@@ -93,7 +93,7 @@ def junction_type(row):
         elif a > 0 and b < 0:
             type_.append("A3SS")
         elif a < 0 and b < 0:
-            type_.append("Exitron")
+            type_.append("EX")
         else:
             type_.append("Other")
 
@@ -122,9 +122,8 @@ def check_exon_inclusion(group):
         return False
 
 
-# look at gtf to fasta from tophat
-
 def bed_from_df(df, columns):
+    # look at gtf to fasta from tophat
     # colum order gene, chr, strand, start, end
 
     bed = ''
@@ -153,15 +152,24 @@ def get_sequences(bed):
 
 
 def split_exon(exon):
-    return (int(x) for x in exon.split('-'))
+    if isinstance(exon, str):
+        return (int(x) for x in exon.split('-'))
+    return np.nan, np.nan
+
+
+def first_event_exon_coord(row, event='A5SS'):
+    if event not in row['junction_type']:
+        return '0-0'  # None
+
+    idx = row['junction_type'].index(event)
+    return row['Exons coords'][idx]
 
 
 def event_distance(row, event='A5SS'):
-    if event not in row['junction_type']:
+    try:
+        exon_s, exon_e = split_exon(first_event_exon_coord(row, event))
+    except AttributeError:  # not string
         return np.nan
-
-    idx = row['junction_type'].index(event)
-    exon_s, exon_e = split_exon(row['Exons coords'][idx])
 
     if row['strand'] == '+':
         return row['junction_start'] - exon_s
@@ -172,8 +180,6 @@ def event_distance(row, event='A5SS'):
 @click.command()
 @click.option('--file', type=click.Path(exists=True),
               help='Majiq output (tsv file)')
-@click.option('--majiq_cutoff', type=float, default=0.10,
-              help='Majiq dPSI cutoff')
 @click.option('--posterior_prob_filter', type=float, default=0.90,
               help='Filter junctions with P(dPSI) < {default}')
 @click.option('--fold_change_filter', type=float, default=0.10,
@@ -182,22 +188,22 @@ def event_distance(row, event='A5SS'):
               help='gtf.refmap file from StringTie, which contain the'
                    'mapping between transfrags and the reference'
                    'gene name, gene id and also the mapping class code')
-def main(file, majiq_cutoff, posterior_prob_filter, fold_change_filter, names):
+def main(file, posterior_prob_filter, fold_change_filter, names):
     base_name = os.path.basename(file).split('.')[0]
     table = pd.read_table(file)
     dPSI_col = table.columns[table.columns.str.startswith('P(|dPSI|')][0]
     PSI_cols = table.columns[table.columns.str.endswith('E(PSI)')]
 
-    print('Majiq output {} loaded with {} columns and {} rows.'.format(
-        file, table.shape[0], table.shape[1]))
-
-    # Use StringTie to fetch the Gene names and class code for the mapping
-    names_table = pd.read_table(names)
-    names_table['qry_id_list'] = names_table['qry_id_list'].str.split('|')
-    names_table = explode(names_table, ['qry_id_list'])
-    names_table.rename(columns={'qry_id_list': '#Gene Name'}, inplace=True)
-    names_table.set_index('#Gene Name', inplace=True)
-    table = table.join(names_table, on='#Gene Name')
+    print('Majiq output {} loaded with {} rows and {} columns.'.format(
+        file, *table.shape))
+    if names:
+        # Use StringTie to fetch the Gene names and class code for the mapping
+        names_table = pd.read_table(names)
+        names_table['qry_id_list'] = names_table['qry_id_list'].str.split('|')
+        names_table = explode(names_table, ['qry_id_list'])
+        names_table.rename(columns={'qry_id_list': '#Gene Name'}, inplace=True)
+        names_table.set_index('#Gene Name', inplace=True)
+        table = table.join(names_table, on='#Gene Name')
 
     # process the convoluted columns
     table['Exons coords'] = table['Exons coords'].str.split(';')
@@ -222,7 +228,7 @@ def main(file, majiq_cutoff, posterior_prob_filter, fold_change_filter, names):
                              .astype(int))
 
     # Filter unprobable and low fold change events
-    table.loc[:, 'filtered'] = False
+    table['filtered'] = False
     table.loc[table['E(dPSI) per LSV junction'] > -fold_change_filter,
               'filtered'] = True
     table.loc[table[dPSI_col] < posterior_prob_filter,
@@ -231,31 +237,79 @@ def main(file, majiq_cutoff, posterior_prob_filter, fold_change_filter, names):
 
     # Add junction type for each exon in the majiq output
     table['junction_type'] = table.apply(junction_type, axis=1)
+    # A5SS, A3SS, ES, EI, IR, EX
+
     exon_inclusion = table.groupby('LSV ID').apply(check_exon_inclusion)
-    table['exon_inclusion'] = table['LSV ID'].apply(exon_inclusion.get)
+    table['EI'] = table['LSV ID'].apply(exon_inclusion.get)
+    for ass_type in 'A5SS A3SS ES IR EX'.split():
+        table[ass_type] = table['junction_type'].apply(
+            lambda x: ass_type in x)
 
     # Deep analysis
-    bed_junction = bed_from_df(table, ['#Gene Name', 'chr', 'strand',
-                                       'junction_start', 'junction_end'])
-    table['junction_seq'] = get_sequences(bed_junction)
-    table['junction_score5'] = table.loc[:, 'junction_seq'].apply(
-        maxent_fast.score5)
-    table['A5SS_dist'] = table.apply(event_distance, axis=1)
+    # hack to deal with lack of typed Nan
+    es_table = table.loc[table['ES']].copy()
+    a5ss_table = table.loc[table['A5SS']].copy()
+    es_table['es_first'] = es_table.apply(
+        first_event_exon_coord, event='ES', axis=1)
+    es_table['ES_start'] = (es_table['es_first']
+                            .str.split('-', expand=True)[0]
+                            .astype(int)
+                            .replace(0, np.nan))
+    es_table['ES_end'] = (es_table['es_first']
+                          .str.split('-', expand=True)[1]
+                          .astype(int)
+                          .replace(0, np.nan))
+
+    a5ss_table['A5SS_first'] = a5ss_table.apply(first_event_exon_coord, axis=1)
+    a5ss_table['A5SS_start'] = (a5ss_table['A5SS_first']
+                                .str.split('-', expand=True)[0]
+                                .astype(int)
+                                .replace(0, np.nan))
+    a5ss_table['A5SS_end'] = (a5ss_table['A5SS_first']
+                         .str.split('-', expand=True)[1]
+                         .astype(int)
+                         .replace(0, np.nan))
+
+    for t, component in zip([table, es_table, a5ss_table],
+                            ['junction', 'ES', 'A5SS']):
+        start, end = f'{component}_start', f'{component}_end'
+        bed_ = bed_from_df(t, ['#Gene Name', 'chr', 'strand', start, end])
+        t[f'{component}_seq'] = get_sequences(bed_)
+        t[f'{component}_score5'] = t[f'{component}_seq'].apply(
+            maxent_fast.score5)
+        a5ss_table['A5SS_dist'] = table.apply(event_distance, axis=1)
 
     # output junctions counts per gene
-    table[['ref_gene_id', 'ref_id']].fillna('None', inplace=True)
-    table.loc[table.filtered, 'ref_gene_id'].value_counts().to_csv(
-        '{}.junction_per_genes.csv'.format(base_name))
+    cols = {'junction': ['chr', 'junction_start', 'junction_end', 'strand',
+                         'junction_type', 'Exons coords', 'EI', 'LSV ID',
+                         'junction_seq', 'junction_score5',
+                         '#Gene Name', 'Gene ID', 'filtered', 'A5SS',  'A3SS',
+                         'ES', 'IR', 'EX', 'E(dPSI) per LSV junction', dPSI_col,
+                         *PSI_cols],
 
-    cols = ['chr', 'junction_start', 'junction_end', 'strand', 'junction_type',
-            'Exons coords', 'exon_inclusion', 'LSV ID', 'junction_seq',
-            'junction_score5' 'A5SS_dist', 'ref_gene_id', 'ref_id',
-            'class_code', '#Gene Name', 'Gene ID', 'filtered',
-            'E(dPSI) per LSV junction', dPSI_col] + list(PSI_cols)
-    table = table.loc[:, cols]
-    table.columns = table.columns.str.replace('per LSV junction', '')
-    table.to_csv('{}.csv'.format(base_name), index=False)
+            'ES': ['chr', 'ES_start', 'ES_end', 'strand', 'junction_start',
+                   'junction_end', 'Exons coords', 'EI', 'LSV ID', 'ES_seq',
+                   'ES_score5', 'filtered', 'E(dPSI) per LSV junction',
+                   dPSI_col, *PSI_cols],
 
+            'A5SS': ['chr', 'A5SS_start', 'A5SS_end', 'strand',
+                     'junction_start', 'junction_end', 'Exons coords',
+                     'EI', 'LSV ID', 'A5SS_seq', 'A5SS_score5',
+                     'A5SS_dist', 'filtered', 'E(dPSI) per LSV junction',
+                     dPSI_col, *PSI_cols]}
+
+    if names:
+        table.loc[table.filtered, 'ref_gene_id'].value_counts().to_csv(
+            '{}.junction_per_genes.csv'.format(base_name))
+        for col in cols:
+            cols[col].extend('ref_gene_id ref_id class_code'.split())
+
+    for t, component in zip([table, es_table, a5ss_table],
+                            ['junction', 'ES', 'A5SS']):
+        t = t.loc[:, cols[component]].copy()
+        t.columns = t.columns.str.replace('per LSV junction', '')
+        t.to_csv('{}_{}_old_classification.csv'.format(base_name, component),
+                 index=False)
 
 if __name__ == "__main__":
     main()
