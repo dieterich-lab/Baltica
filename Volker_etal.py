@@ -3,13 +3,17 @@
 """
 Created on 15:30 30/01/2018 2018 
 Pipeline to process Majiq output table
+.. usage:
+python Volker_etal.py --file /Volumes/prj/Niels_Gehring/revision/RNPS1_Luc_workflow/RNPS1_Luc.deltapsi_deltapsi.tsv  --names  /Volumes/prj/Niels_Gehring/revision/RNPS1_Luc_workflow/luc.combined.luc.gtf.refmap
+
+install maxentpy with pip install git+git://github.com/kepbod/maxentpy
 """
 import os
 
 import click as click
 import numpy as np
 import pandas as pd
-# from maxentpy import maxent_fast
+from maxentpy import maxent_fast
 import pybedtools
 
 
@@ -159,9 +163,11 @@ def event_distance(row, event='A5SS'):
     idx = row['junction_type'].index(event)
     exon_s, exon_e = split_exon(row['Exons coords'][idx])
 
-    junction = row['junction_start'] if row['strand'] == '+' else row[
-        'junction_end']
-    return junction - exon_s
+    if row['strand'] == '+':
+        return row['junction_start'] - exon_s
+    else:
+        return exon_e - row['junction_end']
+
 
 @click.command()
 @click.option('--file', type=click.Path(exists=True),
@@ -180,6 +186,8 @@ def main(file, majiq_cutoff, posterior_prob_filter, fold_change_filter, names):
     base_name = os.path.basename(file).split('.')[0]
     table = pd.read_table(file)
     dPSI_col = table.columns[table.columns.str.startswith('P(|dPSI|')][0]
+    PSI_cols = table.columns[table.columns.str.endswith('E(PSI)')]
+
     print('Majiq output {} loaded with {} columns and {} rows.'.format(
         file, table.shape[0], table.shape[1]))
 
@@ -193,10 +201,8 @@ def main(file, majiq_cutoff, posterior_prob_filter, fold_change_filter, names):
 
     # process the convoluted columns
     table['Exons coords'] = table['Exons coords'].str.split(';')
-    cols = [
-        'Junctions coords',
-        'E(dPSI) per LSV junction',
-        dPSI_col]
+    cols = ['Junctions coords', 'E(dPSI) per LSV junction', dPSI_col] + list(
+        PSI_cols)
 
     for col in cols:
         table[col] = table[col].str.split(';')
@@ -232,18 +238,23 @@ def main(file, majiq_cutoff, posterior_prob_filter, fold_change_filter, names):
     bed_junction = bed_from_df(table, ['#Gene Name', 'chr', 'strand',
                                        'junction_start', 'junction_end'])
     table['junction_seq'] = get_sequences(bed_junction)
-    # table.loc[:, 'junction_score5'] = table.loc[:, 'junction_seq'].apply(
-    #     maxent_fast.score5)
+    table['junction_score5'] = table.loc[:, 'junction_seq'].apply(
+        maxent_fast.score5)
     table['A5SS_dist'] = table.apply(event_distance, axis=1)
-
-    # missing ES seq and junction
 
     # output junctions counts per gene
     table[['ref_gene_id', 'ref_id']].fillna('None', inplace=True)
     table.loc[table.filtered, 'ref_gene_id'].value_counts().to_csv(
         '{}.junction_per_genes.csv'.format(base_name))
 
-    table.to_csv('{}.csv'.format(base_name))
+    cols = ['chr', 'junction_start', 'junction_end', 'strand', 'junction_type',
+            'Exons coords', 'exon_inclusion', 'LSV ID', 'junction_seq',
+            'junction_score5' 'A5SS_dist', 'ref_gene_id', 'ref_id',
+            'class_code', '#Gene Name', 'Gene ID', 'filtered',
+            'E(dPSI) per LSV junction', dPSI_col] + list(PSI_cols)
+    table = table.loc[:, cols]
+    table.columns = table.columns.str.replace('per LSV junction', '')
+    table.to_csv('{}.csv'.format(base_name), index=False)
 
 
 if __name__ == "__main__":
