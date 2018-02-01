@@ -82,20 +82,24 @@ def junction_type(row):
         if strand == '+':
             a = e_start - j_start
             b = j_end - e_end
+            c = e_end - j_start
+            d = j_end - e_start
         else:
             a = j_end - e_end
             b = e_start - j_start
+            c = j_end - e_start
+            d = e_end - j_start
 
-        if a > 0 and b > 0:
+        if a > 0 and b > 0 and c > 0 and d > 0:
             type_.append("ES")
-        elif a < 0 and b > 0:
+        elif a < 0 and b > 0 and c > 0 and d > 0:
             type_.append("A5SS")
-        elif a > 0 and b < 0:
+        elif a > 0 and b < 0 and c > 0 and d > 0:
             type_.append("A3SS")
-        elif a < 0 and b < 0:
+        elif a < 0 and b < 0 and c > 0 and d > 0:
             type_.append("EX")
         else:
-            type_.append("Other")
+            type_.append("NONE")
 
     return type_
 
@@ -266,9 +270,9 @@ def main(file, posterior_prob_filter, fold_change_filter, names):
                                 .astype(int)
                                 .replace(0, np.nan))
     a5ss_table['A5SS_end'] = (a5ss_table['A5SS_first']
-                         .str.split('-', expand=True)[1]
-                         .astype(int)
-                         .replace(0, np.nan))
+                              .str.split('-', expand=True)[1]
+                              .astype(int)
+                              .replace(0, np.nan))
 
     for t, component in zip([table, es_table, a5ss_table],
                             ['junction', 'ES', 'A5SS']):
@@ -283,7 +287,7 @@ def main(file, posterior_prob_filter, fold_change_filter, names):
     cols = {'junction': ['chr', 'junction_start', 'junction_end', 'strand',
                          'junction_type', 'Exons coords', 'EI', 'LSV ID',
                          'junction_seq', 'junction_score5',
-                         '#Gene Name', 'Gene ID', 'filtered', 'A5SS',  'A3SS',
+                         '#Gene Name', 'Gene ID', 'filtered', 'A5SS', 'A3SS',
                          'ES', 'IR', 'EX', 'E(dPSI) per LSV junction', dPSI_col,
                          *PSI_cols],
 
@@ -308,8 +312,9 @@ def main(file, posterior_prob_filter, fold_change_filter, names):
                             ['junction', 'ES', 'A5SS']):
         t = t.loc[:, cols[component]].copy()
         t.columns = t.columns.str.replace('per LSV junction', '')
-        t.to_csv('{}_{}_old_classification.csv'.format(base_name, component),
+        t.to_csv('{}_{}.csv'.format(base_name, component),
                  index=False)
+
 
 if __name__ == "__main__":
     main()
