@@ -13,6 +13,7 @@ import os
 import click as click
 import numpy as np
 import pandas as pd
+import sys
 from maxentpy import maxent_fast
 import pybedtools
 
@@ -94,14 +95,15 @@ def junction_type(row):
     type_ = []
 
     j_start, j_end, exons, strand = row.loc[[
-        'junction_start', 'junction_end', 'Exons coords', 'strand']]
+        'junction_start', 'junction_end', 'new_exons', 'strand']]
     if j_end - j_start <= 1:
         return ['IR']
+    if not exons:
+        return ['EMPTY']
 
     for i, (e_start, e_end) in enumerate(
             exon.split('-') for exon in exons):
         e_start, e_end = int(e_start), int(e_end)
-
         if j_start in (e_start, e_end):
             type_.append('JS')
             continue
@@ -192,12 +194,12 @@ def split_exon(exon):
     return np.nan, np.nan
 
 
-def first_event_exon_coord(row, event='A5SS'):
+def first_event_exon_coord(row, event='A5SS', exon_label='new_exons'):
     if event not in row['junction_type']:
         return '0-0'  # None
 
     idx = row['junction_type'].index(event)
-    return row['Exons coords'][idx]
+    return row[exon_label][idx]
 
 
 def event_distance(row, event='A5SS'):
@@ -258,12 +260,12 @@ def main(file, posterior_prob_filter, fold_change_filter, refmap_path,
         table[col] = table[col].astype(float)
 
     table['junction_start'] = (table['Junctions coords']
-                               .str.split('-', expand=True)[0]
-                               .astype(int))
+        .str.split('-', expand=True)[0]
+        .astype(int))
 
     table['junction_end'] = (table['Junctions coords']
-                             .str.split('-', expand=True)[1]
-                             .astype(int))
+        .str.split('-', expand=True)[1]
+        .astype(int))
 
     # Filter unprobable and low fold change events
     table['filtered'] = False
@@ -273,9 +275,33 @@ def main(file, posterior_prob_filter, fold_change_filter, refmap_path,
               'filtered'] = True
     print(table.filtered.value_counts())
 
+    # extract exons from gff
+    gff = (pybedtools.BedTool(fn=gff_path)
+        .filter(lambda x: x[2] == 'exon')
+        .sort()
+        .saveas())
+    # need to normalise the bedfile to 6 columns
+    table['dot'] = '.'
+    table['idx'] = range(table.shape[0])
+
+    bed_cols = ['chr', 'junction_start', 'junction_end', 'idx', 'dot', 'strand']
+    a_bed = pybedtools.BedTool.from_dataframe(table.loc[:, bed_cols])
+    intersect = (a_bed.intersect(b=gff, wa=True, wb=True, s=True)
+        .to_dataframe(names=range(15)))
+    intersect['new_exons'] = intersect[9].astype(str) + "-" + intersect[
+        10].astype(str)
+
+    exons = intersect.groupby([3], sort=False)['new_exons'].apply(
+        lambda x: list(set(x)))
+
+    # exons['new_exons'] = exons['new_exons'].str.join(' ')
+    table = table.merge(
+        right=exons.to_frame(), left_on=['idx'], right_index=True)
+
     # Add junction type for each exon in the majiq output
-    table['junction_type'] = table.apply(junction_type, axis=1)
     # A5SS, A3SS, ES, EI, IR, EX
+
+    table['junction_type'] = table.apply(junction_type, axis=1)
 
     exon_inclusion = table.groupby('LSV ID').apply(check_exon_inclusion)
     table['EI'] = table['LSV ID'].apply(exon_inclusion.get)
@@ -290,28 +316,41 @@ def main(file, posterior_prob_filter, fold_change_filter, refmap_path,
     es_table['es_first'] = es_table.apply(
         first_event_exon_coord, event='ES', axis=1)
     es_table['ES_start'] = (es_table['es_first']
-                            .str.split('-', expand=True)[0]
-                            .astype(int)
-                            .replace(0, np.nan))
+        .str.split('-', expand=True)[0]
+        .astype(int)
+        .replace(0, np.nan))
     es_table['ES_end'] = (es_table['es_first']
-                          .str.split('-', expand=True)[1]
-                          .astype(int)
-                          .replace(0, np.nan))
+        .str.split('-', expand=True)[1]
+        .astype(int)
+        .replace(0, np.nan))
 
-    for t, component in zip([table, es_table], # a5ss_table
-                            ['junction', 'ES',]): #  'A5SS'
+    a5ss_table = table.loc[table['A5SS']].copy()
+
+    a5ss_table['A5SS_first'] = a5ss_table.apply(first_event_exon_coord, axis=1)
+    a5ss_table['A5SS_start'] = (a5ss_table['A5SS_first']
+        .str.split('-', expand=True)[0]
+        .astype(int)
+        .replace(0, np.nan))
+    a5ss_table['A5SS_end'] = (a5ss_table['A5SS_first']
+        .str.split('-', expand=True)[1]
+        .astype(int)
+        .replace(0, np.nan))
+
+    for t, component in zip([table, es_table, a5ss_table],
+                            ['junction', 'ES', 'A5SS']):
         start, end = f'{component}_start', f'{component}_end'
         bed_ = bed_from_df(t, ['#Gene Name', 'chr', 'strand', start, end])
         t[f'{component}_seq'] = get_sequences(bed_)
         t[f'{component}_score5'] = t[f'{component}_seq'].apply(
             maxent_fast.score5)
+        t['dinucleotide'] = t[f'{component}_seq'].str[3:5]
 
-    # a5ss_table['A5SS_dist'] = table.apply(event_distance, axis=1)
-    table['dinucleotide'] = table['junction_seq'].str[3:5]
+    a5ss_table['A5SS_dist'] = table.apply(event_distance, axis=1)
 
     # output junctions counts per gene
     cols = {'junction': ['chr', 'junction_start', 'junction_end', 'strand',
                          'junction_type', 'Exons coords', 'EI', 'LSV ID',
+                         'new_exons',
                          'junction_seq', 'dinucleotide', 'junction_score5',
                          '#Gene Name', 'Gene ID', 'filtered', 'A5SS', 'A3SS',
                          'ES', 'IR', 'EX', 'E(dPSI) per LSV junction', dPSI_col,
@@ -320,9 +359,9 @@ def main(file, posterior_prob_filter, fold_change_filter, refmap_path,
             'ES': ['chr', 'ES_start', 'ES_end', 'strand', 'junction_start',
                    'junction_end', 'Exons coords', 'EI', 'LSV ID', 'ES_seq',
                    'ES_score5', 'filtered', 'E(dPSI) per LSV junction',
-                   dPSI_col, *PSI_cols],
+                   'new_exons', dPSI_col, *PSI_cols],
 
-            'A5SS': ['chr', 'A5SS_start', 'A5SS_end', 'strand',
+            'A5SS': ['chr', 'A5SS_start', 'A5SS_end', 'strand', 'new_exons',
                      'junction_start', 'junction_end', 'Exons coords',
                      'EI', 'LSV ID', 'A5SS_seq', 'A5SS_score5',
                      'A5SS_dist', 'filtered', 'E(dPSI) per LSV junction',
@@ -334,8 +373,8 @@ def main(file, posterior_prob_filter, fold_change_filter, refmap_path,
         for col in cols:
             cols[col].extend('ref_gene_id ref_id class_code'.split())
 
-    for t, component in zip([table, es_table, ], # a5ss_table
-                            ['junction', 'ES', ]): # 'A5SS'
+    for t, component in zip([table, es_table, ],  # a5ss_table
+                            ['junction', 'ES', ]):  # 'A5SS'
         t = t.loc[:, cols[component]].copy()
         t.columns = t.columns.str.replace('per LSV junction', '')
         t.to_csv('{}_{}.csv'.format(base_name, component),
