@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8
 """
-Created on 17:07 24/01/2018 2018 
+Created on 17:07 24/01/2018 2018
 Snakemake file for majiq.
 .. usage:
     find . -name majiq.slurm.sh -exec sbatch  {} \;
 """
-from numpy.f2py import rules
-
 __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2017, Dieterichlab"
 __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
@@ -16,16 +14,30 @@ __license__ = "MIT"
 from itertools import combinations
 import os
 from os.path import join as path_join
+import subprocess
 
-basedir = "/scratch/rbm20/mnt/ARCHIVEDISKS/archive_disk_2_contents/projects/Michael_Gotthardt_Rbm20/"
-# wget https://majiq.biociphers.org/download/gtf2gff3.pl
-# perl gtf2gff3.pl /biodb/genomes/mus_musculus/GRCm38_79/GRCm38.79.gtf > GRCm38.79.gff
-output_dir = "/scratch/tbrittoborges/majiq_Michael_Gotthardt_Rbm20/"
-gff3_annotation = output_dir + 'GRCm38.79.gff'
-genome =  "GRCm38"
-genome_path='/biodb/genomes/mus_musculus/GRCm38_79/GRCm38_79.fa'
- # for f in $basedir/*_STARmapping/Log.final.out; do echo $f; grep 'Average mapped length' $f; done
-readlen = 200
+output_dir = "/home/tbrittoborges/prj/HIVFACS_majiq"
+gtf_path = "/biodb/genomes/homo_sapiens/GRCh38_90/GRCh38.90.gtf"
+genome_path = "/biodb/genomes/mus_musculus/GRCm38_79/GRCm38_79.fa"
+bam_base_path = '/prj/Alfredo_Castello_Palomares/HIVFACS/workflow/mapping'
+readlen = 158
+ # for f in /prj/Alfredo_Castello_Palomares/HIVFACS/workflow/mapping/20170719-HIV-*_STARmapping/Log.final.out; do echo $f;  ; done
+data={
+    "syncytia": ["20170719-HIV-syncytia_S2_STARmapping", ],
+    "mChneg-p24neg_S5": ["20170719-HIV-mChneg-p24neg_S5_STARmapping", ],
+    "mChpos-p24neg_S4": ["20170719-HIV-mChpos-p24neg_S4_STARmapping", ],
+    "mChpos-p24pos_S3": ["20170719-HIV-mChpos-p24pos_S3_STARmapping", ],
+    "uninfected_S1": ["20170719-HIV-uninfected_S1_STARmapping", ]}
+try:
+    os.mkdir(output_dir)
+Exception OSError:
+    pass
+
+subprocess.run(
+    ['perl', '/home/tbrittoborges/bin/gtf2gff3.pl', gtf_path],
+    stdout = output_dir + os.path.basename(gtf_path).replace('gtf', 'gff'))
+
+
 sub_template="""#!/bin/bash
 #SBATCH -c 20
 #SBATCH -n 1
@@ -34,7 +46,7 @@ sub_template="""#!/bin/bash
 #SBATCH --job-name="majiq_workflow"
 #SBATCH --mail-user=thiago.brittoborges@uni-heidelberg.de
 #SBATCH --mail-type=ALL
-#SBATCH --output=/scratch/tbrittoborges/majiq_Michael_Gotthardt_Rbm20/logs%j.out
+#SBATCH --output={output}/logs%j.out
 
 module load majiq
 module load samtools
@@ -64,24 +76,9 @@ voila deltapsi \
 """
 
 
-data={"male_TiKO": [
-        "male_TiKO_004_STARmapping/Aligned.noS.correct.bam",
-        "male_TiKO_003_STARmapping/Aligned.noS.correct.bam",
-        "male_TiKO_002_STARmapping/Aligned.noS.correct.bam"],
-    "male_WT": [
-        "male_WT_010_STARmapping/Aligned.noS.correct.bam",
-        "male_WT_011_STARmapping/Aligned.noS.correct.bam",
-        "male_WT_009_STARmapping/Aligned.noS.correct.bam"],
-    "female_WT":[
-        "female_WT_016_STARmapping/Aligned.noS.correct.bam",
-        "female_WT_014_STARmapping/Aligned.noS.correct.bam",
-        "female_WT_015_STARmapping/Aligned.noS.correct.bam"],
-    "female_TiKO":[
-        "female_TiKO_008_STARmapping/Aligned.noS.correct.bam",
-        "female_TiKO_006_STARmapping/Aligned.noS.correct.bam",
-        "female_TiKO_005_STARmapping/Aligned.noS.correct.bam"]}
 
 sample =  ["_vs_".join(sample) for sample in combinations(data.keys(), 2)]
+
 
 rule all:
     input: expand('{sample}/majiq.ini', sample=sample)
@@ -104,7 +101,7 @@ rule create_ini:
 
             for filepath, name in zip(samples_paths, samples_names):
                 os.symlink(
-                    path_join(basedir, filepath),
+                    path_join(bam_base_path, filepath),
                     path_join(output_dir, comparison, '{}.bam'.format(name)))
 
 

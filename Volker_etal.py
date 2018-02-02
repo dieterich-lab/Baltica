@@ -17,6 +17,37 @@ from maxentpy import maxent_fast
 import pybedtools
 
 
+def load_gff_to_df(filename):
+    header = ('NAME', 'SOURCE', 'TYPE', 'START', 'END',
+              'SCORE', 'STRAND', 'FRAME', 'GROUP', 'empty')
+    dtypes = {'END': int, 'FRAME': str, 'GROUP': str, 'ID': str, 'NAME': str,
+              'NOTE': str, 'SCORE': str, 'SOURCE': str, 'START': int,
+              'STRAND': str, 'TYPE': str, 'empty': str, }
+    return pd.read_table(filename, names=header, na_values='.', dtype=dtypes,
+                         comment='#')
+
+
+def gff_query_junction(df, jun, chr=None, type='exon', strand='+'):
+    q = 'NAME == "{chr}" & STRAND == "{strand}" & TYPE == "{type}" & START < ' \
+        '{jun} & END > {jun} '
+    return df.query(
+        q.format(chr=chr, strand=strand, jun=jun, type=type))
+
+
+def a5ss_exon_from_stringtie(row, dataset):
+    if row['strand'] == '+':
+        junction = row['junction_start']
+    else:
+        junction = row['junction_end']
+    query = 'NAME == "{chr}" & STRAND == "{strand}" & TYPE == "exon" ' \
+            '& START < {jun} &  {jun} < END '.format(
+        chr=row['chr'], strand=row['strand'], jun=junction)
+    result = dataset.query(query)
+    if result.shape[0] != 1:
+        return 1, 2
+    return result.iloc[0, [3, 4]]
+
+
 def explode(dataframe, columns, fill_value=''):
     """Decovolutes a the `columns` of a DataFrame
 
@@ -188,11 +219,14 @@ def event_distance(row, event='A5SS'):
               help='Filter junctions with P(dPSI) < {default}')
 @click.option('--fold_change_filter', type=float, default=0.10,
               help='Filter junctions with |E(dPSI)| < {default}')
-@click.option('--names', type=click.Path(exists=True),
+@click.option('--refmap_path', type=click.Path(exists=True),
               help='gtf.refmap file from StringTie, which contain the'
                    'mapping between transfrags and the reference'
                    'gene name, gene id and also the mapping class code')
-def main(file, posterior_prob_filter, fold_change_filter, names):
+@click.option('--gff_path', type=click.Path(exists=True),
+              help='Path to Majiq gff file used for exon definition')
+def main(file, posterior_prob_filter, fold_change_filter, refmap_path,
+         gff_path):
     base_name = os.path.basename(file).split('.')[0]
     table = pd.read_table(file)
     dPSI_col = table.columns[table.columns.str.startswith('P(|dPSI|')][0]
@@ -200,9 +234,9 @@ def main(file, posterior_prob_filter, fold_change_filter, names):
 
     print('Majiq output {} loaded with {} rows and {} columns.'.format(
         file, *table.shape))
-    if names:
+    if refmap_path:
         # Use StringTie to fetch the Gene names and class code for the mapping
-        names_table = pd.read_table(names)
+        names_table = pd.read_table(refmap_path)
         names_table['qry_id_list'] = names_table['qry_id_list'].str.split('|')
         names_table = explode(names_table, ['qry_id_list'])
         names_table.rename(columns={'qry_id_list': '#Gene Name'}, inplace=True)
@@ -252,7 +286,7 @@ def main(file, posterior_prob_filter, fold_change_filter, names):
     # Deep analysis
     # hack to deal with lack of typed Nan
     es_table = table.loc[table['ES']].copy()
-    a5ss_table = table.loc[table['A5SS']].copy()
+    # a5ss_table = table.loc[table['A5SS']].copy()
     es_table['es_first'] = es_table.apply(
         first_event_exon_coord, event='ES', axis=1)
     es_table['ES_start'] = (es_table['es_first']
@@ -264,29 +298,21 @@ def main(file, posterior_prob_filter, fold_change_filter, names):
                           .astype(int)
                           .replace(0, np.nan))
 
-    a5ss_table['A5SS_first'] = a5ss_table.apply(first_event_exon_coord, axis=1)
-    a5ss_table['A5SS_start'] = (a5ss_table['A5SS_first']
-                                .str.split('-', expand=True)[0]
-                                .astype(int)
-                                .replace(0, np.nan))
-    a5ss_table['A5SS_end'] = (a5ss_table['A5SS_first']
-                              .str.split('-', expand=True)[1]
-                              .astype(int)
-                              .replace(0, np.nan))
-
-    for t, component in zip([table, es_table, a5ss_table],
-                            ['junction', 'ES', 'A5SS']):
+    for t, component in zip([table, es_table], # a5ss_table
+                            ['junction', 'ES',]): #  'A5SS'
         start, end = f'{component}_start', f'{component}_end'
         bed_ = bed_from_df(t, ['#Gene Name', 'chr', 'strand', start, end])
         t[f'{component}_seq'] = get_sequences(bed_)
         t[f'{component}_score5'] = t[f'{component}_seq'].apply(
             maxent_fast.score5)
-        a5ss_table['A5SS_dist'] = table.apply(event_distance, axis=1)
+
+    # a5ss_table['A5SS_dist'] = table.apply(event_distance, axis=1)
+    table['dinucleotide'] = table['junction_seq'].str[3:5]
 
     # output junctions counts per gene
     cols = {'junction': ['chr', 'junction_start', 'junction_end', 'strand',
                          'junction_type', 'Exons coords', 'EI', 'LSV ID',
-                         'junction_seq', 'junction_score5',
+                         'junction_seq', 'dinucleotide', 'junction_score5',
                          '#Gene Name', 'Gene ID', 'filtered', 'A5SS', 'A3SS',
                          'ES', 'IR', 'EX', 'E(dPSI) per LSV junction', dPSI_col,
                          *PSI_cols],
@@ -302,14 +328,14 @@ def main(file, posterior_prob_filter, fold_change_filter, names):
                      'A5SS_dist', 'filtered', 'E(dPSI) per LSV junction',
                      dPSI_col, *PSI_cols]}
 
-    if names:
+    if refmap_path:
         table.loc[table.filtered, 'ref_gene_id'].value_counts().to_csv(
             '{}.junction_per_genes.csv'.format(base_name))
         for col in cols:
             cols[col].extend('ref_gene_id ref_id class_code'.split())
 
-    for t, component in zip([table, es_table, a5ss_table],
-                            ['junction', 'ES', 'A5SS']):
+    for t, component in zip([table, es_table, ], # a5ss_table
+                            ['junction', 'ES', ]): # 'A5SS'
         t = t.loc[:, cols[component]].copy()
         t.columns = t.columns.str.replace('per LSV junction', '')
         t.to_csv('{}_{}.csv'.format(base_name, component),
