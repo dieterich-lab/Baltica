@@ -1,0 +1,59 @@
+#!/usr/bin/env python
+# -*- coding: utf-8
+"""
+Created on 17:07 27/02/2018 
+Snakemake file for stringtie.
+.. usage:
+    
+"""
+__author__ = "Thiago Britto Borges"
+__copyright__ = "Copyright 2017, Dieterichlab"
+__email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
+__license__ = "MIT"
+import os
+# input file with target files 1 per line
+configfile: "stringtieConfig.yml"
+samples = config['inputs']
+names =  config['names']
+DIRS = "mappings StringTienoRef".split()
+
+rule all:
+	output: expand('StringTienoRef/{names}.gtf', names=names)
+
+
+rule dirs:
+    output: DIRS
+    shell: "mkdir -p " + ' '.join(DIRS)
+
+
+rule clean:
+	shell: 
+		shell: "rm -rf " + ' '.join(DIRS)
+
+
+rule symlink:
+	input: 
+		bam = expand('{samples}', samples=samples),
+		bai = expand('{samples}.bai', samples=samples)
+	output:
+		bam = expand('mappings/{names}.bam', names=names),
+		bai = expand('mappings/{names}.bam.bai', names=names)
+	run:
+		for bam_in, bai_in, bam_out, bai_out in zip(
+			input.bam, input.bai, output.bam, output.bai):
+			os.symlink(bam_in, bam_out)
+			os.symlink(bai_in, bai_out)		
+
+rule stringtie:
+	input: rules.symlink.output.bam
+	output: expand('StringTienoRef/{names}.gtf', names=names)
+	threads: 8 
+	params:
+		min_iso: config.get(min_iso, "") 
+		min_anchor_len: config.get(min_anchor_len, "")
+		min_junction_cov: config.get(min_junction_cov, "")
+
+	shell: 
+		'module load stringtie'
+		'stringtie {input}  -v -p {threads} --rf -o {output}'
+		'{params.min_iso} {params.min_anchor_len} {params.min_junction_cov}'
