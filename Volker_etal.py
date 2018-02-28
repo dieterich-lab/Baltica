@@ -13,9 +13,8 @@ import os
 import click as click
 import numpy as np
 import pandas as pd
-import sys
-from maxentpy import maxent_fast
 import pybedtools
+from maxentpy import maxent_fast
 
 
 def load_gff_to_df(filename):
@@ -159,7 +158,7 @@ def check_exon_inclusion(group):
         return False
 
 
-def bed_from_df(df, columns):
+def bed_5SS_from_df(df, columns):
     # look at gtf to fasta from tophat
     # colum order gene, chr, strand, start, end
 
@@ -176,10 +175,79 @@ def bed_from_df(df, columns):
     return bed
 
 
-def get_sequences(bed):
+def bed_5SS_exon_from_df(df, columns):
+    # look at gtf to fasta from tophat
+    # colum order gene, chr, strand, start, end
+
+    bed = ''
+    for idx, row in df.loc[:, columns].iterrows():
+        name, chr, strand, start, end = row
+        if strand == '+':
+            bed = '\n'.join(
+                [bed, f'{chr}\t{start - 3}\t{start + 6}\t{name}\t1\t{strand}'])
+
+        elif strand == '-':
+            bed = '\n'.join(
+                [bed, f'{chr}\t{end - 6}\t{end + 3}\t{name}\t1\t{strand}'])
+    return bed
+
+
+def bed_3SS_exon_from_df(df, columns):
+    # look at gtf to fasta from tophat
+    # colum order gene, chr, strand, start, end
+
+    bed = ''
+    for idx, row in df.loc[:, columns].iterrows():
+        name, chr, strand, start, end = row
+        if strand == '+':
+            bed = '\n'.join(
+                [bed, f'{chr}\t{end - 20}\t{end + 3}\t{name}\t1\t{strand}'])
+
+        elif strand == '-':
+            bed = '\n'.join(
+                [bed, f'{chr}\t{start - 3}\t{start + 20}\t{name}\t1\t{strand}'])
+    return bed
+
+
+def calculate_maxent_exon(data, fasta=None, columns=(
+        'SOURCE', 'NAME', 'STRAND', 'START', 'END')):
+    bed5 = bed_5SS_exon_from_df(data, columns=columns)
+    data['seq5'] = get_sequences(bed5, fasta=fasta)
+    data['score5'] = data['seq5'].apply(maxent_fast.score5)
+    data['seq5'] = data['seq5'].str[:3].str.upper() + \
+                   data['seq5'].str[3:].str.lower()
+
+    junc3_bed = bed_3SS_exon_from_df(data, columns=columns)
+    data['seq3'] = get_sequences(junc3_bed, fasta=fasta)
+    data['score3'] = data['seq3'].apply(maxent_fast.score3)
+
+    data['seq3'] = data['seq3'].str[:20].str.lower() + \
+                   data['seq3'].str[20:].str.upper()
+
+    return data
+
+
+def bed_3SS_from_df(df, columns):
+    # look at gtf to fasta from tophat
+    # colum order gene, chr, strand, start, end
+
+    bed = ''
+    for idx, row in df.loc[:, columns].iterrows():
+        name, chr, strand, start, end = row
+        if strand == '+':
+            bed = '\n'.join(
+                [bed, f'{chr}\t{end - 21}\t{end + 2}\t{name}\t1\t{strand}'])
+
+        elif strand == '-':
+            bed = '\n'.join(
+                [bed, f'{chr}\t{start - 3}\t{start + 20}\t{name}\t1\t{strand}'])
+    return bed
+
+
+def get_sequences(bed, fasta):
     pybed_obj = pybedtools.BedTool(bed, from_string=True)
     pybed_obj.sequence(
-        fi='/Users/tbrittoborges/GRCh38_90.fa',
+        fi=fasta,
         name=True, s=True)
 
     with open(pybed_obj.seqfn) as f:
@@ -231,8 +299,11 @@ def event_distance(row, event='A5SS', which='start'):
                    'gene name, gene id and also the mapping class code')
 @click.option('--gff_path', type=click.Path(exists=True),
               help='Path to Majiq gff file used for exon definition')
+@click.option('--fasta_path', type=click.Path(exists=True),
+              default='/Users/tbrittoborges/GRCh38_90.fa',
+              help='Path to fasta file for sequence extraction')
 def main(file, posterior_prob_filter, fold_change_filter, refmap_path,
-         gff_path):
+         gff_path, fasta_path):
     base_name = os.path.basename(file).split('.')[0]
     table = pd.read_table(file)
     dPSI_col = table.columns[table.columns.str.startswith('P(|dPSI|')][0]
@@ -243,9 +314,7 @@ def main(file, posterior_prob_filter, fold_change_filter, refmap_path,
     if refmap_path:
         # Use StringTie to fetch the Gene names and class code for the mapping
         names_table = pd.read_table(refmap_path)
-        names_table['qry_id_list'] = names_table['qry_id_list'].str.split('|')
-        names_table = explode(names_table, ['qry_id_list'])
-        names_table.rename(columns={'qry_id_list': '#Gene Name'}, inplace=True)
+        names_table.rename(columns={'StringTie ID': '#Gene Name'}, inplace=True)
         names_table.set_index('#Gene Name', inplace=True)
         table = table.join(names_table, on='#Gene Name')
 
@@ -343,10 +412,12 @@ def main(file, posterior_prob_filter, fold_change_filter, refmap_path,
                             ['junction', 'ES', 'A5SS']):
         start, end = f'{component}_start', f'{component}_end'
         if component in ['ES', 'A5SS']:
-            bed_ = bed_from_df(t, ['#Gene Name', 'chr', 'strand', end, start])
+            bed_ = bed_5SS_from_df(t,
+                                   ['#Gene Name', 'chr', 'strand', end, start])
         else:
-            bed_ = bed_from_df(t, ['#Gene Name', 'chr', 'strand', start, end])
-        t[f'{component}_seq'] = get_sequences(bed_)
+            bed_ = bed_5SS_from_df(t,
+                                   ['#Gene Name', 'chr', 'strand', start, end])
+        t[f'{component}_seq'] = get_sequences(bed_, fasta=fasta_path)
         t[f'{component}_score5'] = t[f'{component}_seq'].apply(
             maxent_fast.score5)
         t['dinucleotide'] = t[f'{component}_seq'].str[3:5]
@@ -377,10 +448,10 @@ def main(file, posterior_prob_filter, fold_change_filter, refmap_path,
                      'E(dPSI) per LSV junction', dPSI_col, *PSI_cols]}
 
     if refmap_path:
-        table.loc[table.filtered, 'ref_gene_id'].value_counts().to_csv(
+        table.loc[table.filtered, 'Gene name'].value_counts().to_csv(
             '{}.junction_per_genes.csv'.format(base_name))
         for col in cols:
-            cols[col].extend('ref_gene_id ref_id class_code'.split())
+            cols[col].extend('Gene name'.split())
 
     for t, component in zip([table, es_table, a5ss_table],  #
                             ['junction', 'ES', 'A5SS']):  #

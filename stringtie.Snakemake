@@ -26,9 +26,9 @@ rule dirs:
     shell: "mkdir -p " + ' '.join(DIRS)
 
 
-rule clean:
-	shell: 
-		shell: "rm -rf " + ' '.join(DIRS)
+# rule clean:
+# 	shell: 
+# 		shell: "rm -rf " + ' '.join(DIRS)
 
 
 rule symlink:
