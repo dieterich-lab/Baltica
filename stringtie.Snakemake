@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8
 """
 Created on 17:07 27/02/2018 
@@ -10,9 +9,10 @@ __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2017, Dieterichlab"
 __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
+
 import os
 # input file with target files 1 per line
-configfile: "stringtieConfig.yml"
+configfile: "config.yml"
 samples = config['inputs']
 names =  config['names']
 DIRS = "mappings StringTienoRef".split()
@@ -26,9 +26,9 @@ rule dirs:
     shell: "mkdir -p " + ' '.join(DIRS)
 
 
-# rule clean:
-# 	shell: 
-# 		shell: "rm -rf " + ' '.join(DIRS)
+rule clean:
+	shell: 
+		'rm $(snakemake --summary | tail -n+2 | cut -f1)'
 
 
 rule symlink:

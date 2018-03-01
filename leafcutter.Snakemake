@@ -1,0 +1,93 @@
+# -*- coding: utf-8
+"""
+Created on 17:07 29/02/2018 2018
+Snakemake file for leafcutter.
+.. usage:
+
+create a directory, Leafcutter_results
+
+
+Notes:
+    They recommend Olego
+    or star :
+    STAR --genomeDir hg19index/
+         --twopassMode Basic 
+         --outSAMstrandField intronMotif 
+         --readFilesCommand zcat
+         --outSAMtype BAM Unsorted
+"""
+__author__ = "Thiago Britto Borges"
+__copyright__ = "Copyright 2017, Dieterichlab"
+__email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
+__license__ = "MIT"
+
+from pathlib import Path
+
+configfile: "config.yaml"
+names = config["samples"].keys()
+samples = config["samples"].values()
+bin_path = '/home/tbrittoborges/bin/leafcutter'
+directories = 'mappings junctions'.split()
+gtf_path = '/biodb/genomes/homo_sapiens/GRCh38_90/GRCh38.90.gtf'
+
+rule all:
+    input:
+        'leafcutter_result'
+
+rule clean:
+    shell: 
+        'rm $(snakemake --summary | tail -n+2 | cut -f1)'
+ 
+rule symlink:
+    input:
+        bam=expand("{sample}", sample=samples),
+        bai=expand("{sample}.bai", sample=samples)
+    output:
+        bam=expand('mappings/{names}.bam', names=names),
+        bai=expand('mappings/{names}.bam.bai', names=names)
+    run:
+        for bam_in, bai_in, bam_out, bai_out in zip(
+            input.bam, input.bai, output.bam, output.bai):
+            os.symlink(bam_in, bam_out)
+            os.symlink(bai_in, bai_out)
+
+# step 1.1
+rule bam2junc: 
+    input: expand('mappings/{names}.bam', names=names)
+    output: expand('junctions/{names}.junc', names=names)
+    shell: 'sh {bin_path}/scripts/bam2junc.sh {input} {output}'
+
+# step 1.2 m= min numb of reads a cluster, l = intro len
+rule concatenate:
+    input: expand('junctions/{names}.junc', names=names)
+    output: 'junctions/all.junc'
+    params: m=50, l=500000
+    shell: 'cat {input} {output}'
+
+# step 2
+rule intron_clustering:
+    input:
+        rules.concatenate.output
+    output:
+        'testYRIvsEU_perind_numers.counts.gz'
+    script: """
+{bin_path}/clustering/leafcutter_cluster.py \ 
+-j {input} -m {params.m} -o testYRIvsEU -l {params.l}"""
+
+# step 3.1
+rule gtf_to_exon:
+    input: gtf_path
+    output: 'exons.gtf'
+    script: '{bin_path}/gtf_to_exons.R {input} {output}'
+
+# step 3.2
+rule differential_splicing:
+    input: 
+        a=rules.gtf_to_exon.output, b=rules.intron_clustering.output
+    output: 
+        'leafcutter_result'
+    threads: 4
+    script: """
+{bin_path}/scripts/leafcutter_ds.R --num_threads {threads} \
+--exons_file={input.a} {input.b} {output}"""
+

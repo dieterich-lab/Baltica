@@ -1,0 +1,28 @@
+samples:
+  Luc_1: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49739_STARmapping/Aligned.noS.bam
+  Luc_2: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49740_STARmapping/Aligned.noS.bam
+  Luc_3: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49741_STARmapping/Aligned.noS.bam
+  RNPS1_1: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49742_STARmapping/Aligned.noS.bam
+  RNPS1_2: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49743_STARmapping/Aligned.noS.bam
+  RNPS1_3: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49744_STARmapping/Aligned.noS.bam
+  WT_rescue_1: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49745_STARmapping/Aligned.noS.bam
+  WT_rescue_2: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49746_STARmapping/Aligned.noS.bam
+  WT_rescue_3: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49747_STARmapping/Aligned.noS.bam
+  Mut_rescue_1: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49748_STARmapping/Aligned.noS.bam
+  Mut_rescue_2: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49749_STARmapping/Aligned.noS.bam
+  Mut_rescue_2: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49750_STARmapping/Aligned.noS.bam
+
+# StringTie
+
+# -f minimun isoform fraction (default: .1)
+min_iso:
+  '-f 0.2'
+# -a minimum anchor length for junctions (default: 10)
+min_anchor_len:
+ '-a 15'
+# -j minimum junction coverage (default: 1)
+min_junction_cov:
+  '-j 5'
+
+ 
+
