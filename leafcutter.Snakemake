@@ -21,6 +21,7 @@ __copyright__ = "Copyright 2018, Dieterichlab"
 __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
+from itertools import combinations
 from pathlib import Path
 
 def basename(path, suffix=None):
@@ -28,15 +29,18 @@ def basename(path, suffix=None):
         return str(Path(path).with_suffix(suffix).name)
     return str(Path(path).name)
 
-configfile: "config.yaml"
+configfile: "config.yml"
 NAMES = config["samples"].keys()
 SAMPLES = config["samples"].values()
 bin_path = '/home/tbrittoborges/bin/leafcutter'
 gtf_path = '/biodb/genomes/homo_sapiens/GRCh38_90/GRCh38.90.gtf'
+conditions = [x.split('_')[0] for x in NAMES]
+comp_names =  ['{}_vs_{}'.format(*x) for x in combinations(set(conditions), 2)]
+
 
 rule all:
     input:
-        'ds_plots.pdf'
+        expand('leafcutter/{comp_names}/ds_plots.pdf', comp_names=comp_names)
 
 rule clean:
     shell:
@@ -59,8 +63,8 @@ rule symlink:
 rule bam2junc:
     input: 'mappings/{NAMES}.bam'
     output:
-        bed='junctions/{NAMES}.bed',
-        junc='junctions/{NAMES}.junc'
+        bed='leafcutter/{NAMES}.bed',
+        junc='leafcutter/{NAMES}.junc'
     params: bin_path=bin_path
     shell:
         """
@@ -71,39 +75,45 @@ rule bam2junc:
         perl {params.bin_path}/scripts/bed2junc.pl {output.bed} {output.junc}
         """
 
-# this rule does only all against all,
-# the combination between the 4 samples
-# is more valid
 rule concatenate:
-    input: expand('junctions/{NAMES}.junc', NAMES=NAMES)
+    input: expand('leafcutter/{NAMES}.junc', NAMES=NAMES)
     output:
-        junc='leafcutter/all.junc',
-        test='leafcutter/test_diff_introns.txt'
+        junc=expand('leafcutter/{comp_names}/all.junc', comp_names=comp_names),
+        test=expand('leafcutter/{comp_names}/test_diff_introns.txt',
+                    comp_names=comp_names)
     run:
+        comp = output.junc.split('/')[1]
+        cond_a, cond_b = comp.split('_vs_')
         with open(output.junc, 'w') as fout:
-            fout.write("\n".join(input))
+            for junc_file in input:
+                if junc_file.startswith(cond_a) or junc_file.startswith(cond_b):
+                    fout.write(junc_file + "\n")
 
         with open(output.test, 'w') as fout:
-            for condition, sample_path in zip(NAMES, SAMPLES):
-                fout.write("mappings/{}.bam {}\n".format(
-                    condition, "_".split(condition)[0]))
+            for condition in NAMES:
+                if condition.startswith(cond_a):
+                    fout.write("mappings/{}.bam {}\n".format(
+                        condition, cond_a))
+
+                elif condition.startswith(cond_b):
+                    fout.write("mappings/{}.bam {}\n".format(
+                        condition, cond_b))
 
 # step 2
 # step 1.2 m= min numb of reads a cluster, l = intro len
 rule intron_clustering:
     input:
-        rules.concatenate.output.junc
+        'leafcutter/{comp_names}/all.junc'
     params:
         m=50,
         l=500000,
-        out='leafcutter/all'
+        prefix='leafcutter/{comp_names}/{comp_names}'
     output:
-        # expand('leafcutter/{res}_perind.counts.gz', res=['all'])
-        'leafcutter/all_perind_numers.counts.gz'
+        'leafcutter/{comp_names}/{comp_names}_perind_numers.counts.gz'
     shell:
         """
         python2 {bin_path}/clustering/leafcutter_cluster.py \
-        -j {input} -m {params.m} -o {params.out} -l {params.l}
+        -j {input} -m {params.m} -o {params.prefix} -l {params.l}
         """
 
 # step 3.1
@@ -127,7 +137,7 @@ rule differential_splicing:
         b=rules.intron_clustering.output,
         c=rules.concatenate.output.test
     output:
-        'leafcutter_ds_cluster_significance.txt'
+        'leafcutter/{comp_names}/leafcutter_ds_cluster_significance.txt'
     params:
         min_samples_per_group=config.get('min_samples_per_group', ''),
         min_samples_per_intron=config.get('min_samples_per_intron', '')
@@ -135,8 +145,9 @@ rule differential_splicing:
     shell:
         """
         module load R/3.4.1
-        Rscript {bin_path}/scripts/leafcutter_ds.R --exon_file={input.a} {input.b} {input.c} \
-        --num_threads {threads} {params.min_samples_per_intron} {params.min_samples_per_group}
+        Rscript {bin_path}/scripts/leafcutter_ds.R --exon_file={input.a} \
+        {input.b} {input.c}  --num_threads {threads} \
+        {params.min_samples_per_intron} {params.min_samples_per_group}
         """
 
 rule plot:
@@ -146,7 +157,7 @@ rule plot:
         counts=rules.intron_clustering.output,
         signif=rules.differential_splicing.output,
     output:
-        'ds_plots.pdf'
+        'leafcutter/{comp_names}/ds_plots.pdf'
     params:
         fdr=config.get('fdr', '')
     shell:
