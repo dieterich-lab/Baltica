@@ -5,12 +5,12 @@ samples:
   RNPS1_1: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49742_STARmapping/Aligned.noS.bam
   RNPS1_2: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49743_STARmapping/Aligned.noS.bam
   RNPS1_3: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49744_STARmapping/Aligned.noS.bam
-  WT_rescue_1: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49745_STARmapping/Aligned.noS.bam
-  WT_rescue_2: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49746_STARmapping/Aligned.noS.bam
-  WT_rescue_3: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49747_STARmapping/Aligned.noS.bam
-  Mut_rescue_1: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49748_STARmapping/Aligned.noS.bam
-  Mut_rescue_2: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49749_STARmapping/Aligned.noS.bam
-  Mut_rescue_2: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49750_STARmapping/Aligned.noS.bam
+  WTrescue_1: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49745_STARmapping/Aligned.noS.bam
+  WTrescue_2: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49746_STARmapping/Aligned.noS.bam
+  WTrescue_3: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49747_STARmapping/Aligned.noS.bam
+  Mutrescue_1: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49748_STARmapping/Aligned.noS.bam
+  Mutrescue_2: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49749_STARmapping/Aligned.noS.bam
+  Mutrescue_2: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49750_STARmapping/Aligned.noS.bam
 
 # StringTie
 
@@ -23,6 +23,27 @@ min_anchor_len:
 # -j minimum junction coverage (default: 1)
 min_junction_cov:
   '-j 5'
+rf:
+  '--rf'
 
- 
+# Leafcutter
+min_samples_per_intron:
+  '--min_samples_per_intron=2'
+min_samples_per_group:
+  '--min_samples_per_group=2'
+fdr:
+  '-f 0.05'
 
+# Junctionseq
+max_read_length:
+  '--maxReadLength 76'
+min_count:
+  '--minCount 3'
+
+# general
+read_len:
+  76
+assembly:
+  'Grch38'
+genome_path:
+ '/biodb/genomes/mus_musculus/GRCm38_79/GRCm38_79.fa'

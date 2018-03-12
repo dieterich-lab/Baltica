@@ -37,14 +37,17 @@ gtf_path = '/biodb/genomes/homo_sapiens/GRCh38_90/GRCh38.90.gtf'
 conditions = [x.split('_')[0] for x in NAMES]
 comp_names =  ['{}_vs_{}'.format(*x) for x in combinations(set(conditions), 2)]
 
+localrules: all, concatenate
+
 
 rule all:
     input:
-        expand('leafcutter/{comp_names}/ds_plots.pdf', comp_names=comp_names)
+        expand('leafcutter/{comp_names}/ds_plots.pdf', comp_names=comp_names),
+        expand('leafcutter/{NAMES}.junc', NAMES=NAMES)
 
 rule clean:
     shell:
-        'rm -rf mappings junctions leafcutter'
+        'rm -rf leafcutter'
 
 rule symlink:
     input:
@@ -68,6 +71,7 @@ rule bam2junc:
     params: bin_path=bin_path
     shell:
         """
+
         module load samtools
         samtools view {input} \
         | python2 {params.bin_path}/scripts/filter_cs.py \
@@ -76,34 +80,33 @@ rule bam2junc:
         """
 
 rule concatenate:
-    input: expand('leafcutter/{NAMES}.junc', NAMES=NAMES)
+    input:
+        expand(rules.bam2junc.output, NAMES=NAMES)
     output:
-        junc=expand('leafcutter/{comp_names}/all.junc', comp_names=comp_names),
-        test=expand('leafcutter/{comp_names}/test_diff_introns.txt',
-                    comp_names=comp_names)
+        junc='leafcutter/{comp_names}/all.junc',
+        test='leafcutter/{comp_names}/test_diff_introns.txt'
     run:
         comp = output.junc.split('/')[1]
         cond_a, cond_b = comp.split('_vs_')
         with open(output.junc, 'w') as fout:
-            for junc_file in input:
-                if junc_file.startswith(cond_a) or junc_file.startswith(cond_b):
-                    fout.write(junc_file + "\n")
+            for name in NAMES:
+                if name.startswith(cond_a) or name.startswith(cond_b):
+                    fout.write("leafcutter/{}.junc\n".format(name))
 
         with open(output.test, 'w') as fout:
-            for condition in NAMES:
-                if condition.startswith(cond_a):
+            for name in NAMES:
+                if name.startswith(cond_a):
                     fout.write("mappings/{}.bam {}\n".format(
-                        condition, cond_a))
+                        name, cond_a))
 
-                elif condition.startswith(cond_b):
+                elif name.startswith(cond_b):
                     fout.write("mappings/{}.bam {}\n".format(
-                        condition, cond_b))
+                        name, cond_b))
 
 # step 2
-# step 1.2 m= min numb of reads a cluster, l = intro len
+# m= min numb reads per cluster, l = intron length
 rule intron_clustering:
-    input:
-        'leafcutter/{comp_names}/all.junc'
+    input: rules.concatenate.output.junc
     params:
         m=50,
         l=500000,
@@ -121,8 +124,8 @@ rule gtf_to_exon:
     input:
         gtf_path
     output:
-        a=basename(gtf_path, suffix='.gz'),
-        b='exons.gtf.gz'
+        a='leafcutter/' + basename(gtf_path, suffix='.gz'),
+        b='leafcutter/exons.gtf.gz'
     shell:
         """
         gzip -c {input} > {output.a}
@@ -134,19 +137,20 @@ rule gtf_to_exon:
 rule differential_splicing:
     input:
         a=rules.gtf_to_exon.output.b,
-        b=rules.intron_clustering.output,
-        c=rules.concatenate.output.test
+        b='leafcutter/{comp_names}/{comp_names}_perind_numers.counts.gz',
+        c='leafcutter/{comp_names}/test_diff_introns.txt'
     output:
-        'leafcutter/{comp_names}/leafcutter_ds_cluster_significance.txt'
+        'leafcutter/{comp_names}/{comp_names}_cluster_significance.txt'
     params:
         min_samples_per_group=config.get('min_samples_per_group', ''),
-        min_samples_per_intron=config.get('min_samples_per_intron', '')
+        min_samples_per_intron=config.get('min_samples_per_intron', ''),
+        prefix='leafcutter/{comp_names}/{comp_names}'
     threads: 4
     shell:
         """
         module load R/3.4.1
         Rscript {bin_path}/scripts/leafcutter_ds.R --exon_file={input.a} \
-        {input.b} {input.c}  --num_threads {threads} \
+        {input.b} {input.c} --num_threads {threads} --output_prefix={params.prefix} \
         {params.min_samples_per_intron} {params.min_samples_per_group}
         """
 
@@ -164,5 +168,5 @@ rule plot:
         """
         module load R/3.4.1
         Rscript {bin_path}/scripts/ds_plots.R -e {input.exons} \
-        {input.counts} {input.test} {input.signif} \
+        {input.counts} {input.test} {input.signif} --output={output} \
         {params.fdr}"""
