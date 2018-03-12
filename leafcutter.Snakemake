@@ -11,40 +11,44 @@ Notes:
     They recommend Olego
     or star :
     STAR --genomeDir hg19index/
-         --twopassMode Basic 
-         --outSAMstrandField intronMotif 
+         --twopassMode Basic
+         --outSAMstrandField intronMotif
          --readFilesCommand zcat
          --outSAMtype BAM Unsorted
 """
 __author__ = "Thiago Britto Borges"
-__copyright__ = "Copyright 2017, Dieterichlab"
+__copyright__ = "Copyright 2018, Dieterichlab"
 __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
 from pathlib import Path
 
+def basename(path, suffix=None):
+    if suffix:
+        return str(Path(path).with_suffix(suffix).name)
+    return str(Path(path).name)
+
 configfile: "config.yaml"
-names = config["samples"].keys()
-samples = config["samples"].values()
+NAMES = config["samples"].keys()
+SAMPLES = config["samples"].values()
 bin_path = '/home/tbrittoborges/bin/leafcutter'
-directories = 'mappings junctions'.split()
 gtf_path = '/biodb/genomes/homo_sapiens/GRCh38_90/GRCh38.90.gtf'
 
 rule all:
     input:
-        'leafcutter_result'
+        'ds_plots.pdf'
 
 rule clean:
-    shell: 
-        'rm $(snakemake --summary | tail -n+2 | cut -f1)'
- 
+    shell:
+        'rm -rf mappings junctions leafcutter'
+
 rule symlink:
     input:
-        bam=expand("{sample}", sample=samples),
-        bai=expand("{sample}.bai", sample=samples)
+        bam=expand("{SAMPLES}", SAMPLES=SAMPLES),
+        bai=expand("{SAMPLES}.bai", SAMPLES=SAMPLES)
     output:
-        bam=expand('mappings/{names}.bam', names=names),
-        bai=expand('mappings/{names}.bam.bai', names=names)
+        bam=expand('mappings/{NAMES}.bam', NAMES=NAMES),
+        bai=expand('mappings/{NAMES}.bam.bai', NAMES=NAMES)
     run:
         for bam_in, bai_in, bam_out, bai_out in zip(
             input.bam, input.bai, output.bam, output.bai):
@@ -52,42 +56,102 @@ rule symlink:
             os.symlink(bai_in, bai_out)
 
 # step 1.1
-rule bam2junc: 
-    input: expand('mappings/{names}.bam', names=names)
-    output: expand('junctions/{names}.junc', names=names)
-    shell: 'sh {bin_path}/scripts/bam2junc.sh {input} {output}'
+rule bam2junc:
+    input: 'mappings/{NAMES}.bam'
+    output:
+        bed='junctions/{NAMES}.bed',
+        junc='junctions/{NAMES}.junc'
+    params: bin_path=bin_path
+    shell:
+        """
+        module load samtools
+        samtools view {input} \
+        | python2 {params.bin_path}/scripts/filter_cs.py \
+        | perl {params.bin_path}/scripts/sam2bed.pl --use-RNA-strand - {output.bed}
+        perl {params.bin_path}/scripts/bed2junc.pl {output.bed} {output.junc}
+        """
 
-# step 1.2 m= min numb of reads a cluster, l = intro len
+# this rule does only all against all,
+# the combination between the 4 samples
+# is more valid
 rule concatenate:
-    input: expand('junctions/{names}.junc', names=names)
-    output: 'junctions/all.junc'
-    params: m=50, l=500000
-    shell: 'cat {input} {output}'
+    input: expand('junctions/{NAMES}.junc', NAMES=NAMES)
+    output:
+        junc='leafcutter/all.junc',
+        test='leafcutter/test_diff_introns.txt'
+    run:
+        with open(output.junc, 'w') as fout:
+            fout.write("\n".join(input))
+
+        with open(output.test, 'w') as fout:
+            for condition, sample_path in zip(NAMES, SAMPLES):
+                fout.write("mappings/{}.bam {}\n".format(
+                    condition, "_".split(condition)[0]))
 
 # step 2
+# step 1.2 m= min numb of reads a cluster, l = intro len
 rule intron_clustering:
     input:
-        rules.concatenate.output
+        rules.concatenate.output.junc
+    params:
+        m=50,
+        l=500000,
+        out='leafcutter/all'
     output:
-        'testYRIvsEU_perind_numers.counts.gz'
-    script: """
-{bin_path}/clustering/leafcutter_cluster.py \ 
--j {input} -m {params.m} -o testYRIvsEU -l {params.l}"""
+        # expand('leafcutter/{res}_perind.counts.gz', res=['all'])
+        'leafcutter/all_perind_numers.counts.gz'
+    shell:
+        """
+        python2 {bin_path}/clustering/leafcutter_cluster.py \
+        -j {input} -m {params.m} -o {params.out} -l {params.l}
+        """
 
 # step 3.1
 rule gtf_to_exon:
-    input: gtf_path
-    output: 'exons.gtf'
-    script: '{bin_path}/gtf_to_exons.R {input} {output}'
+    input:
+        gtf_path
+    output:
+        a=basename(gtf_path, suffix='.gz'),
+        b='exons.gtf.gz'
+    shell:
+        """
+        gzip -c {input} > {output.a}
+        module load R/3.4.1
+        Rscript {bin_path}/scripts/gtf_to_exons.R {output.a} {output.b}
+        """
 
 # step 3.2
 rule differential_splicing:
-    input: 
-        a=rules.gtf_to_exon.output, b=rules.intron_clustering.output
-    output: 
-        'leafcutter_result'
+    input:
+        a=rules.gtf_to_exon.output.b,
+        b=rules.intron_clustering.output,
+        c=rules.concatenate.output.test
+    output:
+        'leafcutter_ds_cluster_significance.txt'
+    params:
+        min_samples_per_group=config.get('min_samples_per_group', ''),
+        min_samples_per_intron=config.get('min_samples_per_intron', '')
     threads: 4
-    script: """
-{bin_path}/scripts/leafcutter_ds.R --num_threads {threads} \
---exons_file={input.a} {input.b} {output}"""
+    shell:
+        """
+        module load R/3.4.1
+        Rscript {bin_path}/scripts/leafcutter_ds.R --exon_file={input.a} {input.b} {input.c} \
+        --num_threads {threads} {params.min_samples_per_intron} {params.min_samples_per_group}
+        """
 
+rule plot:
+    input:
+        exons=rules.gtf_to_exon.output.b,
+        test=rules.concatenate.output.test,
+        counts=rules.intron_clustering.output,
+        signif=rules.differential_splicing.output,
+    output:
+        'ds_plots.pdf'
+    params:
+        fdr=config.get('fdr', '')
+    shell:
+        """
+        module load R/3.4.1
+        Rscript {bin_path}/scripts/ds_plots.R -e {input.exons} \
+        {input.counts} {input.test} {input.signif} \
+        {params.fdr}"""
