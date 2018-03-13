@@ -1,129 +1,122 @@
-#!/usr/bin/env python
 # -*- coding: utf-8
 """
-Created on 17:07 24/01/2018 2018
+Created on 17:07 29/02/2018 2018
 Snakemake file for majiq.
 .. usage:
-    find . -name majiq.slurm.sh -exec sbatch  {} \;
+
+
 """
 __author__ = "Thiago Britto Borges"
-__copyright__ = "Copyright 2017, Dieterichlab"
+__copyright__ = "Copyright 2018, Dieterichlab"
 __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
 from itertools import combinations
-import os
-from os.path import join as path_join
-import subprocess
+from pathlib import Path
 
-output_dir = "/home/tbrittoborges/prj/HIVFACS_majiq"
-gtf_path = "/biodb/genomes/homo_sapiens/GRCh38_90/GRCh38.90.gtf"
-genome_path = "/biodb/genomes/mus_musculus/GRCm38_79/GRCm38_79.fa"
-bam_base_path = '/prj/Alfredo_Castello_Palomares/HIVFACS/workflow/mapping'
-readlen = 158
- # for f in /prj/Alfredo_Castello_Palomares/HIVFACS/workflow/mapping/20170719-HIV-*_STARmapping/Log.final.out; do echo $f;  ; done
-data={
-    "syncytia": ["20170719-HIV-syncytia_S2_STARmapping", ],
-    "mChneg-p24neg_S5": ["20170719-HIV-mChneg-p24neg_S5_STARmapping", ],
-    "mChpos-p24neg_S4": ["20170719-HIV-mChpos-p24neg_S4_STARmapping", ],
-    "mChpos-p24pos_S3": ["20170719-HIV-mChpos-p24pos_S3_STARmapping", ],
-    "uninfected_S1": ["20170719-HIV-uninfected_S1_STARmapping", ]}
-try:
-    os.mkdir(output_dir)
-Exception OSError:
-    pass
+def basename(path, suffix=None):
+    if suffix:
+        return str(Path(path).with_suffix(suffix).name)
+    return str(Path(path).name)
 
-subprocess.run(
-    ['perl', '/home/tbrittoborges/bin/gtf2gff3.pl', gtf_path],
-    stdout = output_dir + os.path.basename(gtf_path).replace('gtf', 'gff'))
+configfile: "config.yml"
+NAMES = config["samples"].keys()
+SAMPLES = config["samples"].values()
+conditions = [x.split('_')[0] for x in NAMES]
+conditions = [x.split('_')[0] for x in sorted(NAMES)]
+comp_names =  ['{}_vs_{}'.format(*x) for x in combinations(set(conditions), 2)]
 
-
-sub_template="""#!/bin/bash
-#SBATCH -c 20
-#SBATCH -n 1
-#SBATCH -N 1
-#SBATCH --mem=64G
-#SBATCH --job-name="majiq_workflow"
-#SBATCH --mail-user=thiago.brittoborges@uni-heidelberg.de
-#SBATCH --mail-type=ALL
-#SBATCH --output={output}/logs%j.out
-
-module load majiq
-module load samtools
-
-parallel  samtools index ::: {output}/*.bam
-
-cd {output_dir}
-
-majiq build \
--conf {output}/majiq.ini \
---nthreads 20 \
---nogc \
---output {output} \
-{gff3_annotation}
-
-majiq deltapsi \
--grp1 {output}/{name1}*.majiq.hdf5 \
--grp2 {output}/{name2}*.majiq.hdf5 \
---output {output}/ \
---names {name1} {name2} \
---default_prior
-
-voila deltapsi \
-{output}/{name1}_{name2}.deltapsi.voila \
--o {output} \
---splice-graph {output}/splicegraph.hdf5
-"""
-
-
-
-sample =  ["_vs_".join(sample) for sample in combinations(data.keys(), 2)]
+localrules: all, symlink, create_ini
 
 
 rule all:
-    input: expand('{sample}/majiq.ini', sample=sample)
+    input:
+        expand('majiq/{comp_names}/{comp_names}_majiqvoila.tsv',
+        comp_names=comp_names)
 
-rule dir:
-    output: expand("{sample}/", sample=sample)
-    shell: "mkdir -p {sample}"
+
+rule clean:
+    shell:
+        "rm -rf majiq"
+
+
+rule symlink:
+    input:
+        bam=expand("{SAMPLES}", SAMPLES=SAMPLES),
+        bai=expand("{SAMPLES}.bai", SAMPLES=SAMPLES)
+    output:
+        bam=expand('mappings/{NAMES}.bam', NAMES=NAMES),
+        bai=expand('mappings/{NAMES}.bam.bai', NAMES=NAMES)
+    run:
+        for bam_in, bai_in, bam_out, bai_out in zip(
+            input.bam, input.bai, output.bam, output.bai):
+            os.symlink(bam_in, bam_out)
+            os.symlink(bai_in, bai_out)
+
 
 rule create_ini:
-    input: rules.dir.output
-    output: expand('{sample}/majiq.ini', sample=sample),
+    input: rules.symlink.input.bam
+    output: expand('majiq/{conditions}.ini', conditions=sorted(set(conditions)))
     run:
-        for comparison in input:
-            sample_a, sample_b = comparison.replace('/', '').split('_vs_')
+        lines = [
+            '[info]',
+            'readlen={}'.format(config['read_len']),
+            'samdir={}'.format('mappings/'),
+            'genome={}'.format(config['assembly']),
+            'genome_path={}'.format(config['genome_path']),
+            '[experiments]',
+            '{}={}'.format(
+                wildcards.condition, ','.join([x for x in NAMES
+                                               if wildcards.conditions in x]))]
 
-            samples_names = [sample_a] * len(data[sample_a]) + [sample_b] * len(data[sample_b])
-            samples_names = ["{}_{}".format(x, i) for i, x in enumerate(samples_names)]
-            samples_paths = data[sample_a] + data[sample_b]
+        with open(str(output), 'w') as ini:
+            ini.writelines('\n'.join(lines))
+
+rule build:
+    input: rules.create_ini.output
+    output: 'majiq/{NAME}.majiq.hdf5'
+    params:
+        output='majiq/',
+        annotation=config['gtf_path']
+    threads: 20
+    shell:
+        '''
+        module load majiq
+        majiq build -conf {input} --nthreads {threads} --output \
+        {params.output} {params.annotation}
+        '''
 
 
-            for filepath, name in zip(samples_paths, samples_names):
-                os.symlink(
-                    path_join(bam_base_path, filepath),
-                    path_join(output_dir, comparison, '{}.bam'.format(name)))
+rule deltapsi:
+    input: rules.build.input
+    output: 'majiq/{comp_names}/splicegraph.hdf5'
+    threads: 20
+    params:
+        output='majiq/{comp_names}/',
+        names=lambda wildcards: wildcards.comp_names.replace('_vs_', ' '), # RNPS1 Luc
+        cond_a='a',
+        cond_b='b'
+    shell:
+        '''
+        module load majiq
+        majiq deltapsi \
+        -grp1 majiq/{comp_names}/{params.cond_a}.majiq.hdf5 \
+        -grp2 majiq/{comp_names}/{params.cond_b}.majiq.hdf5 \
+        --nthreads {threads} \
+        --output {params.output} \
+        --names {params.names}
+        '''
 
 
-            lines = [
-                '[info]',
-                'readlen={}'.format(readlen),
-                'samdir={}'.format(output_dir + comparison),
-                'genome={}'.format(genome),
-                'genome_path={}'.format(genome_path),
-                '[experiments]',
-                '{}={}'.format(sample_a, ','.join(
-                    [x for x in samples_names if x.startswith(sample_a)])),
-                '{}={}'.format(sample_b, ','.join(
-                    [x for x in samples_names if x.startswith(sample_b)]))]
-
-            with open('{0}/majiq.ini'.format(comparison), 'w') as ini:
-              ini.writelines('\n'.join(lines))
-
-            with open('{0}/majiq.slurm.sh'.format(comparison), 'w') as sub:
-                sub.write(sub_template.format(
-                                    output_dir=output_dir,
-                                    output=comparison.replace('/', ''),
-                                    gff3_annotation=gff3_annotation,
-                                    name1=sample_a,
-                                    name2=sample_b))
+rule voila_deltapsi:
+    input: rules.deltapsi.output
+    output: 'majiq/{comp_names}/{comp_names}_majiqvoila.tsv'
+    params:
+        output='majiq/{comp_names}/',
+        splicegraph='majiq/{comp_names}/splicegraph.hdf5'
+    shell:
+        '''
+        module load majiq
+        voila deltapsi {input} -o {params.output} --splice-graph \
+        {params.splicegraph}
+        '''

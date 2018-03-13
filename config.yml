@@ -40,10 +40,19 @@ max_read_length:
 min_count:
   '--minCount 3'
 
+# Majiq
+genome_path:
+ '/biodb/genomes/mus_musculus/GRCm38_79/GRCm38_79.fa'
+
+threshold:
+  '--threshold 0.1'
+
+assembly:
+  'Grch38'
+
 # general
 read_len:
   76
-assembly:
-  'Grch38'
-genome_path:
- '/biodb/genomes/mus_musculus/GRCm38_79/GRCm38_79.fa'
+
+gtf_path:
+  '/biodb/genomes/homo_sapiens/GRCh38_90/GRCh38.90.gtf'
