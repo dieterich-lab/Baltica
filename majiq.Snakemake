@@ -22,41 +22,27 @@ def basename(path, suffix=None):
 configfile: "config.yml"
 NAMES = config["samples"].keys()
 SAMPLES = config["samples"].values()
-conditions = [x.split('_')[0] for x in NAMES]
 conditions = [x.split('_')[0] for x in sorted(NAMES)]
-comp_names =  ['{}_vs_{}'.format(*x) for x in combinations(set(conditions), 2)]
+combination = combinations(set(sorted(conditions)), 2)
 
-localrules: all, symlink, create_ini
+#localrules: all, symlink, create_ini
 
+cond, rep = glob_wildcards("mappings/{cond}_{rep}.bam")
 
 rule all:
     input:
-        expand('majiq/{comp_names}/{comp_names}_majiqvoila.tsv',
-        comp_names=comp_names)
-
+        expand('majiq/{cond_a}_{cond_b}/{cond_a}_{cond_b}_majiqvoila.tsv',
+            cond_a=[x[0] for x in combination],
+            cond_b=[x[1] for x in combination]),
+        expand('majiq/{cond}/{cond}_{rep}.majiq.hdf5', cond=cond, rep=rep)
 
 rule clean:
     shell:
         "rm -rf majiq"
 
-
-rule symlink:
-    input:
-        bam=expand("{SAMPLES}", SAMPLES=SAMPLES),
-        bai=expand("{SAMPLES}.bai", SAMPLES=SAMPLES)
-    output:
-        bam=expand('mappings/{NAMES}.bam', NAMES=NAMES),
-        bai=expand('mappings/{NAMES}.bam.bai', NAMES=NAMES)
-    run:
-        for bam_in, bai_in, bam_out, bai_out in zip(
-            input.bam, input.bai, output.bam, output.bai):
-            os.symlink(bam_in, bam_out)
-            os.symlink(bai_in, bai_out)
-
-
 rule create_ini:
-    input: rules.symlink.input.bam
-    output: expand('majiq/{conditions}.ini', conditions=sorted(set(conditions)))
+    input: expand('mappings/{cond}_{rep}.bam', cond=cond, rep=rep)
+    output: 'majiq/{cond}/{cond}.ini'
     run:
         lines = [
             '[info]',
@@ -65,16 +51,16 @@ rule create_ini:
             'genome={}'.format(config['assembly']),
             'genome_path={}'.format(config['genome_path']),
             '[experiments]',
-            '{}={}'.format(
-                wildcards.condition, ','.join([x for x in NAMES
-                                               if wildcards.conditions in x]))]
+            '{}={}'.format(wildcards.cond, ','.join([
+                x for x in NAMES if wildcards.cond in x]))]
 
         with open(str(output), 'w') as ini:
             ini.writelines('\n'.join(lines))
 
+
 rule build:
     input: rules.create_ini.output
-    output: 'majiq/{NAME}.majiq.hdf5'
+    output: 'majiq/{cond}/{cond}_{rep}.majiq.hdf5'
     params:
         output='majiq/',
         annotation=config['gtf_path']
@@ -88,20 +74,23 @@ rule build:
 
 
 rule deltapsi:
-    input: rules.build.input
-    output: 'majiq/{comp_names}/splicegraph.hdf5'
+    input:
+        cond_a='majiq/{cond_a}/{cond_a}.majiq.hdf5',
+        cond_b='majiq/{cond_b}/{cond_b}.majiq.hdf5'
+    output: 'majiq/{cond_a}_{cond_b}/{cond_a}_{cond_b}_splicegraph.hdf5',
+
     threads: 20
     params:
-        output='majiq/{comp_names}/',
-        names=lambda wildcards: wildcards.comp_names.replace('_vs_', ' '), # RNPS1 Luc
-        cond_a='a',
-        cond_b='b'
+        output='majiq/{cond_a}_{cond_b}/',
+        names='{cond_a} {cond_b}', # RNPS1 Luc
+        cond_a='{cond_a}', # RNPS1
+        cond_b='{cond_b}' # Luc
     shell:
         '''
         module load majiq
         majiq deltapsi \
-        -grp1 majiq/{comp_names}/{params.cond_a}.majiq.hdf5 \
-        -grp2 majiq/{comp_names}/{params.cond_b}.majiq.hdf5 \
+        -grp1 majiq/{cond_a}/{cond_a}.majiq.hdf5 \
+        -grp2 majiq/{cond_a}/{cond_b}.majiq.hdf5 \
         --nthreads {threads} \
         --output {params.output} \
         --names {params.names}
@@ -110,10 +99,10 @@ rule deltapsi:
 
 rule voila_deltapsi:
     input: rules.deltapsi.output
-    output: 'majiq/{comp_names}/{comp_names}_majiqvoila.tsv'
+    output: 'majiq/{cond_a}_{cond_b}/{cond_a}_{cond_b}_majiqvoila.tsv'
     params:
-        output='majiq/{comp_names}/',
-        splicegraph='majiq/{comp_names}/splicegraph.hdf5'
+        output='majiq/{cond_a}_{cond_b}/',
+        splicegraph='majiq/{cond_a}_{cond_b}/{cond_a}_{cond_b}_splicegraph.hdf5'
     shell:
         '''
         module load majiq
