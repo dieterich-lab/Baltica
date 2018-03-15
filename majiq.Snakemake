@@ -4,7 +4,6 @@ Created on 17:07 29/02/2018 2018
 Snakemake file for majiq.
 .. usage:
 
-
 """
 __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2018, Dieterichlab"
@@ -23,18 +22,14 @@ configfile: "config.yml"
 NAMES = config["samples"].keys()
 SAMPLES = config["samples"].values()
 conditions = [x.split('_')[0] for x in sorted(NAMES)]
-combination = combinations(set(sorted(conditions)), 2)
-
-#localrules: all, symlink, create_ini
-
 cond, rep = glob_wildcards("mappings/{cond}_{rep}.bam")
+comparisons = combinations(sorted(set(conditions)), 2)
 
 rule all:
     input:
-        expand('majiq/{cond_a}_{cond_b}/{cond_a}_{cond_b}_majiqvoila.tsv',
-            cond_a=[x[0] for x in combination],
-            cond_b=[x[1] for x in combination]),
-        expand('majiq/{cond}/{cond}_{rep}.majiq.hdf5', cond=cond, rep=rep)
+        expand('majiq/{cond_a}_{cond_b}/{cond_a}_{cond_b}.deltapsi.tsv',
+            cond_a=cond_a, cond_b=cond_b),
+        expand('majiq/{cond}/splicegraph.sql', cond=cond)
 
 rule clean:
     shell:
@@ -50,6 +45,7 @@ rule create_ini:
             'samdir={}'.format('mappings/'),
             'genome={}'.format(config['assembly']),
             'genome_path={}'.format(config['genome_path']),
+            'strandness={}'.format(config['strandness']),
             '[experiments]',
             '{}={}'.format(wildcards.cond, ','.join([
                 x for x in NAMES if wildcards.cond in x]))]
@@ -60,52 +56,51 @@ rule create_ini:
 
 rule build:
     input: rules.create_ini.output
-    output: 'majiq/{cond}/{cond}_{rep}.majiq.hdf5'
+    output: '{cond}_{rep}.majiq'
     params:
-        output='majiq/',
+        output='majiq/{cond}',
         annotation=config['gtf_path']
     threads: 20
     shell:
         '''
         module load majiq
-        majiq build -conf {input} --nthreads {threads} --output \
-        {params.output} {params.annotation}
+        majiq build --conf {input} --nproc {threads} --output {params.output} \
+        {params.annotation}
         '''
+
+cond, rep = glob_wildcards("majiq/{cond}/{cond}_{rep}.bam")
+
+
+
+
 
 
 rule deltapsi:
     input:
-        cond_a='majiq/{cond_a}/{cond_a}.majiq.hdf5',
-        cond_b='majiq/{cond_b}/{cond_b}.majiq.hdf5'
-    output: 'majiq/{cond_a}_{cond_b}/{cond_a}_{cond_b}_splicegraph.hdf5',
-
+        'majiq/{cond_a}/{cond_a}_{rep}.majiq',
+        'majiq/{cond_b}/{cond_b}_{rep}.majiq'
+    output:
+        'majiq/{cond_a}_{cond_b}/{cond_a}_{cond_b}_deltapsi.voila'
     threads: 20
     params:
         output='majiq/{cond_a}_{cond_b}/',
-        names='{cond_a} {cond_b}', # RNPS1 Luc
-        cond_a='{cond_a}', # RNPS1
-        cond_b='{cond_b}' # Luc
+        names='{cond_a} {cond_b}' # RNPS1 Luc
     shell:
         '''
         module load majiq
-        majiq deltapsi \
-        -grp1 majiq/{cond_a}/{cond_a}.majiq.hdf5 \
-        -grp2 majiq/{cond_a}/{cond_b}.majiq.hdf5 \
-        --nthreads {threads} \
-        --output {params.output} \
-        --names {params.names}
+        majiq deltapsi -grp1 {input.a} -grp2 {input.b} \
+        --nproc {threads} --output {params.output} --names {params.names}
         '''
 
 
 rule voila_deltapsi:
     input: rules.deltapsi.output
-    output: 'majiq/{cond_a}_{cond_b}/{cond_a}_{cond_b}_majiqvoila.tsv'
+    output: 'majiq/{cond_a}_{cond_b}/{cond_a}_{cond_b}.deltapsi.tsv'
     params:
         output='majiq/{cond_a}_{cond_b}/',
-        splicegraph='majiq/{cond_a}_{cond_b}/{cond_a}_{cond_b}_splicegraph.hdf5'
     shell:
         '''
         module load majiq
-        voila deltapsi {input} -o {params.output} --splice-graph \
-        {params.splicegraph}
+        voila deltapsi -o {params.output} --splice-graph \
+        'majiq/{cond_b}/splicegraph.sql' {input}
         '''
