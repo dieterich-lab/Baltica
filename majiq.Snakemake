@@ -13,23 +13,32 @@ __license__ = "MIT"
 from itertools import combinations
 from pathlib import Path
 
-def basename(path, suffix=None):
-    if suffix:
-        return str(Path(path).with_suffix(suffix).name)
-    return str(Path(path).name)
-
 configfile: "config.yml"
 NAMES = config["samples"].keys()
 SAMPLES = config["samples"].values()
 conditions = [x.split('_')[0] for x in sorted(NAMES)]
 cond, rep = glob_wildcards("mappings/{cond}_{rep}.bam")
 comparisons = combinations(sorted(set(conditions)), 2)
+cond_a = [x[0] for x in combinations(sorted(set(conditions)), 2)]
+cond_b = [x[1] for x in combinations(sorted(set(conditions)), 2)]
+
+def basename(path, suffix=None):
+    if suffix:
+        return str(Path(path).with_suffix(suffix).name)
+    return str(Path(path).name)
+
+def get_comparison(wildcards):
+    for comparison in comparisons:
+        cond_a, cond_b = comparison
+
+        print('majiq/{cond_a}_{rep}.majiq'.format(cond_a=cond_a, rep=rep))
+        yield ['majiq/{cond_a}_{rep}.majiq'.format(cond_a=cond_a, rep=rep),
+            'majiq/{cond_b}_{rep}.majiq'.format(cond_b=cond_b, rep=rep)]
 
 rule all:
     input:
         expand('majiq/{cond_a}_{cond_b}/{cond_a}_{cond_b}.deltapsi.tsv',
             cond_a=cond_a, cond_b=cond_b),
-        expand('majiq/{cond}/splicegraph.sql', cond=cond)
 
 rule clean:
     shell:
@@ -68,19 +77,10 @@ rule build:
         {params.annotation}
         '''
 
-cond, rep = glob_wildcards("majiq/{cond}/{cond}_{rep}.bam")
-
-
-
-
-
 
 rule deltapsi:
-    input:
-        'majiq/{cond_a}/{cond_a}_{rep}.majiq',
-        'majiq/{cond_b}/{cond_b}_{rep}.majiq'
-    output:
-        'majiq/{cond_a}_{cond_b}/{cond_a}_{cond_b}_deltapsi.voila'
+    input: get_comparison
+    output: 'majiq/{cond_a}_{cond_b}/{cond_a}_{cond_b}_deltapsi.voila'
     threads: 20
     params:
         output='majiq/{cond_a}_{cond_b}/',
