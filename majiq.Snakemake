@@ -16,29 +16,38 @@ from pathlib import Path
 configfile: "config.yml"
 NAMES = config["samples"].keys()
 SAMPLES = config["samples"].values()
-conditions = [x.split('_')[0] for x in sorted(NAMES)]
+conditions = [x.split('_')[0] for x in NAMES]
+comp_names =  ['{}_vs_{}'.format(*x) for x in combinations(set(conditions), 2)]
+
 cond, rep = glob_wildcards("mappings/{cond}_{rep}.bam")
-comparisons = combinations(sorted(set(conditions)), 2)
-cond_a = [x[0] for x in combinations(sorted(set(conditions)), 2)]
-cond_b = [x[1] for x in combinations(sorted(set(conditions)), 2)]
 
 def basename(path, suffix=None):
     if suffix:
         return str(Path(path).with_suffix(suffix).name)
     return str(Path(path).name)
 
-def get_comparison(wildcards):
-    for comparison in comparisons:
-        cond_a, cond_b = comparison
+def comparison_a(wildcards):
+    condition = wildcards.comp_names.split('_vs_')[0]
+    reps = [r for c, r in zip(cond, rep) if cond == condition]
+    return [x for x in expand("{cond}/{cond}_{{rep}}.majiq".format(cond=cond),
+        rep=reps)]
 
-        print('majiq/{cond_a}_{rep}.majiq'.format(cond_a=cond_a, rep=rep))
-        yield ['majiq/{cond_a}_{rep}.majiq'.format(cond_a=cond_a, rep=rep),
-            'majiq/{cond_b}_{rep}.majiq'.format(cond_b=cond_b, rep=rep)]
+def comparison_b(wildcards):
+    condition = wildcards.comp_names.split('_vs_')[1]
+    reps = [r for c, r in zip(cond, rep) if cond == condition]
+    return [x for x in expand("{cond}/{cond}_{{rep}}.majiq".format(cond=cond),
+        rep=reps)]
+
+
+def splicegraph(wildcards):
+    cond = wildcards.comp_names.split('_vs_')[1]
+    return 'majiq/{}/splicegraph.sql'.format(cond)
+
 
 rule all:
     input:
-        expand('majiq/{cond_a}_{cond_b}/{cond_a}_{cond_b}.deltapsi.tsv',
-            cond_a=cond_a, cond_b=cond_b),
+        expand('majiq/{comp_names}/{comp_names}.deltapsi.tsv',
+            comp_names=comp_names)
 
 rule clean:
     shell:
@@ -79,28 +88,29 @@ rule build:
 
 
 rule deltapsi:
-    input: get_comparison
-    output: 'majiq/{cond_a}_{cond_b}/{cond_a}_{cond_b}_deltapsi.voila'
+    input: comparison_a, comparison_b
+    output: 'majiq/{comp_names}/{comp_names}_deltapsi.voila'
     threads: 20
     params:
-        output='majiq/{cond_a}_{cond_b}/',
-        names='{cond_a} {cond_b}' # RNPS1 Luc
+        output='majiq/{comp_names}/',
+        names=lambda wildcards: wildcards.comp_names.replace('_vs_', ' ')  # RNPS1 Luc
     shell:
         '''
         module load majiq
-        majiq deltapsi -grp1 {input.a} -grp2 {input.b} \
+        majiq deltapsi -grp1 {input[0]} -grp2 {input[1]} \
         --nproc {threads} --output {params.output} --names {params.names}
         '''
 
 
 rule voila_deltapsi:
     input: rules.deltapsi.output
-    output: 'majiq/{cond_a}_{cond_b}/{cond_a}_{cond_b}.deltapsi.tsv'
+    output: 'majiq/{comp_names}/{comp_names}.deltapsi.tsv'
     params:
-        output='majiq/{cond_a}_{cond_b}/',
+        output='majiq/{comp_names}/',
+        splicegraph=splicegraph
     shell:
         '''
         module load majiq
         voila deltapsi -o {params.output} --splice-graph \
-        'majiq/{cond_b}/splicegraph.sql' {input}
+        {params.splicegraph} {input}
         '''
