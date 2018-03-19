@@ -10,7 +10,8 @@ samples:
   WTrescue_3: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49747_STARmapping/Aligned.noS.bam
   Mutrescue_1: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49748_STARmapping/Aligned.noS.bam
   Mutrescue_2: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49749_STARmapping/Aligned.noS.bam
-  Mutrescue_2: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49750_STARmapping/Aligned.noS.bam
+  Mutrescue_3: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49750_STARmapping/Aligned.noS.bam
+
 
 # StringTie
 
@@ -42,17 +43,19 @@ min_count:
 
 # Majiq
 genome_path:
- '/biodb/genomes/mus_musculus/GRCm38_79/GRCm38_79.fa'
-
+ '/biodb/genomes/homo_sapiens/GRCh38_90/GRCh38_90.fa'
 threshold:
   '--threshold 0.1'
-
 assembly:
   'Grch38'
-
+#strandness=forward[|reverse|none]
+strandness:
+  'forward'
 # general
+#readlen : Length of the RNA-seq reads. MAJIQ the longest read length
 read_len:
   76
 
 gtf_path:
-  '/biodb/genomes/homo_sapiens/GRCh38_90/GRCh38.90.gtf'
+  #'/biodb/genomes/homo_sapiens/GRCh38_90/GRCh38.90.gtf'
+  /prj/Niels_Gehring/revision/majiq/Homo_sapiens.GRCh38.90.gff3
