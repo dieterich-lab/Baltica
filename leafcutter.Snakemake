@@ -3,7 +3,7 @@
 Created on 17:07 29/02/2018 2018
 Snakemake file for leafcutter.
 .. usage:
-    snakemake -s leafcutter.Snakemake --cluster sbatch --jobs 100
+    snakemake -s leafcutter.Snakemake --cluster 'sbatch -m 4G' --jobs 100
 
 
 
@@ -35,7 +35,8 @@ SAMPLES = config["samples"].values()
 bin_path = '/home/tbrittoborges/bin/leafcutter'
 gtf_path = config["gtf_path"]
 conditions = [x.split('_')[0] for x in NAMES]
-comp_names =  ['{}_vs_{}'.format(*x) for x in combinations(set(conditions), 2)]
+comp_names =  ['{}_vs_{}'.format(*x)
+    for x in combinations(sorted(set(conditions)), 2)]
 
 localrules: all, concatenate
 
@@ -71,7 +72,6 @@ rule bam2junc:
     params: bin_path=bin_path
     shell:
         """
-
         module load samtools
         samtools view {input} \
         | python2 {params.bin_path}/scripts/filter_cs.py \

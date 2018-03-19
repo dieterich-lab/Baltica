@@ -21,11 +21,11 @@ comp_names =  ['{}_{}'.format(*x) for x in
                combinations(conditions, 2)]
 mapping = {c: [x for x in NAMES if x.startswith(c)] for c in conditions}
 
-
 def basename(path, suffix=None):
     if suffix:
         return str(Path(path).with_suffix(suffix).name)
     return str(Path(path).name)
+
 
 def comparison(wildcards, index):
     condition = wildcards.comp_names.split('_')[index]
@@ -37,10 +37,11 @@ def splicegraph(wildcards):
     cond = wildcards.comp_names.split('_')[1]
     return 'majiq/{}/splicegraph.sql'.format(cond)
 
+localrules: all, create_ini , symlink
+ruleorder:  symlink > create_ini > build > deltapsi
 
 rule all:
     input:
-        dynamic(expand('majiq/{cond}/{cond}_{{rep}}.majiq', cond=conditions)),
         expand('majiq/{comp_names}/{comp_names}.deltapsi.tsv',
             comp_names=comp_names)
 
@@ -48,9 +49,24 @@ rule clean:
     shell:
         "rm -rf majiq"
 
-#ruleorder: create_ini > build > deltapsi > voila_deltapsi
+rule symlink:
+    input:
+        bam=expand("{SAMPLES}", SAMPLES=SAMPLES),
+        bai=expand("{SAMPLES}.bai", SAMPLES=SAMPLES)
+    output:
+        bam=expand('mappings/{NAMES}.bam', NAMES=NAMES),
+        bai=expand('mappings/{NAMES}.bam.bai', NAMES=NAMES)
+    run:
+        for bam_in, bai_in, bam_out, bai_out in zip(
+            input.bam, input.bai, output.bam, output.bai):
+            os.symlink(bam_in, bam_out)
+            os.symlink(bai_in, bai_out)
+
 
 rule create_ini:
+    input:
+        lambda wildcards:
+            expand('mappings/{names}.bam', names=mapping[wildcards.cond])
     output: 'majiq/{cond}/{cond}.ini'
     run:
         lines = [
@@ -67,10 +83,15 @@ rule create_ini:
         with open(str(output), 'w') as ini:
             ini.writelines('\n'.join(lines))
 
-rule build:
-    input: rules.create_ini.output
-    output: dynamic('majiq/{cond}/{cond}_{rep}.majiq')
 
+rule build:
+    input:
+        rules.create_ini.output,
+        lambda wildcards:
+            expand('mappings/{names}.bam', cond=wildcards.cond,
+                names=mapping[wildcards.cond])
+    output:
+        dynamic('majiq/{cond}/{names}.majiq')
     params:
         output='majiq/{cond}',
         annotation=config['gtf_path']
@@ -78,8 +99,8 @@ rule build:
     shell:
         '''
         module load majiq
-        majiq build --conf {input} --nproc {threads} --output {params.output} \
-        {params.annotation}
+        majiq build --conf {input[0]} --nproc {threads} \
+        --output {params.output} {params.annotation}
         '''
 
 
@@ -110,4 +131,5 @@ rule voila_deltapsi:
         module load majiq
         voila deltapsi -o {params.output} --splice-graph \
         {params.splicegraph} {input}
+
         '''
