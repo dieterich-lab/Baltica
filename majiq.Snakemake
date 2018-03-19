@@ -3,7 +3,7 @@
 Created on 17:07 29/02/2018 2018
 Snakemake file for majiq.
 .. usage:
-
+    snakemake -s majiq.Snakemake --cluster "sbatch --mem=24000" --jobs 100
 """
 __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2018, Dieterichlab"
@@ -16,36 +16,31 @@ from pathlib import Path
 configfile: "config.yml"
 NAMES = config["samples"].keys()
 SAMPLES = config["samples"].values()
-conditions = [x.split('_')[0] for x in NAMES]
-comp_names =  ['{}_vs_{}'.format(*x) for x in combinations(set(conditions), 2)]
+conditions = sorted(set([x.split('_')[0] for x in NAMES]))
+comp_names =  ['{}_{}'.format(*x) for x in
+               combinations(conditions, 2)]
+mapping = {c: [x for x in NAMES if x.startswith(c)] for c in conditions}
 
-cond, rep = glob_wildcards("mappings/{cond}_{rep}.bam")
 
 def basename(path, suffix=None):
     if suffix:
         return str(Path(path).with_suffix(suffix).name)
     return str(Path(path).name)
 
-def comparison_a(wildcards):
-    condition = wildcards.comp_names.split('_vs_')[0]
-    reps = [r for c, r in zip(cond, rep) if cond == condition]
-    return [x for x in expand("{cond}/{cond}_{{rep}}.majiq".format(cond=cond),
-        rep=reps)]
-
-def comparison_b(wildcards):
-    condition = wildcards.comp_names.split('_vs_')[1]
-    reps = [r for c, r in zip(cond, rep) if cond == condition]
-    return [x for x in expand("{cond}/{cond}_{{rep}}.majiq".format(cond=cond),
-        rep=reps)]
+def comparison(wildcards, index):
+    condition = wildcards.comp_names.split('_')[index]
+    return expand('majiq/{cond}/{{name}}.majiq'.format(cond=condition),
+        name=mapping[condition])
 
 
 def splicegraph(wildcards):
-    cond = wildcards.comp_names.split('_vs_')[1]
+    cond = wildcards.comp_names.split('_')[1]
     return 'majiq/{}/splicegraph.sql'.format(cond)
 
 
 rule all:
     input:
+        dynamic(expand('majiq/{cond}/{cond}_{{rep}}.majiq', cond=conditions)),
         expand('majiq/{comp_names}/{comp_names}.deltapsi.tsv',
             comp_names=comp_names)
 
@@ -53,8 +48,9 @@ rule clean:
     shell:
         "rm -rf majiq"
 
+#ruleorder: create_ini > build > deltapsi > voila_deltapsi
+
 rule create_ini:
-    input: expand('mappings/{cond}_{rep}.bam', cond=cond, rep=rep)
     output: 'majiq/{cond}/{cond}.ini'
     run:
         lines = [
@@ -65,16 +61,16 @@ rule create_ini:
             'genome_path={}'.format(config['genome_path']),
             'strandness={}'.format(config['strandness']),
             '[experiments]',
-            '{}={}'.format(wildcards.cond, ','.join([
-                x for x in NAMES if wildcards.cond in x]))]
+            '{}={}'.format(
+                wildcards.cond, ','.join(mapping[wildcards.cond]))]
 
         with open(str(output), 'w') as ini:
             ini.writelines('\n'.join(lines))
 
-
 rule build:
     input: rules.create_ini.output
-    output: '{cond}_{rep}.majiq'
+    output: dynamic('majiq/{cond}/{cond}_{rep}.majiq')
+
     params:
         output='majiq/{cond}',
         annotation=config['gtf_path']
@@ -88,16 +84,17 @@ rule build:
 
 
 rule deltapsi:
-    input: comparison_a, comparison_b
-    output: 'majiq/{comp_names}/{comp_names}_deltapsi.voila'
+    input: cont=lambda wildcards: comparison(wildcards, 0),
+           treat=lambda wildcards: comparison(wildcards, 1)
+    output: 'majiq/{comp_names}/{comp_names}.deltapsi.voila'
     threads: 20
     params:
         output='majiq/{comp_names}/',
-        names=lambda wildcards: wildcards.comp_names.replace('_vs_', ' ')  # RNPS1 Luc
+        names=lambda wildcards: wildcards.comp_names.replace('_', ' '),  # RNPS1 Luc
     shell:
         '''
         module load majiq
-        majiq deltapsi -grp1 {input[0]} -grp2 {input[1]} \
+        majiq deltapsi -grp1 {input.cont} -grp2 {input.treat} \
         --nproc {threads} --output {params.output} --names {params.names}
         '''
 
