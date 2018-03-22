@@ -3,14 +3,14 @@
 Created on 17:07 29/02/2018 2018
 Snakemake file for majiq.
 .. usage:
-    snakemake -s majiq.Snakemake --cluster "sbatch --mem=24000" --jobs 100
+    snakemake -s majiq.Snakemake --cluster "sbatch --mem=24000 --job-name majiq_pipeline" --jobs 100
 """
 __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2018, Dieterichlab"
 __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
-from itertools import combinations
+from itertools import combinations, chain
 from pathlib import Path
 
 configfile: "config.yml"
@@ -29,18 +29,13 @@ def basename(path, suffix=None):
 
 def comparison(wildcards, index):
     condition = wildcards.comp_names.split('_')[index]
-    return expand('majiq/{cond}/{{name}}.majiq'.format(cond=condition),
-        name=mapping[condition])
+    return expand('majiq/{name}.majiq', name=mapping[condition])
 
-def splicegraph(wildcards):
-    cond = wildcards.comp_names.split('_')[1]
-    return 'majiq/{}/splicegraph.sql'.format(cond)
-
-localrules: all, create_ini , symlink
-ruleorder:  symlink > create_ini >  deltapsi
 
 rule all:
     input:
+        'majiq/build.ini',
+        expand('majiq/{names}.majiq', names=NAMES),
         expand('majiq/{comp_names}/{comp_names}.deltapsi.tsv',
             comp_names=comp_names)
 
@@ -53,8 +48,8 @@ rule symlink:
         bam=expand("{SAMPLES}", SAMPLES=SAMPLES),
         bai=expand("{SAMPLES}.bai", SAMPLES=SAMPLES)
     output:
-        bam=expand('mappings/{NAMES}.bam', NAMES=NAMES),
-        bai=expand('mappings/{NAMES}.bam.bai', NAMES=NAMES)
+        bam=expand('mappings/{names}.bam', names=NAMES),
+        bai=expand('mappings/{names}.bam.bai', names=NAMES)
     run:
         for bam_in, bai_in, bam_out, bai_out in zip(
             input.bam, input.bai, output.bam, output.bai):
@@ -63,10 +58,8 @@ rule symlink:
 
 
 rule create_ini:
-    input:
-        lambda wildcards:
-            expand('mappings/{names}.bam', names=mapping[wildcards.cond])
-    output: 'majiq/{cond}/{cond}.ini'
+    input: expand('mappings/{names}.bam', names=NAMES)
+    output: 'majiq/build.ini'
     run:
         lines = [
             '[info]',
@@ -75,32 +68,29 @@ rule create_ini:
             'genome={}'.format(config['assembly']),
             'genome_path={}'.format(config['genome_path']),
             'strandness={}'.format(config['strandness']),
-            '[experiments]',
-            '{}={}'.format(
-                wildcards.cond, ','.join(mapping[wildcards.cond]))]
+            '[experiments]']
+
+        lines.extend(
+            ['{}={}'.format(k, ','.join(v)) for k, v in mapping.items()])
 
         with open(str(output), 'w') as ini:
             ini.writelines('\n'.join(lines))
 
-# https://stackoverflow.com/a/49004234/1694714
-# rule build
-for condition, replicate in mapping.items():
-    rule:
-        input:
-            'majiq/{condition}/{condition}.ini'.format(condition=condition)
-        output:
-            expand('majiq/{condition}/{replicate}.majiq',
-                replicate=replicate, condition=condition)
-        params:
-            output='majiq/{condition}'.format(condition=condition),
-            annotation=config['gtf_path']
-        threads: 20
-        shell:
-            '''
-            module load majiq
-            majiq build --conf {input} --nproc {threads} \
-            --output {params.output} {params.annotation}
-            '''
+rule build:
+    input:
+        'majiq/build.ini'
+    output:
+        expand('majiq/{names}.majiq', names=NAMES)
+    params:
+        output='majiq/',
+        annotation=config['gtf_path']
+    threads: 20
+    shell:
+        '''
+        module load majiq
+        majiq build --conf {input} --nproc {threads} \
+        --output {params.output} {params.annotation}
+        '''
 
 
 rule deltapsi:
@@ -124,11 +114,9 @@ rule voila_deltapsi:
     output: 'majiq/{comp_names}/{comp_names}.deltapsi.tsv'
     params:
         output='majiq/{comp_names}/',
-        splicegraph=splicegraph
     shell:
         '''
         module load majiq
-        voila deltapsi -o {params.output} --splice-graph \
-        {params.splicegraph} {input}
-
+        voila deltapsi -o {params.output} --splice-graph majiq/splicegraph.sql \
+         {input}
         '''

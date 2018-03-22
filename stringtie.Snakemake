@@ -2,7 +2,8 @@
 """
 Created on 17:07 27/02/2018 
 Snakemake file for stringtie.
-untested
+.. usage:
+    snakemake -s stringtie.Snakemake --cluster "sbatch --mem=24000 -n stringtie" --jobs 100
     
 """
 __author__ = "Thiago Britto Borges"
@@ -13,41 +14,35 @@ __license__ = "MIT"
 import os
 # input file with target files 1 per line
 configfile: "config.yml"
-samples = config['inputs']
-names =  config['names']
-DIRS = "mappings StringTienoRef".split()
+NAMES = config["samples"].keys()
+SAMPLES = config["samples"].values()
 
 rule all:
-    output: expand('StringTieNoRef/{names}.gtf', names=names)
-
-
-rule clean:
-    shell: 
-        'rm $(snakemake --summary | tail -n+2 | cut -f1)'
+    input: expand('StringTieNoRef/{names}.gtf', names=NAMES)
 
 
 rule symlink:
-    input: 
-        bam = expand('{samples}', samples=samples),
-        bai = expand('{samples}.bai', samples=samples)
+    input:
+        bam = expand('{samples}', samples=SAMPLES),
+        bai = expand('{samples}.bai', samples=SAMPLES)
     output:
-        bam = expand('mappings/{names}.bam', names=names),
-        bai = expand('mappings/{names}.bam.bai', names=names)
+        bam = expand('mappings/{names}.bam', names=NAMES),
+        bai = expand('mappings/{names}.bam.bai', names=NAMES)
     run:
         for bam_in, bai_in, bam_out, bai_out in zip(
             input.bam, input.bai, output.bam, output.bai):
             os.symlink(bam_in, bam_out)
-            os.symlink(bai_in, bai_out)        
+            os.symlink(bai_in, bai_out)
 
 rule stringtie:
-    input: rules.symlink.output.bam
-    output: 'StringTienoRef/{names}.gtf'
+    input: 'mappings/{names}.bam'
+    output: 'StringTieNoRef/{names}.gtf'
     threads: 8 
     params:
-        min_iso: config.get('min_iso', "")
-        min_anchor_len: config.get('min_anchor_len', "")
-        min_junction_cov: config.get('min_junction_cov', "")
-        rf: config.get('rf', "")
+        min_iso = config.get('min_iso', ""),
+        min_anchor_len = config.get('min_anchor_len', ""),
+        min_junction_cov = config.get('min_junction_cov', ""),
+        rf = config.get('rf', "")
     shell:
         '''
         module load stringtie
