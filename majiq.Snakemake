@@ -32,13 +32,12 @@ def comparison(wildcards, index):
     return expand('majiq/{cond}/{{name}}.majiq'.format(cond=condition),
         name=mapping[condition])
 
-
 def splicegraph(wildcards):
     cond = wildcards.comp_names.split('_')[1]
     return 'majiq/{}/splicegraph.sql'.format(cond)
 
 localrules: all, create_ini , symlink
-ruleorder:  symlink > create_ini > build > deltapsi
+ruleorder:  symlink > create_ini >  deltapsi
 
 rule all:
     input:
@@ -83,25 +82,25 @@ rule create_ini:
         with open(str(output), 'w') as ini:
             ini.writelines('\n'.join(lines))
 
-
-rule build:
-    input:
-        rules.create_ini.output,
-        lambda wildcards:
-            expand('mappings/{names}.bam', cond=wildcards.cond,
-                names=mapping[wildcards.cond])
-    output:
-        dynamic('majiq/{cond}/{names}.majiq')
-    params:
-        output='majiq/{cond}',
-        annotation=config['gtf_path']
-    threads: 20
-    shell:
-        '''
-        module load majiq
-        majiq build --conf {input[0]} --nproc {threads} \
-        --output {params.output} {params.annotation}
-        '''
+# https://stackoverflow.com/a/49004234/1694714
+# rule build
+for condition, replicate in mapping.items():
+    rule:
+        input:
+            'majiq/{condition}/{condition}.ini'.format(condition=condition)
+        output:
+            expand('majiq/{condition}/{replicate}.majiq',
+                replicate=replicate, condition=condition)
+        params:
+            output='majiq/{condition}'.format(condition=condition),
+            annotation=config['gtf_path']
+        threads: 20
+        shell:
+            '''
+            module load majiq
+            majiq build --conf {input} --nproc {threads} \
+            --output {params.output} {params.annotation}
+            '''
 
 
 rule deltapsi:
