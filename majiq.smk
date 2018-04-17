@@ -3,8 +3,7 @@
 Created on 17:07 29/02/2018 2018
 Snakemake file for majiq.
 .. usage:
-    snakemake -s majiq.smk  --cluster "sbatch --mem=24000 --cpus-per-task 10" \
-    --jobs 100 --no-hook
+    snakemake -s majiq.smk --keep-going --cluster "sbatch --mem=32000  --cpus-per-task 20" --jobs 100
 """
 __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2018, Dieterichlab"
