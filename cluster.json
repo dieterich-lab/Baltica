@@ -1,0 +1,14 @@
+{
+  "__default__":
+          {
+            "time" : "02:00:00",
+            "mem": 4000,
+            'out': 'logs/{rule}_{wildcards}.log'
+           },
+  "build":
+          {
+            "partition": 'long',
+            "mem": 3200,
+            'cpus-per-task': 30,
+            'out': 'logs/{rule}_{wildcards}.log'}
+  }
