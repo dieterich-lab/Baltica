@@ -3,8 +3,7 @@
 Created on 17:07 29/02/2018 2018
 Snakemake file for majiq.
 .. usage:
-    snakemake -s majiq.smk  --cluster "sbatch --mem=24000 --cpus-per-task 10" \
-    --jobs 100 --no-hook
+    snakemake -s majiq.Snakemake --cluster "sbatch --mem=24000 --job-name majiq_pipeline" --jobs 100
 """
 __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2018, Dieterichlab"
@@ -30,14 +29,14 @@ def basename(path, suffix=None):
 
 def comparison(wildcards, index):
     condition = wildcards.comp_names.split('_')[index]
-    return expand('majiq/{name}.majiq', name=mapping[condition])
+    return expand('majiq/{name}.majiq.hdf5', name=mapping[condition])
 
 
 rule all:
     input:
         'majiq/build.ini',
-        expand('majiq/{names}.majiq', names=NAMES),
-        expand('majiq/{comp_names}/{comp_names}.deltapsi.tsv',
+        expand('majiq/{names}.majiq.hdf5', names=NAMES),
+        expand('majiq/{comp_names}/{comp_names}.deltapsi_deltapsi.tsv',
             comp_names=comp_names)
 
 rule clean:
@@ -68,7 +67,6 @@ rule create_ini:
             'samdir={}'.format('mappings/'),
             'genome={}'.format(config['assembly']),
             'genome_path={}'.format(config['genome_path']),
-            'strandness={}'.format(config['strandness']),
             '[experiments]']
 
         lines.extend(
@@ -81,15 +79,15 @@ rule build:
     input:
         'majiq/build.ini'
     output:
-        expand('majiq/{names}.majiq', names=NAMES)
+        expand('majiq/{names}.majiq.hdf5', names=NAMES)
     params:
         output='majiq/',
         annotation=config['gff_path']
     threads: 20
     shell:
         '''
-        module load majiq
-        majiq build --conf {input} --nproc {threads} \
+        module load majiq/1.0.6
+        majiq build -conf {input} --nthreads {threads} --nogc \
         --output {params.output} {params.annotation}
         '''
 
@@ -104,20 +102,20 @@ rule deltapsi:
         names=lambda wildcards: wildcards.comp_names.replace('_', ' '),  # RNPS1 Luc
     shell:
         '''
-        module load majiq
+        module load majiq/1.0.6
         majiq deltapsi -grp1 {input.cont} -grp2 {input.treat} \
-        --nproc {threads} --output {params.output} --names {params.names}
+        --nthreads {threads} --output {params.output} --names {params.names}
         '''
 
 
 rule voila_deltapsi:
     input: rules.deltapsi.output
-    output: 'majiq/{comp_names}/{comp_names}.deltapsi.tsv'
+    output: 'majiq/{comp_names}/{comp_names}.deltapsi_deltapsi.tsv'
     params:
         output='majiq/{comp_names}/',
     shell:
         '''
-        module load majiq
-        voila deltapsi  --threshold 0.1 -o {params.output} --splice-graph majiq/splicegraph.sql \
+        module load majiq/1.0.6
+        voila deltapsi --threshold 0.1 -o {params.output} --splice-graph majiq/splicegraph.hdf5 \
          {input}
         '''
