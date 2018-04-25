@@ -8,7 +8,7 @@
   "build":
           {
             "partition": 'long',
-            "mem": 3200,
+            "mem": 32000,
             'cpus-per-task': 30,
             'out': 'logs/{rule}_{wildcards}.log'}
   }

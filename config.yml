@@ -1,33 +1,30 @@
+# example for three conditions in triplicate
 samples:
-  Luc_1: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49739_STARmapping/Aligned.noS.bam
-  Luc_2: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49740_STARmapping/Aligned.noS.bam
-  Luc_3: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49741_STARmapping/Aligned.noS.bam
-  RNPS1_1: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49742_STARmapping/Aligned.noS.bam
-  RNPS1_2: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49743_STARmapping/Aligned.noS.bam
-  RNPS1_3: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49744_STARmapping/Aligned.noS.bam
-  WTrescue_1: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49745_STARmapping/Aligned.noS.bam
-  WTrescue_2: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49746_STARmapping/Aligned.noS.bam
-  WTrescue_3: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49747_STARmapping/Aligned.noS.bam
-  Mutrescue_1: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49748_STARmapping/Aligned.noS.bam
-  Mutrescue_2: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49749_STARmapping/Aligned.noS.bam
-  Mutrescue_3: /prj/Niels_Gehring/workflow_New_90/mapping/K002000065_49750_STARmapping/Aligned.noS.bam
+  SampleA_1: SampleA_1.bam
+  SampleA_2: SampleA_2.bam
+  SampleA_3: SampleA_3.bam
+  SampleB_1: SampleB_1.bam
+  SampleB_2: SampleB_2.bam
+  SampleB_3: SampleB_3.bam
+  SampleC_1: SampleC_1.bam
+  SampleC_2: SampleC_2.bam
+  SampleC_3: SampleC_3.bam
 
-
-# StringTie
-
-# -f minimun isoform fraction (default: .1)
+# StringTie parameters
+# minimun isoform fraction (default: .1)
 min_iso:
   '-f 0.2'
-# -a minimum anchor length for junctions (default: 10)
+# minimum anchor length for junctions (default: 10)
 min_anchor_len:
  '-a 15'
-# -j minimum junction coverage (default: 1)
+# minimum junction coverage (default: 1)
 min_junction_cov:
   '-j 5'
+# reads are of the first (reverse) strand
 rf:
   '--rf'
 
-# Leafcutter
+# Leafcutter parameters
 min_samples_per_intron:
   '--min_samples_per_intron=2'
 min_samples_per_group:
@@ -35,15 +32,18 @@ min_samples_per_group:
 fdr:
   '-f 0.05'
 
-# Junctionseq
+# Junctionseq parameters
 max_read_length:
   '--maxReadLength 76'
 min_count:
   '--minCount 3'
+stranded:
+  '--stranded'
 
-# Majiq
+# Majiq parameters
+# path for the genome fasta for GC content composition correction
 genome_path:
- '/biodb/genomes/homo_sapiens/GRCh38_90/GRCh38_90.fa'
+ '/GRCh38_90.fa'
 threshold:
   '--threshold 0.1'
 assembly:
@@ -55,7 +55,5 @@ strandness:
 #readlen : Length of the RNA-seq reads. MAJIQ the longest read length
 read_len:
   76
-
 gtf_path:
-  #'/biodb/genomes/homo_sapiens/GRCh38_90/GRCh38.90.gtf'
-  /prj/Niels_Gehring/revision/majiq/Homo_sapiens.GRCh38.90.gff3
+  GRCh38.90.gtf'
