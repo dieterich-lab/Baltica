@@ -2,8 +2,14 @@
 """
 Created on 17:07 27/02/2018
 Snakemake file for stringtie.
+
+Install qorts
+Install JunctionSeq from R:
+    source("http://hartleys.github.io/JunctionSeq/install/JS.install.R");
+    JS.install();
+
 .. usage:
-    snakemake -s junctionSeq.smk --keep-going --cluster 'sbatch ' --cluster-config  cluster.json --jobs 100
+    snakemake -s junctionSeq.smk --keep-going --cluster 'sbatch --job-name junctionseq_pipeline' --cluster-config  cluster.json --jobs 100
 
 """
 __author__ = "Thiago Britto Borges"
@@ -55,15 +61,32 @@ rule qorts:
         {input} {params.gtf} {params.output}
         """
 
+
 rule merge:
-    input: 'junctionseq/{NAMES}/'
-    output: '
+    input: rules.create_decoder.output
+    output: 'junctionseq/mergedOutput/withNovel.forJunctionSeq.gff.gz'
     params:
-        gtf=config['gtf_path']
+        gtf=config['gtf_path'],
         min_count=config['min_count']
     shell:
         """
-        qorts mergeNovelSplices  --minCount 6 --stranded  ~/RNPS1/rawCts/ ~/RNPS1/decoder.txt \
-        {params.gtf} ~/RNPS1/Cts/
+        module load java qorts
+        qorts mergeNovelSplices \
+        --minCount 6 \
+        {params.stranded} \
+        junctionseq/rawCts \
+        {input} \
+        {params.gtf} \
+        junctionseq/mergedOutput/
         """
+
+rule analysis:
+    input: rules.merge.output
+    threads: 10
+    shell:
+        """
+        module load R
+        Rscript junctionSeq.R {threads}
+        """
+
 
