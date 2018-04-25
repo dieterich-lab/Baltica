@@ -3,7 +3,9 @@
 Created on 17:07 29/02/2018 2018
 Snakemake file for leafcutter.
 .. usage:
-    snakemake -s leafcutter.Snakemake --cluster 'sbatch -m 4G' --jobs 100
+    snakemake -s leafcutter.smk --keep-going \
+    --cluster 'sbatch --job-name leafcutter_pipeline' \
+    --cluster-config  cluster.json --jobs 100
 
 
 

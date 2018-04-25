@@ -9,7 +9,9 @@ Install JunctionSeq from R:
     JS.install();
 
 .. usage:
-    snakemake -s junctionSeq.smk --keep-going --cluster 'sbatch --job-name junctionseq_pipeline' --cluster-config  cluster.json --jobs 100
+    snakemake -s junctionSeq.smk --keep-going --cluster \
+    'sbatch --job-name junctionseq_pipeline' --cluster-config  \
+     cluster.json --jobs 100
 
 """
 __author__ = "Thiago Britto Borges"
@@ -18,7 +20,6 @@ __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
 import os
-# input file with target files 1 per line
 configfile: "config.yml"
 NAMES = config["samples"].keys()
 SAMPLES = config["samples"].values()
@@ -72,7 +73,7 @@ rule merge:
         """
         module load java qorts
         qorts mergeNovelSplices \
-        --minCount 6 \
+        {params.min_count} \
         {params.stranded} \
         junctionseq/rawCts \
         {input} \
@@ -80,7 +81,7 @@ rule merge:
         junctionseq/mergedOutput/
         """
 
-rule analysis:
+rule junctioseq_analysis:
     input: rules.merge.output
     threads: 10
     shell:

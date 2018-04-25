@@ -10,5 +10,11 @@
             "partition": 'long',
             "mem": 32000,
             'cpus-per-task': 30,
-            'out': 'logs/{rule}_{wildcards}.log'}
-  }
+            'out': 'logs/{rule}_{wildcards}.log'},
+
+  junctioseq_analysis:
+  {
+            "mem": 16000,
+            'cpus-per-task': 10,
+            'out': 'logs/{rule}_{wildcards}.log'},
+}

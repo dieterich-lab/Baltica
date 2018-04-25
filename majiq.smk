@@ -3,7 +3,9 @@
 Created on 17:07 29/02/2018 2018
 Snakemake file for majiq.
 .. usage:
-    snakemake -s majiq.smk --keep-going --cluster "--partition long sbatch --mem=32000  --cpus-per-task 20" --jobs 100
+    snakemake -s junctionSeq.smk --keep-going --cluster \
+    'sbatch --job-name majiq_pipeline' --cluster-config  \
+     cluster.json --jobs 100
 """
 __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2018, Dieterichlab"
