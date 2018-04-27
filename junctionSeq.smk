@@ -33,44 +33,36 @@ mapping = {c: [x for x in NAMES if x.startswith(c)] for c in conditions}
 rule all:
     input: expand('junctionseq/{NAMES}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz', NAMES=NAMES)
 
-
 for condition, replicate in mapping.items():
     rule:
-        input:
-            'mappings/{NAMES}.bam'
-            'majiq/{condition}/{condition}.ini'.format(condition=condition)
-        output:
-            expand('majiq/{condition}/{replicate}.majiq',
-                replicate=replicate, condition=condition)
+        input: 'mappings/{NAMES}.bam'
+        output: 'junctionseq/rawCts/{NAMES}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz'
         params:
-            output='majiq/{condition}'.format(condition=condition),
-            annotation=config['gtf_path']
-        threads: 20
+            gtf=config['gtf_path'],
+            output='junctionseq/rawCts/{NAMES}/',
+            max_read=config['max_read_length'],
         shell:
-            '''
-            module load majiq
-            majiq build --conf {input} --nproc {threads} \
-            --output {params.output} {params.annotation}
-            '''
+            """
+            module load java qorts
+            qorts QC --stranded {params.max_read}   \
+            --runFunctions writeKnownSplices,writeNovelSplices,writeSpliceExon  \
+            {input} {params.gtf} {params.output}
+            """
 
-rule qorts:
-    input: 'mappings/{NAMES}.bam'
-    output: 'junctionseq/{NAMES}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz',
-    params:
-        gtf=config['gtf_path'],
-        output='junctionseq/{NAMES}',
-        max_read=config['max_read_length'],
-    shell:
-        """
-        module load java qorts
-        qorts QC --stranded {params.max_read}   \
-        --runFunctions writeKnownSplices,writeNovelSplices,writeSpliceExon  \
-        {input} {params.gtf} {params.output}
-        """
-
+rule create_decoder:
+    output: 'junctionseq/decoder.tab'
+    run:
+        with open(str(output), 'w') as fou:
+            fou.write('sample.ID\tgroup.ID\n')
+            for k, v in mapping.items():
+                for name in v:
+                    fou.write('{}\t{}\n'.format(
+                        name, k))
 
 rule merge:
-    input: rules.create_decoder.output
+    input:
+        rules.create_decoder.output,
+        expand('junctionseq/rawCts/{NAMES}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz', NAMES=NAMES)
     output: 'junctionseq/mergedOutput/withNovel.forJunctionSeq.gff.gz'
     params:
         gtf=config['gtf_path'],
@@ -79,10 +71,10 @@ rule merge:
         """
         module load java qorts
         qorts mergeNovelSplices \
-        {params.min_count} \
-        {params.stranded} \
+        --minCount 6 \
+        --stranded \
         junctionseq/rawCts \
-        {input} \
+        {input[0]} \
         {params.gtf} \
         junctionseq/mergedOutput/
         """
