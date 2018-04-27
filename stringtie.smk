@@ -12,31 +12,16 @@ __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
 import os
-# input file with target files 1 per line
 configfile: "config.yml"
 NAMES = config["samples"].keys()
 SAMPLES = config["samples"].values()
 
 rule all:
-    input: expand('StringTieNoRef/{names}.gtf', names=NAMES)
-
-
-rule symlink:
-    input:
-        bam = expand('{samples}', samples=SAMPLES),
-        bai = expand('{samples}.bai', samples=SAMPLES)
-    output:
-        bam = expand('mappings/{names}.bam', names=NAMES),
-        bai = expand('mappings/{names}.bam.bai', names=NAMES)
-    run:
-        for bam_in, bai_in, bam_out, bai_out in zip(
-            input.bam, input.bai, output.bam, output.bai):
-            os.symlink(bam_in, bam_out)
-            os.symlink(bai_in, bai_out)
+    input: expand('stringtie/{names}.gtf', names=NAMES)
 
 rule stringtie:
     input: 'mappings/{names}.bam'
-    output: 'StringTieNoRef/{names}.gtf'
+    output: 'stringtie/{names}.gtf'
     threads: 8 
     params:
         min_iso = config.get('min_iso', ""),
@@ -46,7 +31,37 @@ rule stringtie:
     shell:
         '''
         module load stringtie
-        stringtie {input}  -v -p {threads} -o {output} \
-        {params.rf}    {params.min_iso} {params.min_anchor_len} \
+        stringtie {input} -v -p {threads} -o {output} \
+        {params.rf} {params.min_iso} {params.min_anchor_len} \
         {params.min_junction_cov}
         '''
+
+rule stringtie_merge:
+    input: stringtie/{cond}_{rep,\d+}.gtf
+    output: 'stringtie/{cond}.gtf'
+    shell:
+        '''
+        module load stringtie
+        stringtie --merge -o {output} -v -T 5 -f 0.5 {input}
+        '''
+
+rule gffcompare:
+    input: rules.stringtie_merge.output
+    output: '{cond}.combined.annotated.gtf'
+    params:
+        gff = config['gff_path']
+    shell:
+        """
+        ~tbrittoborges/bin/gffcompare/gffcompare \ 
+        {input} -r {params.gff} -R -Q -M -o {wildcards.cond}.combined
+        """
+
+rule gtf2gff3:
+    input:
+        {cond}.combined.annotated.gtf
+    output:
+        {cond}.gff
+    shell:
+        """
+        perl ~tbrittoborges/bin/gtf2gff3.pl {input} > {output}
+        """
