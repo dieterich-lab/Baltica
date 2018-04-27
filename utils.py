@@ -5,12 +5,35 @@ Created on 14:59 19/01/2018 2018
 
 """
 from collections import namedtuple
+from itertools import combinations
+
 import numpy as np
 import pandas as pd
-import pybedtools
-import maxentpy
 
 GenomicRegion = namedtuple('GenomicRegion', ['chr', 'strand', 'start', 'end'])
+
+
+def create_mapping(config):
+    """
+    Generate the mapping bettwen samples and replicates 
+    :param config: snakemake configuration file
+    :return dict: mapping bettwen sample and replicates
+    """
+    names = config["samples"].keys()
+    conditions = sorted(set([x.split('_')[0] for x in names]))
+
+    return {c: [x for x in names if x.split('_')[0] == c] for c in conditions}
+
+
+def all_against_all(config):
+    """
+
+    :param config: 
+    :return: 
+    """
+    names = config["samples"].keys()
+    conditions = sorted(set([x.split('_')[0] for x in names]))
+    return ['{}_{}'.format(*x) for x in combinations(conditions, 2)]
 
 
 def region(chr, strand='+', start=None, end=None):
@@ -53,14 +76,18 @@ def explode(dataframe, columns, fill_value=''):
                            dataframe[columns[0]].str.len())
             for col in idx_cols
         }).assign(**{col: np.concatenate(
-            dataframe[col].values) for col in columns}).loc[:, dataframe.columns]
+            dataframe[col].values) for col in columns}).loc[:,
+               dataframe.columns]
     else:
         # at least one list in cells is empty
         return pd.DataFrame({
-            col: np.repeat(dataframe[col].values, dataframe[columns[0]].str.len())
+            col: np.repeat(dataframe[col].values,
+                           dataframe[columns[0]].str.len())
             for col in idx_cols
-        }).assign(**{col: np.concatenate(dataframe[col].values) for col in columns}) \
-                   .append(dataframe.loc[lens == 0, idx_cols]).fillna(fill_value) \
+        }).assign(
+            **{col: np.concatenate(dataframe[col].values) for col in columns}) \
+                   .append(dataframe.loc[lens == 0, idx_cols]).fillna(
+            fill_value) \
                    .loc[:, dataframe.columns]
 
 

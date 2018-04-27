@@ -2,8 +2,16 @@
 """
 Created on 17:07 29/02/2018 2018
 Snakemake file for majiq.
+
+install:
+cd ~/bin/
+python3 -m venv majiq_env
+source ~/bin/majiq_env/bin/activate
+pip install cython pysam numpy
+pip install git+https://bitbucket.org/biociphers/majiq_stable.git#egg=majiq
+
 .. usage:
-    snakemake -s junctionSeq.smk --keep-going --cluster \
+    snakemake -s majiq.smk --keep-going --cluster \
     'sbatch --job-name majiq_pipeline' --cluster-config  \
      cluster.json --jobs 100
 """

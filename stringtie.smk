@@ -3,7 +3,9 @@
 Created on 17:07 27/02/2018 
 Snakemake file for stringtie.
 .. usage:
-    snakemake -s stringtie.Snakemake --cluster "sbatch --mem=24000 -n stringtie" --jobs 100
+    snakemake -s stringtie.smk --keep-going \
+    --cluster 'sbatch --job-name stringtie_pipeline' \
+    --cluster-config  cluster.json --jobs 100
     
 """
 __author__ = "Thiago Britto Borges"

@@ -5,7 +5,7 @@ Snakemake file for leafcutter.
 .. usage:
     snakemake -s leafcutter.smk --keep-going \
     --cluster 'sbatch --job-name leafcutter_pipeline' \
-    --cluster-config  cluster.json --jobs 100
+    --cluster-config  cluster.json --jobs 100 --allow-ambiguity
 
 
 

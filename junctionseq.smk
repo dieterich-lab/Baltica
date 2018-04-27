@@ -31,7 +31,11 @@ comp_names =  ['{}_{}'.format(*x) for x in
 mapping = {c: [x for x in NAMES if x.startswith(c)] for c in conditions}
 
 rule all:
-    input: expand('junctionseq/{NAMES}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz', NAMES=NAMES)
+    input:
+        expand('junctionseq/rawCts/{NAMES}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz',
+            NAMES=NAMES),
+        'junctionseq/decoder.tab',
+        'junctionseq/mergedOutput/withNovel.forJunctionSeq.gff.gz'
 
 for condition, replicate in mapping.items():
     rule:
