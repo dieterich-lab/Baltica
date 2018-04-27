@@ -20,9 +20,15 @@ __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
 import os
+from itertools import combinations
+
 configfile: "config.yml"
 NAMES = config["samples"].keys()
 SAMPLES = config["samples"].values()
+conditions = sorted(set([x.split('_')[0] for x in NAMES]))
+comp_names =  ['{}_{}'.format(*x) for x in
+               combinations(conditions, 2)]
+mapping = {c: [x for x in NAMES if x.startswith(c)] for c in conditions}
 
 rule all:
     input: expand('junctionseq/{NAMES}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz', NAMES=NAMES)
