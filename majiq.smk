@@ -2,18 +2,9 @@
 """
 Created on 17:07 29/02/2018 2018
 Snakemake file for majiq.
-
-install:
-cd ~/bin/
-python3 -m venv majiq_env
-source ~/bin/majiq_env/bin/activate
-pip install cython pysam numpy
-pip install git+https://bitbucket.org/biociphers/majiq_stable.git#egg=majiq
-
 .. usage:
-    snakemake -s majiq.smk --keep-going --cluster \
-    'sbatch --job-name majiq_pipeline' --cluster-config  \
-     cluster.json --jobs 100
+    snakemake -s majiq.Snakemake --cluster \
+    "sbatch --mem=24000 --job-name majiq_pipeline" --jobs 100
 """
 __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2018, Dieterichlab"
@@ -97,7 +88,8 @@ rule build:
     threads: 20
     shell:
         '''
-        module load majiq
+        module load python3
+        source ~/bin/majiq_env/bin/activate
         majiq build --conf {input} --nproc {threads} \
         --output {params.output} {params.annotation}
         '''
@@ -113,7 +105,8 @@ rule deltapsi:
         names=lambda wildcards: wildcards.comp_names.replace('_', ' '),  # RNPS1 Luc
     shell:
         '''
-        module load majiq
+        module load python3
+        source ~/bin/majiq_env/bin/activate
         majiq deltapsi -grp1 {input.cont} -grp2 {input.treat} \
         --nproc {threads} --output {params.output} --names {params.names}
         '''
@@ -126,7 +119,8 @@ rule voila_deltapsi:
         output='majiq/{comp_names}/',
     shell:
         '''
-        module load majiq
-        voila deltapsi  --threshold 0.1 -o {params.output} --splice-graph majiq/splicegraph.sql \
+        module load python3
+        source ~/bin/majiq_env/bin/activate
+        voila deltapsi   --percent-threshold 0.1 -o {params.output} --splice-graph majiq/splicegraph.sql \
          {input}
         '''

@@ -2,11 +2,11 @@
 """
 Created on 17:07 27/02/2018 
 Snakemake file for stringtie.
+for some reason this pipelining is falling at the merge rule (KeyError) if run in
+the cluster, but works fine locally
 .. usage:
-    snakemake -s stringtie.smk --keep-going \
-    --cluster 'sbatch --job-name stringtie_pipeline' \
-    --cluster-config  cluster.json --jobs 100
-    
+    snakemake -s stringtie.smk --jobs 100
+
 """
 __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2018, Dieterichlab"
@@ -14,17 +14,32 @@ __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
 import os
+
+def create_mapping(config):
+    """
+    Generate the mapping bettwen samples and replicates
+    :param config: snakemake configuration file
+    :return dict: mapping bettwen sample and replicates
+    """
+    names = config["samples"].keys()
+    conditions = sorted(set([x.split('_')[0] for x in names]))
+
+    return {c: [x for x in names if x.split('_')[0] == c] for c in conditions}
+
+
 configfile: "config.yml"
-NAMES = config["samples"].keys()
-SAMPLES = config["samples"].values()
+NAMES = list(config["samples"].keys())
+mapping = create_mapping(config)
+
 
 rule all:
-    input: expand('stringtie/{names}.gtf', names=NAMES)
+    input: expand('stringtie/{names}.gtf', names=NAMES),
+           expand('stringtie/{cond}.gff', cond=list(mapping.keys()))
 
 rule stringtie:
     input: 'mappings/{names}.bam'
     output: 'stringtie/{names}.gtf'
-    threads: 8 
+    threads: 8
     params:
         min_iso = config.get('min_iso', ""),
         min_anchor_len = config.get('min_anchor_len', ""),
@@ -39,7 +54,8 @@ rule stringtie:
         '''
 
 rule stringtie_merge:
-    input: stringtie/{cond}_{rep,\d+}.gtf
+    input:
+        lambda w: expand('stringtie/{n}.gtf', n=mapping[w.cond])
     output: 'stringtie/{cond}.gtf'
     shell:
         '''
@@ -49,21 +65,18 @@ rule stringtie_merge:
 
 rule gffcompare:
     input: rules.stringtie_merge.output
-    output: '{cond}.combined.annotated.gtf'
+    output: 'stringtie/{cond}.combined.{cond}.gtf.tmap'
     params:
         gff = config['gff_path']
     shell:
-        """
-        ~tbrittoborges/bin/gffcompare/gffcompare \ 
-        {input} -r {params.gff} -R -Q -M -o {wildcards.cond}.combined
-        """
+        '''
+        ~tbrittoborges/bin/gffcompare/gffcompare {input} -r {params.gff} -R -Q -M -o {wildcards.cond}.combined
+        '''
 
 rule gtf2gff3:
-    input:
-        {cond}.combined.annotated.gtf
-    output:
-        {cond}.gff
+    input: 'stringtie/{cond}.gtf'
+    output: 'stringtie/{cond}.gff'
     shell:
-        """
+        '''
         perl ~tbrittoborges/bin/gtf2gff3.pl {input} > {output}
-        """
+        '''
