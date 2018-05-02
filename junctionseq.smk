@@ -2,16 +2,14 @@
 """
 Created on 17:07 27/02/2018
 Snakemake file for stringtie.
-
+.. install :
 Install qorts
 Install JunctionSeq from R:
     source("http://hartleys.github.io/JunctionSeq/install/JS.install.R");
     JS.install();
 
 .. usage:
-    snakemake -s junctionSeq.smk --keep-going --cluster \
-    'sbatch --job-name junctionseq_pipeline' --cluster-config  \
-     cluster.json --jobs 100
+    sbatch submit_smk.sh junctionseq.smk
 
 """
 __author__ = "Thiago Britto Borges"
@@ -28,7 +26,8 @@ SAMPLES = config["samples"].values()
 conditions = sorted(set([x.split('_')[0] for x in NAMES]))
 comp_names =  ['{}_{}'.format(*x) for x in
                combinations(conditions, 2)]
-mapping = {c: [x for x in NAMES if x.startswith(c)] for c in conditions}
+
+mapping = {c: [x for x in NAMES if x.split('_')[0] == c] for c in conditions}
 
 rule all:
     input:
@@ -36,6 +35,7 @@ rule all:
             NAMES=NAMES),
         'junctionseq/decoder.tab',
         'junctionseq/mergedOutput/withNovel.forJunctionSeq.gff.gz'
+
 
 for condition, replicate in mapping.items():
     rule:
@@ -48,8 +48,8 @@ for condition, replicate in mapping.items():
         shell:
             """
             module load java qorts
-            qorts QC --stranded {params.max_read}   \
-            --runFunctions writeKnownSplices,writeNovelSplices,writeSpliceExon  \
+            qorts QC --stranded {params.max_read} \
+            --runFunctions writeKnownSplices,writeNovelSplices,writeSpliceExon \
             {input} {params.gtf} {params.output}
             """
 
@@ -84,12 +84,10 @@ rule merge:
         """
 
 rule junctioseq_analysis:
-    input: rules.merge.output
+    input: rules.merge.output, rules.create_decoder.output
     threads: 10
     shell:
         """
         module load R
         Rscript junctionSeq.R {threads}
         """
-
-

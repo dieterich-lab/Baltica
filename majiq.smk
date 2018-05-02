@@ -3,8 +3,7 @@
 Created on 17:07 29/02/2018 2018
 Snakemake file for majiq.
 .. usage:
-    snakemake -s majiq.Snakemake --cluster \
-    "sbatch --mem=24000 --job-name majiq_pipeline" --jobs 100
+    sbatch submit_smk.sh majiq.smk
 """
 __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2018, Dieterichlab"
@@ -18,7 +17,7 @@ configfile: "config.yml"
 NAMES = config["samples"].keys()
 SAMPLES = config["samples"].values()
 conditions = sorted(set([x.split('_')[0] for x in NAMES]))
-comp_names =  ['{}_{}'.format(*x) for x in
+comp_names = ['{}_{}'.format(*x) for x in
                combinations(conditions, 2)]
 mapping = {c: [x for x in NAMES if x.startswith(c)] for c in conditions}
 
@@ -102,7 +101,7 @@ rule deltapsi:
     threads: 20
     params:
         output='majiq/{comp_names}/',
-        names=lambda wildcards: wildcards.comp_names.replace('_', ' '),  # RNPS1 Luc
+        names=lambda wildcards: wildcards.comp_names.replace('_', ' '), # RNPS1 Luc
     shell:
         '''
         module load python3
@@ -121,6 +120,6 @@ rule voila_deltapsi:
         '''
         module load python3
         source ~/bin/majiq_env/bin/activate
-        voila deltapsi   --percent-threshold 0.1 -o {params.output} --splice-graph majiq/splicegraph.sql \
+        voila deltapsi --percent-threshold 0.1 -o {params.output} --splice-graph majiq/splicegraph.sql \
          {input}
         '''

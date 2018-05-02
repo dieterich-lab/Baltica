@@ -37,7 +37,7 @@ def junction_support(intron_data, genomic_region):
     :param genomic_region: the exon's genomic region
     :return bool: whether the region is supported by junctions
     """
-    if genomic_region.start and not genomic_region.end :
+    if genomic_region.start and not genomic_region.end:
         query = f'''chr == "{chr}" & strand == "{strand}" 
         & end == {start - 1}'''.format(genomic_region._asdict())
 

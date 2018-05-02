@@ -2,16 +2,16 @@
 """
 Created on 17:07 29/02/2018 2018
 Snakemake file for leafcutter.
+.. install:
+    if (!require("devtools")) install.packages("devtools", repos='http://cran.us.r-project.org')
+devtools::install_github("davidaknowles/leafcutter/leafcutter")
+
 .. usage:
-    snakemake -s leafcutter.smk --keep-going \
-    --cluster 'sbatch --job-name leafcutter_pipeline' \
-    --cluster-config  cluster.json --jobs 100 --allow-ambiguity
-
-
+    sbatch submit_smk.sh leafcutter.smk
 
 Notes:
-    They recommend Olego
-    or star :
+    They recommend Olego as mapper, but STAR is fine, 
+    for example:
     STAR --genomeDir hg19index/
          --twopassMode Basic
          --outSAMstrandField intronMotif
@@ -37,7 +37,7 @@ SAMPLES = config["samples"].values()
 bin_path = '/home/tbrittoborges/bin/leafcutter'
 gtf_path = config["gtf_path"]
 conditions = [x.split('_')[0] for x in NAMES]
-comp_names =  ['{}_vs_{}'.format(*x)
+comp_names = ['{}_vs_{}'.format(*x)
     for x in combinations(sorted(set(conditions)), 2)]
 
 localrules: all, concatenate
@@ -131,7 +131,7 @@ rule gtf_to_exon:
     shell:
         """
         gzip -c {input} > {output.a}
-        module load R/3.4.1
+        module load R
         Rscript {bin_path}/scripts/gtf_to_exons.R {output.a} {output.b}
         """
 
@@ -150,7 +150,7 @@ rule differential_splicing:
     threads: 4
     shell:
         """
-        module load R/3.4.1
+        module load R
         Rscript {bin_path}/scripts/leafcutter_ds.R --exon_file={input.a} \
         {input.b} {input.c} --num_threads {threads} --output_prefix={params.prefix} \
         {params.min_samples_per_intron} {params.min_samples_per_group}
@@ -165,10 +165,10 @@ rule plot:
     output:
         'leafcutter/{comp_names}/ds_plots.pdf'
     params:
-        fdr=config.get('fdr', '')
+        fdr=config['fdr']
     shell:
         """
-        module load R/3.4.1
+        module load R
         Rscript {bin_path}/scripts/ds_plots.R -e {input.exons} \
         {input.counts} {input.test} {input.signif} --output={output} \
         {params.fdr}"""

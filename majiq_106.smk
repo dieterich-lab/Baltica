@@ -2,6 +2,10 @@
 """
 Created on 17:07 29/02/2018 2018
 Snakemake file for majiq.
+
+python3 -m venv majiq_env
+source pysster_venv/bin/activate
+
 .. usage:
     snakemake -s majiq.Snakemake --cluster "sbatch --mem=24000 --job-name majiq_pipeline" --jobs 100
 """
@@ -9,6 +13,9 @@ __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2018, Dieterichlab"
 __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
+
+
+
 
 from itertools import combinations, chain
 from pathlib import Path
