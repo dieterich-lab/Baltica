@@ -1,0 +1,1 @@
+multiqc -s -dd 2 -o . $1

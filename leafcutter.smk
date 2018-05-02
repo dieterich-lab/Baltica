@@ -85,8 +85,8 @@ rule concatenate:
     input:
         expand(rules.bam2junc.output, NAMES=NAMES)
     output:
-        junc='leafcutter/{comp_names}/all.junc',
-        test='leafcutter/{comp_names}/test_diff_introns.txt'
+        junc='leafcutter/{comp_names}/juncfiles.txt',
+        test='leafcutter/{comp_names}/diff_introns.txt'
     run:
         comp = output.junc.split('/')[1]
         cond_a, cond_b = comp.split('_vs_')
@@ -98,11 +98,11 @@ rule concatenate:
         with open(output.test, 'w') as fout:
             for name in NAMES:
                 if name.startswith(cond_a):
-                    fout.write("mappings/{}.bam {}\n".format(
+                    fout.write("{} {}\n".format(
                         name, cond_a))
 
                 elif name.startswith(cond_b):
-                    fout.write("mappings/{}.bam {}\n".format(
+                    fout.write("{} {}\n".format(
                         name, cond_b))
 
 # step 2
@@ -140,12 +140,12 @@ rule differential_splicing:
     input:
         a=rules.gtf_to_exon.output.b,
         b='leafcutter/{comp_names}/{comp_names}_perind_numers.counts.gz',
-        c='leafcutter/{comp_names}/test_diff_introns.txt'
+        c='leafcutter/{comp_names}/diff_introns.txt'
     output:
         'leafcutter/{comp_names}/{comp_names}_cluster_significance.txt'
     params:
-        min_samples_per_group=config.get('min_samples_per_group', ''),
-        min_samples_per_intron=config.get('min_samples_per_intron', ''),
+        min_samples_per_group=config['min_samples_per_group'],
+        min_samples_per_intron=config['min_samples_per_intron'],
         prefix='leafcutter/{comp_names}/{comp_names}'
     threads: 4
     shell:
