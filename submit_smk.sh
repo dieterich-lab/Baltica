@@ -6,6 +6,6 @@
 #SBATCH --mail-user=thiago.brittoborges@uni-heidelberg.de
 #SBATCH --partition=long
 
-snakemake -s $1 --keep-going --cluster \
-    'sbatch ' --cluster-config  \
-    cluster.json --jobs 100
+source ~/bin/snakemake/bin/activate
+snakemake -s $1 --keep-going --cluster 'sbatch -p {cluster.partition} --mem
+{cluster.mem}' --cluster-config cluster.json --jobs 100
