@@ -87,8 +87,7 @@ rule build:
     threads: 20
     shell:
         '''
-        module load python3
-        source ~/bin/majiq_env/bin/activate
+        module load majiq
         majiq build --conf {input} --nproc {threads} \
         --output {params.output} {params.annotation}
         '''
@@ -104,8 +103,7 @@ rule deltapsi:
         names=lambda wildcards: wildcards.comp_names.replace('_', ' '), # RNPS1 Luc
     shell:
         '''
-        module load python3
-        source ~/bin/majiq_env/bin/activate
+        module load majiq
         majiq deltapsi -grp1 {input.cont} -grp2 {input.treat} \
         --nproc {threads} --output {params.output} --names {params.names}
         '''
@@ -118,7 +116,6 @@ rule voila_deltapsi:
         output='majiq/{comp_names}/',
     shell:
         '''
-        module load python3
         source ~/bin/majiq_env/bin/activate
         voila deltapsi --percent-threshold 0.1 -o {params.output} --splice-graph majiq/splicegraph.sql \
          {input}
