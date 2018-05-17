@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscrip
 # Title     : TODO
 # Objective : TODO
 # Created by: tbrittoborges

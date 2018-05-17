@@ -8,13 +8,13 @@ NAMES = config["samples"].keys()
 SAMPLES = config["samples"].values()
 
 rule all:
-    input: expand('DEanalysis/{sample}', sample=sample),
-    'DEanalysis/sample.tab'
+    input:
+        'DEanalysis/gene_counts.csv'
 
 rule create_sample_list:
-    output: 'DEanalysis/sample.tab'
+    output:
+        'DEanalysis/samples.txt'
     run:
-
         with open(str(output), 'w') as fou:
             for k, v in zip(NAMES, SAMPLES):
                 fou.write('{} {}\n'.format(
@@ -22,17 +22,30 @@ rule create_sample_list:
                 '_StringTieBallgown/stringtieB_outfile.gtf')))
 
 rule prepDE:
-    input: 'mappings/{names}.bam'
+    input:
+        'DEanalysis/samples.txt'
     output:
-        g='DEanalysis/{names}_gene_counts.csv',
-        t='DEanalysis/{names}_trans_counts.csv'
+        g = 'DEanalysis/gene_counts.csv',
+        t = 'DEanalysis/transcript_counts.csv'
     params:
-        min_iso = config.get('min_iso', ""),
-        min_anchor_len = config.get('min_anchor_len', ""),
-        min_junction_cov = config.get('min_junction_cov', ""),
-        rf = config.get('rf', "")
+        prepDE_path = '~/bin/prepDE.py',
+        length = 75
     shell:
         '''
-        module load python
-        python prepDE.py -i {input} --length=75
+        module load python2
+        python {params.prepDE_path} -i {input} --length={params.length} \
+        -g {output.g} -t {output.t}
         '''
+
+rule DE:
+    input:
+        rules.prepDE.output.g
+    output:
+        'DEanalysis/limmaReport/glMDSPlot/MDS-Plot.html',
+        'DEanalysis/limmaReport/glMDPlot/MD-Plot.html'
+
+    shell:
+    '''
+    module load R/3.4.1
+    Rscript DE_analysis.R
+    '''
