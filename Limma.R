@@ -45,10 +45,7 @@ analysis <- function(variables) {
   b <- paste0('group', variables[2])
   c <- paste(a, b, sep = '-')
   cat(c,  "\n")
-  cat(cond.name, "\n")
-  dir.create(cond.name,
-             showWarnings = FALSE,
-             recursive = TRUE)
+
   contr.matrix <- makeContrasts(
     contrasts = c, levels = factor(colnames(design)))
 
