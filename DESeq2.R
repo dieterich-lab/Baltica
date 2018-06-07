@@ -142,8 +142,10 @@ genes$ENSEMBL <-
   )
 
 dds <- DESeqDataSetFromMatrix(
-  as.matrix(dge),
-  DataFrame(group), ~ group)
+    as.matrix(dge),
+
+  DataFrame(group),
+    ~ group)
 dds <- DESeq(dds)
 
 analysis.for <- function(x) {
