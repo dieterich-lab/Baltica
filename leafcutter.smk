@@ -94,7 +94,6 @@ rule concatenate:
             for name in NAMES:
                 if name.startswith(cond_a) or name.startswith(cond_b):
                     fout.write("leafcutter/{}.junc\n".format(name))
-
         with open(output.test, 'w') as fout:
             for name in NAMES:
                 if name.startswith(cond_a):

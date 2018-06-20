@@ -1,4 +1,3 @@
-#!/usr/bin/env Rscrip
 # Title     : TODO
 # Objective : TODO
 # Created by: tbrittoborges
@@ -40,12 +39,14 @@ message("Done with writeCompleteResults (",date(),")");
 
 dir.create(file.path('junctionseq/results/'))
 message("Starting buildAllPlots (",date(),")");
-bap <- buildAllPlots(
+try(
+	buildAllPlots(
             jscs=jscs,
             FDR.threshold = 0.01,
             outfile.prefix = "junctionseq/results/",
             variance.plot = TRUE,
             ma.plot = TRUE,
             rawCounts.plot=TRUE,
-            verbose = TRUE);
+            verbose = TRUE)
+)
 message("Done with  buildAllPlots (",date(),")");

@@ -1,20 +1,22 @@
-{
-  "__default__":
+{ "__default__":
           {
-            "time" : "02:00:00",
-            "mem": 4000,
-            'out': 'logs/{rule}_{wildcards}.log'
+            "time" : "23:00:00",
+            "mem": 20000,
+            "out": "logs/{rule}_{wildcards}.log",
+	    "partition": "general"
            },
   "build":
           {
-            "partition": 'long',
+            "partition": "long",
             "mem": 32000,
-            'cpus-per-task': 30,
-            'out': 'logs/{rule}_{wildcards}.log'},
+            "cpus-per-task": 30,
+            "out": "logs/{rule}_{wildcards}.log"
+	  },
 
-  junctioseq_analysis:
-  {
-            "mem": 16000,
-            'cpus-per-task': 10,
-            'out': 'logs/{rule}_{wildcards}.log'},
+  "junctioseq_analysis":
+  	  {
+            "mem": 128000,
+            "cpus-per-task": 10,
+            "out": "logs/{rule}_{wildcards}.log"
+	  }
 }

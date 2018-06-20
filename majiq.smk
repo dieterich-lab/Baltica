@@ -58,7 +58,7 @@ rule symlink:
 
 
 rule create_ini:
-    input: expand('mappings/{names}.bam', names=NAMES)
+    input: expand('mappings/{names}.bam', names=NAMES)ß
     output: 'majiq/build.ini'
     run:
         lines = [
@@ -88,7 +88,7 @@ rule build:
     shell:
         '''
         module load majiq
-        majiq build --conf {input} --nproc {threads} \
+	majiq build --conf {input} --nproc {threads} \
         --output {params.output} {params.annotation}
         '''
 
@@ -103,7 +103,7 @@ rule deltapsi:
         names=lambda wildcards: wildcards.comp_names.replace('_', ' '), # RNPS1 Luc
     shell:
         '''
-        module load majiq
+	module load majiq
         majiq deltapsi -grp1 {input.cont} -grp2 {input.treat} \
         --nproc {threads} --output {params.output} --names {params.names}
         '''
@@ -116,7 +116,7 @@ rule voila_deltapsi:
         output='majiq/{comp_names}/',
     shell:
         '''
-        source ~/bin/majiq_env/bin/activate
-        voila deltapsi --percent-threshold 0.1 -o {params.output} --splice-graph majiq/splicegraph.sql \
+        module load majiq
+	    voila deltapsi --threshold 0.1 -o {params.output} --splice-graph majiq/splicegraph.sql \
          {input}
         '''

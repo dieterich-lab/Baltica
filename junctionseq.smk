@@ -9,8 +9,7 @@ Install JunctionSeq from R:
     JS.install();
 
 .. usage:
-    sbatch submit_smk.sh junctionseq.smk
-
+    sbatch submit_smk.sh 'junctionseq.smk --allow-ambiguity junctioseq_analysis'
 """
 __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2018, Dieterichlab"
