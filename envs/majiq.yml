@@ -1,0 +1,14 @@
+name:
+  majiq
+
+channels:
+  - bioconda
+  - defaults
+
+dependencies:
+  - python >= 3.5
+  - pip:
+      - cython
+      - pysam
+      - numpy
+      - git+https://bitbucket.org/biociphers/majiq_stable.git
