@@ -1,4 +1,6 @@
 # Baltica
 
-One stop solution for alternative splicign analysis
+One stop solution for differential splicing analysis.
+
+
 
