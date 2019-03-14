@@ -1,0 +1,21 @@
+samples:
+  ctr_1: /path/1.bam
+  ctr_2: /path/2.bam
+  trt_2: /path/3.bam
+  trt_3: /path/4.bam
+
+ref: /path/GRCh38_90.gtf
+
+ref_fa: /path/GRCh38_90.fa
+
+# Majiq
+threshold:
+  --threshold 0.1
+assembly:
+  GRCh38_90
+strandness:
+  reverse
+read_len:
+  100
+
+# LeafCutter
