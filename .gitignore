@@ -60,9 +60,8 @@ venv.bak/
 .ropeproject
 /site
 .mypy_cache/
-.idea
 *.iml
 out
 gen
-.gitignore
 .idea/
+.old/

@@ -1,7 +1,0 @@
-gffutils
-pybedtools
-pandas
-numpy
-click
-snakemake
-git+git://github.com/kepbod/maxentpy
