@@ -1,3 +1,11 @@
+
+sample_path:
+  /path/to/samples
+
+workdir:
+  /path/to/workdir
+
+
 samples:
   ctr_1: /path/1.bam
   ctr_2: /path/2.bam
@@ -19,3 +27,18 @@ read_len:
   100
 
 # LeafCutter
+min_samples_per_group:
+  2
+
+min_samples_per_intron:
+  2
+
+fdr:
+  0.05
+
+contrasts:
+  treated-vs-untreated:
+    - treated
+    - untreated
+
+
