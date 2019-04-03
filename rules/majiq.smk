@@ -12,65 +12,88 @@ e11752.
 .. usage:
 
 """
-from itertools import combinations
 
 __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2019, Dieterichlab"
 __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
-configfile: "../config.yml"
-NAMES = config["samples"].keys()
-SAMPLES = config["samples"].values()
-conditions = sorted(set([x.split("_")[0] for x in NAMES]))
-contrasts = ["{}_{}".format(*x) for x in
-             combinations(conditions, 2)]
+from os.path import join
+import re
 
-mapping = {c: [x for x in NAMES if x.startswith(c)]
-           for c in conditions}
+def natural_sort_key(s, _nsre=re.compile('([0-9]+)')):
+    return [int(text) if text.isdigit() else text.lower()
+            for text in _nsre.split(s)]
 
 
-def comparison(wildcards, index, mapping):
-    condition = wildcards.comp_names.split("_")[index]
+def comparison(wc, index, mapping):
+    condition = wc.contrast.split("-")[index]
     return expand("majiq/{name}.majiq", name=mapping[condition])
 
 
+configfile: "config.yml"
+name = config["samples"].keys()
+raw_name = config["samples"].values()
+sample_path = config["sample_path"]
+contrasts = config['contrasts']
+
+conditions = sorted(
+    set([x.split("_")[0] for x in name]),
+    key=natural_sort_key)
+mapping = {c: [x for x in name if x[: x.index('_')] == c ]
+           for c in conditions}
+
+localrules: symlink, create_ini
 
 rule all:
-    input:
-        "build.ini",
-        expand("{names}.majiq", names=NAMES),
-        directory(
-            expand("{contrast}/voila_deltapsi/",
-            contrast=contrasts))
+  input:
+    "majiq/build.ini",
+    expand("mappings/{name}.bam", name=name),
+    expand("majiq/{name}.majiq", name=name),
+    expand("majiq/{contrast}/voila_deltapsi/",
+        contrast=contrasts)
+
+rule symlink:
+  input:
+    expand(join(sample_path, "{raw_name}"),
+        raw_name=raw_name)
+  output:
+    expand("mappings/{name}.bam", name=name)
+  run:
+    for i, o in zip(input, output):
+      os.symlink(i, o)
+      os.symlink(i + '.bai', o + '.bai')
 
 
 rule create_ini:
-    input: expand("../mappings/{names}.bam", names=NAMES)
-    output: "build.ini"
-    run:
-        lines = [
-            "[info]",
-            "readlen={}".format(config["read_len"]),
-            "samdir={}".format("../mappings/"),
-            "genome={}".format(config["assembly"]),
-            "genome_path={}".format(config["ref_fa"]),
-            "strandness={}".format(config["strandness"]),
-            "[experiments]"]
+  input:
+    expand("mappings/{name}.bam", name=name)
+  output:
+    "majiq/build.ini"
+  run:
+    lines = [
+        "[info]",
+        "readlen={}".format(config["read_len"]),
+        "samdir={}".format("mappings/"),
+        "genome={}".format(config["assembly"]),
+        "genome_path={}".format(config["ref_fa"]),
+        "strandness={}".format(config["strandness"]),
+        "[experiments]"]
 
-        lines.extend(
-            ["{}={}".format(k, ",".join(v)) for k, v in mapping.items()])
+    lines.extend(
+        ["{}={}".format(k, ",".join(v))
+        for k, v in mapping.items()])
 
-        with open(str(output), "w") as ini:
-            ini.writelines("\n".join(lines))
+    with open(str(output), "w") as ini:
+        ini.writelines("\n".join(lines))
 
 
 rule gtf_to_gff:
     output:
-        "ref.gff"
+        "majiq/ref.gff"
     params:
         ref = config["ref"],
-        exe = "perl /home/tbrittoborges/bin/gtf2gff3.pl"
+        exe = "perl scripts/gtf2gff3.pl"
 
     shell:
         "{params.exe} {params.ref} > {output}"
@@ -78,65 +101,43 @@ rule gtf_to_gff:
 
 rule build:
     input:
-        ini="build.ini",
-        ref="ref.gff"
+        ini="majiq/build.ini",
+        ref="majiq/ref.gff"
     output:
-        expand("{names}.majiq", names=NAMES)
-    params:
-        exe=". /home/tbrittoborges/bin/miniconda3/etc/profile.d/conda.sh; "
-        " conda activate majiq_env; "
-    threads: 1
+        expand("majiq/{name}.majiq", name=name)
+    conda:
+        "../envs/majiq.yml"
+    threads: len(conditions)
     shell:
-        " {params.exe} "
         " majiq build --conf {input.ini} --nproc {threads} "
-        " --output majiq/k {input.ref}"
-
-rule deltapsi:
-    input: cont=lambda wildcards: comparison(wildcards, 0),
-           treat=lambda wildcards: comparison(wildcards, 1)
-    output: "{comp_names}/{comp_names}.deltapsi.voila"
-    threads: 20
-    params:
-        output="{comp_names}/",
-        names=lambda wildcards: wildcards.comp_names.replace("_", " ")
-    shell:
-        "{params.exe} "
-        "majiq deltapsi -grp1 {input.cont} -grp2 {input.treat} "
-        "--nproc {threads} --output {params.output} --names {params.names} "
-
-
-rule voila_deltapsi:
-    input: "majiq/{comp_names}/{comp_names}.deltapsi.voila"
-    output: directory("majiq/{comp_names}/voila_deltapsi/")
-    shell:
-        " {params.exe} "
-        " voila deltapsi -o {output} "
-        " -s majiq/splicegraph.sql {input}"
+        " --output majiq/ {input.ref}"
 
 
 rule deltapsi:
-    input: cont=lambda wildcards: comparison(wildcards, 0),
-           treat=lambda wildcards: comparison(wildcards, 1)
-    output: "{comp_names}/{comp_names}.deltapsi.voila"
-    threads: 20
+    input:
+        a=lambda wc: comparison(wc, 0, mapping),
+        b=lambda wc: comparison(wc, -1, mapping)
+    output:
+        "majiq/{contrast}/{contrast}.deltapsi.voila"
+    conda:
+        "../envs/majiq.yml"
+    threads:
+        10
     params:
-        output="{comp_names}/",
-        names=lambda wildcards: wildcards.comp_names.replace("_", " ")
+        name=lambda wc: wc.contrast.replace('-vs-', ' ')
     shell:
-        " {params.exe} "
-        "majiq deltapsi -grp1 {input.cont} -grp2 {input.treat} "
-        "--nproc {threads} --output {params.output} --names {params.names} "
+        "majiq deltapsi -grp1 {input.a} -grp2 {input.b} "
+        "--nproc {threads} --output {output} "
+        "--names {params.name} "
 
 
 rule voila_deltapsi:
-    input: "majiq/{comp_names}/{comp_names}.deltapsi.voila"
-    output: directory("majiq/{comp_names}/voila_deltapsi/")
+    input:
+        "majiq/{contrast}/{contrast}.deltapsi.voila"
+    output:
+        directory("majiq/{contrast}/voila_deltapsi/")
+    conda:
+        "../envs/majiq.yml"
     shell:
-        " {params.exe} "
         " voila deltapsi -o {output} "
         " -s majiq/splicegraph.sql {input}"
-
-
-
-
-
