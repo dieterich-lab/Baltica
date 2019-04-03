@@ -14,24 +14,19 @@ __copyright__ = "Copyright 2018, Dieterichlab"
 __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
-from itertools import combinations
-from pathlib import Path
-
-def basename(path, suffix=None):
-    if suffix:
-        return str(Path(path).with_suffix(suffix).name)
-    return str(Path(path).name)
-
 configfile: "config.yml"
-NAMES = config["samples"].keys()
-SAMPLES = config["samples"].values()
-bin_path = '/home/tbrittoborges/bin/leafcutter'
-gtf_path = config["gtf_path"]
-conditions = [x.split('_')[0] for x in NAMES]
-comp_names = ['{}_vs_{}'.format(*x)
-    for x in combinations(sorted(set(conditions)), 2)]
+name = config["samples"].keys()
+raw_name = config["samples"].values()
+sample_path = config["sample_path"]
+contrasts = config['contrasts']
 
-localrules: all, concatenate
+conditions = sorted(
+    set([x.split("_")[0] for x in name]),
+    key=natural_sort_key)
+mapping = {c: [x for x in name if x[: x.index('_')] == c ]
+           for c in conditions}
+print(mapping)
+localrules: symlink, create_ini
 
 
 rule all:
@@ -39,22 +34,14 @@ rule all:
         expand('leafcutter/{comp_names}/ds_plots.pdf', comp_names=comp_names),
         expand('leafcutter/{NAMES}.junc', NAMES=NAMES)
 
-rule clean:
-    shell:
-        'rm -rf leafcutter'
 
 rule symlink:
-    input:
-        bam=expand("{SAMPLES}", SAMPLES=SAMPLES),
-        bai=expand("{SAMPLES}.bai", SAMPLES=SAMPLES)
-    output:
-        bam=expand('mappings/{NAMES}.bam', NAMES=NAMES),
-        bai=expand('mappings/{NAMES}.bam.bai', NAMES=NAMES)
-    run:
-        for bam_in, bai_in, bam_out, bai_out in zip(
-            input.bam, input.bai, output.bam, output.bai):
-            os.symlink(bam_in, bam_out)
-            os.symlink(bai_in, bai_out)
+  input: expand(join(sample_path, "{raw_name}"), raw_name=raw_name)
+  output: expand("mappings/{name}.bam", name=name)
+  run:
+    for i, o in zip(input, output):
+      os.symlink(i, o)
+
 
 # step 1.1
 rule bam2junc:
@@ -62,12 +49,11 @@ rule bam2junc:
     output:
         bed='leafcutter/{NAMES}.bed',
         junc='leafcutter/{NAMES}.junc'
-    params: bin_path=bin_path
+    env: "../envs/leafcutter.yml"
     shell:
         """
-        module load samtools
         samtools view {input} \
-        | python2 {params.bin_path}/scripts/filter_cs.py \
+        | python2 scripts/filter_cs.py \
         | perl {params.bin_path}/scripts/sam2bed.pl --use-RNA-strand - {output.bed}
         perl {params.bin_path}/scripts/bed2junc.pl {output.bed} {output.junc}
         """
@@ -106,9 +92,10 @@ rule intron_clustering:
         prefix='leafcutter/{comp_names}/{comp_names}'
     output:
         'leafcutter/{comp_names}/{comp_names}_perind_numers.counts.gz'
+    env: "../envs/leafcutter.yml"
     shell:
         """
-        python2 {bin_path}/clustering/leafcutter_cluster.py \
+        python2 scripts/leafcutter_cluster.py \
         -j {input} -m {params.m} -o {params.prefix} -l {params.l}
         """
 
@@ -119,11 +106,11 @@ rule gtf_to_exon:
     output:
         a='leafcutter/' + basename(gtf_path, suffix='.gz'),
         b='leafcutter/exons.gtf.gz'
+    env: "../envs/leafcutter.yml"
     shell:
         """
         gzip -c {input} > {output.a}
-        module load R
-        Rscript {bin_path}/scripts/gtf_to_exons.R {output.a} {output.b}
+        Rscript scripts/gtf_to_exons.R {output.a} {output.b}
         """
 
 # step 3.2
@@ -134,6 +121,7 @@ rule differential_splicing:
         c='leafcutter/{comp_names}/diff_introns.txt'
     output:
         'leafcutter/{comp_names}/{comp_names}_cluster_significance.txt'
+    env: "../envs/leafcutter.yml"
     params:
         min_samples_per_group=config['min_samples_per_group'],
         min_samples_per_intron=config['min_samples_per_intron'],
@@ -155,11 +143,11 @@ rule plot:
         signif=rules.differential_splicing.output,
     output:
         'leafcutter/{comp_names}/ds_plots.pdf'
+    env: "../envs/leafcutter.yml"
     params:
         fdr=config['fdr']
     shell:
         """
-        module load R
         Rscript {bin_path}/scripts/ds_plots.R -e {input.exons} \
         {input.counts} {input.test} {input.signif} --output={output} \
         {params.fdr}"""
