@@ -1,0 +1,13 @@
+name:
+  scallop
+
+channels:
+  - bioconda
+
+dependencies:
+  - python = 2.7
+  - cufflinks
+  # - scallop
+  - salmon
+  - samtools
+  - gffread
