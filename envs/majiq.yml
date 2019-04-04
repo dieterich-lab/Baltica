@@ -8,7 +8,9 @@ channels:
 dependencies:
   - python >= 3.5
   - pip:
+      - whell
+      - setuptools
       - cython
       - pysam
       - numpy
-      - git+https://bitbucket.org/biociphers/majiq_stable.git
+      - git+https://bitbucket.org/biociphers/majiq_stable.git#egg=majiq

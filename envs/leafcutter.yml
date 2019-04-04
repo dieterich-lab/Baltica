@@ -8,6 +8,5 @@ channels:
 
 dependencies:
   - python = 2.7
-  - r-base = 3.3.3
   - r-leafcutter
   - samtools

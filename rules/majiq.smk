@@ -50,8 +50,11 @@ rule all:
     "majiq/build.ini",
     expand("mappings/{name}.bam", name=name),
     expand("majiq/{name}.majiq", name=name),
-    expand("majiq/{contrast}/voila_deltapsi/",
-        contrast=contrasts)
+    expand("majiq/{contrast}/",
+        contrast=contrasts.keys()),
+    expand("majiq/{contrast}/voila.tsv",
+        contrast=contrasts.keys())
+
 
 rule symlink:
   input:
@@ -118,26 +121,14 @@ rule deltapsi:
         a=lambda wc: comparison(wc, 0, mapping),
         b=lambda wc: comparison(wc, -1, mapping)
     output:
-        "majiq/{contrast}/{contrast}.deltapsi.voila"
+        directory("majiq/{contrast}/")
     conda:
         "../envs/majiq.yml"
     threads:
         10
     params:
-        name=lambda wc: wc.contrast.replace('-vs-', ' ')
+        name=lambda wc: wc.contrast.replace('-vs-', ' '),
     shell:
         "majiq deltapsi -grp1 {input.a} -grp2 {input.b} "
         "--nproc {threads} --output {output} "
-        "--names {params.name} "
-
-
-rule voila_deltapsi:
-    input:
-        "majiq/{contrast}/{contrast}.deltapsi.voila"
-    output:
-        directory("majiq/{contrast}/voila_deltapsi/")
-    conda:
-        "../envs/majiq.yml"
-    shell:
-        " voila deltapsi -o {output} "
-        " -s majiq/splicegraph.sql {input}"
+        "--names {params.name} --default-prior "
