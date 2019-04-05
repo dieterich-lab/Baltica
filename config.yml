@@ -12,9 +12,11 @@ samples:
   trt_2: /path/3.bam
   trt_3: /path/4.bam
 
-ref: /path/GRCh38_90.gtf
+ref:
+  /path/GRCh38_90.gtf
 
-ref_fa: /path/GRCh38_90.fa
+ref_fa:
+  /path/GRCh38_90.fa
 
 # Majiq
 threshold:

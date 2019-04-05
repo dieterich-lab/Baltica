@@ -12,7 +12,6 @@ e11752.
 .. usage:
 
 """
-
 __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2019, Dieterichlab"
 __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
