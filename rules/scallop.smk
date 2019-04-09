@@ -6,7 +6,7 @@ with Scallop and Salmon pipeline.
 """
 __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2019, Dieterichlab"
-__email__ = "Thiago.Br§ittoBorges@uni-heidelberg.de"
+__email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
 from itertools import groupby
@@ -15,7 +15,8 @@ from os.path import join
 
 def rename_bam_to_fastq(x):
   # reads star log for input files
-  f = x.replace("Aligned.sortedByCoord.out.bam", "Log.out")
+  f = x.replace("Aligned.noS.bam", "Log.out")
+  # f.replace(f.name, 'Log.out'
   with open(f) as fin:
     for line in fin:
       if line.startswith("##### Command Line:"):
@@ -47,14 +48,11 @@ rule all:
     expand("mappings/{name}.bam", name=name),
     expand("scallop/merged_bam/{group}.bam", group=cond),
     expand("scallop/scallop/{group}.gtf", group=cond),
-    expand("scallop/salmon/{sample}/quant.sf", sample=name),
-    "scallop/cuffmerge/merged.fa",
+    expand("salmon/{sample}/quant.sf", sample=name),
+    "scallop/merged/merged.fa",
     "scallop/salmon/salmon_index/",
-    "scallop/salmon/quant.tsv.gz"
+    # "salmon/quant.tsv.gz"
 
-localrules: symlink
-
-include: "symlink.smk"
 
 rule merge_bam:
   input:
@@ -76,7 +74,7 @@ rule merge_bam:
 
 rule denovo_transcriptomics:
   input:
-    "merged_bam/{group}.bam"
+    "scallop/merged_bam/{group}.bam"
   output:
     "scallop/scallop/{group}.gtf"
   conda:
@@ -88,7 +86,7 @@ rule denovo_transcriptomics:
   log:
     "log/scallop_{group}.log"
   shell:
-    "module load scallop; "
+    "module load scallop "
     "scallop -i {input} -o {output} "
     "--library_type {params.library_type} "
     "--min_flank_length 6 "
@@ -101,26 +99,23 @@ rule merge_gtf:
   input:
     expand("scallop/scallop/{cond}.gtf", cond=cond)
   output:
-    "scallop/cuffmerge/merged.gtf"
+    "scallop/merged/merged.combined.gtf"
   conda:
     "../envs/scallop.yml"
   log:
-    "log/cuffmerge.log"
+    "log/gffcompare.log"
   params:
-    fasta = config["ref_fa"],
     gtf = config["ref"]
   shell:
-    "cuffcompare -s {params.fasta} -GC -r {params.gtf} {params.gtf}; "
-    "for i in {input}; do echo '$i' >> cuffmerge/gtf_list; done; "
-    "cuffmerge -o cuffmerge/ -g {params.gtf} -s {params.fasta} "
-    "--min-isoform-fraction 0.1 cuffmerge/gtf_list"
+    "gffcompare {input} -r {params.gtf} "
+    "-R -V -o scallop/merged/merged 2>{log}"
 
 
 rule extract_sequences:
   input:
     rules.merge_gtf.output
   output:
-    "scallop/cuffmerge/merged.fa"
+    "scallop/merged/merged.fa"
   conda:
     "../envs/scallop.yml"
   log:
@@ -141,7 +136,7 @@ rule salmon_index:
   threads:
     10
   log:
-    "logs/salmon_index.log"
+    "log/salmon_index.log"
   shell :
     "salmon index -t {input} -i {output} -p {threads} 2> {log}"
 
@@ -152,45 +147,16 @@ rule salmon_quant:
     r2 = lambda wildcards: FILES[wildcards.sample][1],
     index = "scallop/salmon/salmon_index/"
   output:
-    "scallop/salmon/{sample}/quant.sf",
-    "scallop/salmon/{sample}/lib_format_counts.json"
+    "salmon/{sample}/quant.sf"
   conda:
     "../envs/scallop.yml"
   threads:
     10
   log:
-    "logs/{sample}_salmons_quant.log"
+    "log/{sample}_salmons_quant.log"
   shell:
     "salmon quant -p {threads} -i {input.index} "
     "--libType A "
     "-1 <(gunzip -c {input.r1}) "
     "-2 <(gunzip -c {input.r2}) "
     "-o salmon/{wildcards.sample}/ &> {log}"
-
-
-rule collate_salmon:
-  input:
-    expand("scallop/salmon/{sample}/quant.sf",
-      sample=name)
-  output:
-    "scallop/salmon/quant.tsv.gz"
-  run:
-    import gzip
-    from os.path import basename, dirname
-
-    b = lambda x: bytes(x, "UTF8")
-
-    # Create the output file.
-    with gzip.open(output[0], "wb") as out:
-
-      # Print the header.
-      header = open(input[0]).readline()
-      out.write(b("sample\t" + header))
-
-      for i in input:
-        sample = basename(dirname(i))
-        lines = open(i)
-        # Skip the header in each file.
-        lines.readline()
-        for line in lines:
-          out.write(b(sample + "\t" + line))
