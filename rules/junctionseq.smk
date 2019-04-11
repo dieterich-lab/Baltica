@@ -1,7 +1,6 @@
 # -*- coding: utf-8
 """
 Created on 17:07 27/02/2018
-Snakemake file for stringtie.
 
 .. usage:
     sbatch submit_smk.sh 'junctionseq.smk --allow-ambiguity junctioseq_analysis'
@@ -12,59 +11,63 @@ __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
 import os
-from itertools import combinations
+from itertools import groupby
 
 configfile: "config.yml"
-NAMES = config["samples"].keys()
-SAMPLES = config["samples"].values()
-conditions = sorted(set([x.split('_')[0] for x in NAMES]))
-comp_names = ['{}_{}'.format(*x) for x in
-               combinations(conditions, 2)]
+name = config["samples"].keys()
+gtf_path = config["ref"]
+comp_names = config['contrasts'].keys()
 
-mapping = {c: [x for x in NAMES if x.split('_')[0] == c] for c in conditions}
+cond, rep = glob_wildcards("mappings/{cond}_{rep}.bam")
+d = {k: list(v) for k, v in groupby(
+    sorted(zip(cond, rep)), key=lambda x: x[0])}
+cond = set(cond)
 
 rule all:
     input:
-        expand('junctionseq/rawCts/{NAMES}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz',
-            NAMES=NAMES),
+        expand('junctionseq/rawCts/{name}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz',
+            name = name),
         'junctionseq/decoder.tab',
-        'junctionseq/mergedOutput/withNovel.forJunctionSeq.gff.gz'
+        'junctionseq/mergedOutput/withNovel.forJunctionSeq.gff.gz',
+        'junctionseq/analysis/'
 
 
-for condition, replicate in mapping.items():
-    rule:
-        input: 'mappings/{NAMES}.bam'
-        output: 'junctionseq/rawCts/{NAMES}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz'
-        params:
-            gtf=config['gtf_path'],
-            output='junctionseq/rawCts/{NAMES}/',
-            max_read=config['max_read_length'],
-        shell:
-            """
-            module load java qorts
-            qorts QC --stranded {params.max_read} \
-            --runFunctions writeKnownSplices,writeNovelSplices,writeSpliceExon \
-            {input} {params.gtf} {params.output}
-            """
+rule qc:
+    input:
+        "mappings/{name}.bam"
+    output:
+        'junctionseq/rawCts/{name}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz'
+    params:
+        gtf = config['ref'],
+        output = 'junctionseq/rawCts/{name}/',
+        max_read = config['read_len'],
+    shell:
+        """
+        module load java qorts
+        qorts QC --stranded --maxReadLength {params.max_read} \
+        --runFunctions writeKnownSplices,writeNovelSplices,writeSpliceExon \
+        {input} {params.gtf} {params.output}
+        """
+
 
 rule create_decoder:
     output: 'junctionseq/decoder.tab'
     run:
         with open(str(output), 'w') as fou:
             fou.write('sample.ID\tgroup.ID\n')
-            for k, v in mapping.items():
-                for name in v:
-                    fou.write('{}\t{}\n'.format(
-                        name, k))
+            for k, v in d.items():
+                for i in v:
+                    fou.write('{}_{}\t{}\n'.format(
+                        *i, k))
 
 rule merge:
     input:
         rules.create_decoder.output,
-        expand('junctionseq/rawCts/{NAMES}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz', NAMES=NAMES)
+        expand('junctionseq/rawCts/{name}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz',
+            name = name)
     output: 'junctionseq/mergedOutput/withNovel.forJunctionSeq.gff.gz'
     params:
-        gtf=config['gtf_path'],
-        min_count=config['min_count']
+        gtf = config['ref']
     shell:
         """
         module load java qorts
@@ -77,11 +80,16 @@ rule merge:
         junctionseq/mergedOutput/
         """
 
+
 rule junctioseq_analysis:
-    input: rules.merge.output, rules.create_decoder.output
+    input:
+        rules.merge.output,
+        rules.create_decoder.output
+    output:
+        'junctionseq/analysis/'
     threads: 10
     shell:
         """
         module load R
-        Rscript junctionSeq.R {threads}
+        Rscript scripts/junctionSeq.R {threads}
         """
