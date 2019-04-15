@@ -84,7 +84,7 @@ rule denovo_transcriptomics:
   wildcard_constraints:
     group = "|".join(cond)
   log:
-    "log/scallop_{group}.log"
+    "logs/scallop_{group}.log"
   shell:
     "module load scallop "
     "scallop -i {input} -o {output} "
@@ -103,7 +103,7 @@ rule merge_gtf:
   conda:
     "../envs/scallop.yml"
   log:
-    "log/gffcompare.log"
+    "logs/gffcompare.log"
   params:
     gtf = config["ref"]
   shell:
@@ -119,7 +119,7 @@ rule extract_sequences:
   conda:
     "../envs/scallop.yml"
   log:
-    "log/gffread.log"
+    "logs/gffread.log"
   params:
     fasta = config["ref_fa"]
   shell:
@@ -136,7 +136,7 @@ rule salmon_index:
   threads:
     10
   log:
-    "log/salmon_index.log"
+    "logs/salmon_index.log"
   shell :
     "salmon index -t {input} -i {output} -p {threads} 2> {log}"
 
@@ -153,7 +153,7 @@ rule salmon_quant:
   threads:
     10
   log:
-    "log/{sample}_salmons_quant.log"
+    "logs/{sample}_salmons_quant.log"
   shell:
     "salmon quant -p {threads} -i {input.index} "
     "--libType A "

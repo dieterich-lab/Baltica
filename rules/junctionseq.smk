@@ -10,7 +10,6 @@ __copyright__ = "Copyright 2018, Dieterichlab"
 __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
-import os
 from itertools import groupby
 
 configfile: "config.yml"
@@ -86,7 +85,7 @@ rule junctioseq_analysis:
         rules.merge.output,
         rules.create_decoder.output
     output:
-        'junctionseq/analysis/'
+        directory('junctionseq/analysis/')
     threads: 10
     shell:
         """
