@@ -1,0 +1,11 @@
+__default__:
+  mem: 16000
+  cpu: 4
+  out: logs/{rule}_{wildcards}.log
+  partition: general
+
+build:
+   partition: long
+   mem: 64000
+   cpus-per-task: 20
+   out: logs/{rule}_{wildcards}.log
