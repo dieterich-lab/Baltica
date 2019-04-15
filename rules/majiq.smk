@@ -26,7 +26,7 @@ def natural_sort_key(s, _nsre=re.compile('([0-9]+)')):
 
 
 def comparison(wc, index, mapping):
-    condition = wc.contrast.split("-")[index]
+    condition = wc.contrast.split("-vs-")[index]
     return expand("majiq/{name}.majiq", name=mapping[condition])
 
 
@@ -49,9 +49,9 @@ rule all:
     "majiq/build.ini",
     expand("mappings/{name}.bam", name=name),
     expand("majiq/{name}.majiq", name=name),
-    expand("majiq/{contrast}/",
+    expand("majiq/{contrast}/{contrast}.deltapsi.voila",
         contrast=contrasts.keys()),
-    expand("majiq/{contrast}/voila.tsv",
+    expand("majiq/voila/{contrast}_voila.tsv",
         contrast=contrasts.keys())
 
 
@@ -60,7 +60,8 @@ rule symlink:
     expand(join(sample_path, "{raw_name}"),
         raw_name=raw_name)
   output:
-    expand("mappings/{name}.bam", name=name)
+    expand("mappings/{name}.bam", name=name),
+    expand("mappings/{name}.bam.bai", name=name)
   run:
     for i, o in zip(input, output):
       os.symlink(i, o)
@@ -96,7 +97,6 @@ rule gtf_to_gff:
     params:
         ref = config["ref"],
         exe = "perl scripts/gtf2gff3.pl"
-
     shell:
         "{params.exe} {params.ref} > {output}"
 
@@ -104,9 +104,10 @@ rule gtf_to_gff:
 rule build:
     input:
         ini="majiq/build.ini",
-        ref="majiq/ref.gff"
+        ref="majiq/ref.gff",
     output:
-        expand("majiq/{name}.majiq", name=name)
+        expand("majiq/{name}.majiq", name=name),
+        "majiq/splicegraph.sql"
     conda:
         "../envs/majiq.yml"
     threads: len(conditions)
@@ -120,14 +121,27 @@ rule deltapsi:
         a=lambda wc: comparison(wc, 0, mapping),
         b=lambda wc: comparison(wc, -1, mapping)
     output:
-        directory("majiq/{contrast}/")
+        "majiq/{contrast}/{contrast}.deltapsi.voila"
     conda:
         "../envs/majiq.yml"
     threads:
         10
     params:
         name=lambda wc: wc.contrast.replace('-vs-', ' '),
+        cont=lambda wc: wc.contrast
     shell:
         "majiq deltapsi -grp1 {input.a} -grp2 {input.b} "
-        "--nproc {threads} --output {output} "
-        "--names {params.name} --default-prior "
+        "--nproc {threads} --output majiq/{params.cont} "
+        "--names {params.name} --default-prior; "
+        "mv majiq/{params.cont}/{input.a}_{input.b}.deltapsi.voila "
+        "{output} "
+
+
+rule voila:
+    input:
+        "majiq/splicegraph.sql",
+        "majiq/{contrast}/{contrast}.deltapsi.voila"
+    output:
+        "majiq/voila/{contrast}_voila.tsv"
+    shell:
+        "voila tsv --threshold 0.1 {input} -f {output}"
