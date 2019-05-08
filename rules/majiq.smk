@@ -128,12 +128,13 @@ rule deltapsi:
         10
     params:
         name=lambda wc: wc.contrast.replace('-vs-', ' '),
+        name2=lambda wc: wc.contrast.replace('-vs-', '_'),
         cont=lambda wc: wc.contrast
     shell:
         "majiq deltapsi -grp1 {input.a} -grp2 {input.b} "
         "--nproc {threads} --output majiq/{params.cont} "
         "--names {params.name} --default-prior; "
-        "mv majiq/{params.cont}/{input.a}_{input.b}.deltapsi.voila "
+        "mv majiq/{params.cont}/{params.name2}.deltapsi.voila "
         "{output} "
 
 
