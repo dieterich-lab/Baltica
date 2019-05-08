@@ -140,5 +140,5 @@ rule differential_splicing:
         """
         Rscript scripts/leafcutter_ds.R --exon_file={input.a} \
         {input.b} {input.c} --num_threads {threads} --output_prefix={params.prefix} \
-        {params.min_samples_per_intron} {params.min_samples_per_group}
+        -i {params.min_samples_per_intron} -g {params.min_samples_per_group}
         """
