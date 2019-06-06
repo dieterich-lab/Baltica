@@ -105,8 +105,8 @@ rule intron_clustering:
         'leafcutter/{comp_names}/{comp_names}_perind_numers.counts.gz'
     shell:
         """
-        python2 scripts/leafcutter_cluster.py \
-        -j {input} -m {params.m} -o {params.prefix} -l {params.l}
+        python2 scripts/leafcutter_cluster.py  \
+        -j {input} -m {params.m} -o {params.prefix} -l {params.l} --strand True
         rm *{params.n}.sorted.gz
         """
 
