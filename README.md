@@ -2,6 +2,20 @@
 
 One stop solution for differential splicing analysis.
 
+## Quickstart (LeafCutter example)
+[Instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) for SnakeMake installlation
+
+1) Clone this repo: `git clone dieterich-lab/Baltica/`
+
+2) [Install LeafCutter](#install-leafcutter)
+
+3) Within Baltica folder fill the `config.yaml` 
+
+4) to run in a slurm cluster, use `sbatch submit_snakemake_onslurm.sh rules/leafcutter.smk` 
+5) to run locally `snakemake -s rules/leafcutter.smk -j 4` (using 4 CPUs)
+6) otherwise check the other options in the SnakeMake [manual](https://snakemake.readthedocs.io/en/latest/executable.html) 
+
+
 
 ## Install Leafcutter
 ```bash
