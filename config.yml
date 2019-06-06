@@ -9,8 +9,8 @@ workdir:
 samples:
   ctr_1: /path/1.bam
   ctr_2: /path/2.bam
-  trt_2: /path/3.bam
-  trt_3: /path/4.bam
+  trt_1: /path/3.bam
+  trt_2: /path/4.bam
 
 ref:
   /path/GRCh38_90.gtf
@@ -39,8 +39,8 @@ fdr:
   0.05
 
 contrasts:
-  treated-vs-untreated:
-    - treated
-    - untreated
+  ctr-vs-trt:
+    - ctr
+    - trt
 
 
