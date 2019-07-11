@@ -1,14 +1,14 @@
+#!/usr/bin/env Rscript
 # Title     : TODO
 # Objective : TODO
 # Created by: tbrittoborges
 # Created on: 25/04/2018
-BiocManager::install('JunctionSeq', version = '3.8')
-
 suppressPackageStartupMessages(library(JunctionSeq));
 options(stringsAsFactors = FALSE);
 
-threads <- as.integer(10)
-setwd('/prj/Andre_Schneider_BNauheim/raw_silke_kreher/newBatchMar2019/Baltica')
+args <- commandArgs(TRUE)
+threads <- as.integer(args[1])
+
 decoder <- read.table(
   'junctionseq/decoder.tab', header=T, stringsAsFactors=F);
 sample.files <-  paste0(
