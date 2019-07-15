@@ -42,3 +42,13 @@ conda create --name junctionseq qorts r-biocmanager -c bioconda -c conda-forge -
 conda activate junctionseq
 Rscript -e "BiocManager::install('JunctionSeq', version = '3.8')"
 ```
+
+## Instal Whippet
+
+```bash
+conda create -n whippet -c conda-forge julia=0.6 --yes 
+conda activate whippet
+julia -e 'Pkg.add("Whippet"); using Whippet'
+# /homes/tbrittoborges/miniconda3/envs/whippet/share/julia/site/v0.6/Whippet/src/
+# /home/tbrittoborges/miniconda3/envs/whippet/bin/julia
+```
