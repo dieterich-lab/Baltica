@@ -4,7 +4,7 @@ Based on https://github.com/charlesreid1/2019-snakemake-cli
 """
 import argparse
 import os.path
-import snakema      ke
+import snakemake
 import sys
 import json
 
