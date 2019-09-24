@@ -2,6 +2,7 @@
 
 One stop solution for differential splicing analysis.
 
+
 ## Quickstart (LeafCutter example)
 [Instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) for SnakeMake installlation
 
