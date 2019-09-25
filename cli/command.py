@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 Command line interface driver for snakemake workflows
 Based on https://github.com/charlesreid1/2019-snakemake-cli
