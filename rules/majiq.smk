@@ -55,17 +55,7 @@ rule all:
         contrast=contrasts.keys())
 
 
-rule symlink:
-  input:
-    expand(join(sample_path, "{raw_name}"),
-        raw_name=raw_name)
-  output:
-    expand("mappings/{name}.bam", name=name),
-    expand("mappings/{name}.bam.bai", name=name)
-  run:
-    for i, o in zip(input, output):
-      os.symlink(i, o)
-      os.symlink(i + '.bai', o + '.bai')
+include: "symlink.smk"
 
 
 rule create_ini:

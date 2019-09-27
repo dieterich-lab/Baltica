@@ -1,12 +1,9 @@
 # -*- coding: utf-8
 """
 Created on 17:07 29/02/2018 2018
-Snakemake file for leafcutter.
-.. installation:
+Snakemake workflow for differential splicing with Leafcutter:
+https://github.com/davidaknowles/leafcutter
 
-.. usage:
-
-.. notes:
 
 """
 __author__ = "Thiago Britto Borges"
@@ -28,7 +25,7 @@ gtf_path = config["ref"]
 conditions = [x.split('_')[0] for x in NAMES]
 comp_names = config['contrasts'].keys()
 
-localrules: all, concatenate
+localrules: symlink, concatenate
 
 
 rule all:
@@ -37,22 +34,7 @@ rule all:
          comp_names=comp_names),
         expand('leafcutter/{NAMES}.junc', NAMES=NAMES)
 
-rule clean:
-    shell:
-        'rm -rf leafcutter'
-
-rule symlink:
-    input:
-        bam=expand("{SAMPLES}", SAMPLES=SAMPLES),
-        bai=expand("{SAMPLES}.bai", SAMPLES=SAMPLES)
-    output:
-        bam=expand('mappings/{NAMES}.bam', NAMES=NAMES),
-        bai=expand('mappings/{NAMES}.bam.bai', NAMES=NAMES)
-    run:
-        for bam_in, bai_in, bam_out, bai_out in zip(
-            input.bam, input.bai, output.bam, output.bai):
-            os.symlink(bam_in, bam_out)
-            os.symlink(bai_in, bai_out)
+include: "symlink.smk"
 
 # step 1.1
 rule bam2junc:

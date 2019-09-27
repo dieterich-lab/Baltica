@@ -9,6 +9,7 @@ import os.path
 import snakemake
 import sys
 import json
+from pathlib import Path
 
 from . import _program
 
@@ -21,11 +22,13 @@ def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser(prog=_program,
                                      description='Baltica: One stop solution for differential splicing analysis.',
                                      usage='''baltica <workflow> <parameters> [<target>]
-Baltica: run snakemake workflows, using the given workflow name & parameters file.
+Baltica: run snakemake workflows, using the given workflow name & parameters file.H
 ''')
-
+    rules_path = Path('../rules/')
+    program_choices = [x.with_suffix('') for x in rules_path.glob('*.smk')]
     parser.add_argument('workflowfile')
     parser.add_argument('paramsfile')
+    parser.add_argument('program', choices=program_choices)
     parser.add_argument('-n', '--dry-run', action='store_true')
     parser.add_argument('-f', '--force', action='store_true')
     args = parser.parse_args(args)
