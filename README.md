@@ -34,24 +34,34 @@ conda install -c bioconda samtools r-base=3.5 --yes
 Rscript -e "install.packages('devtools', repos='http://cran.us.r-project.org')"
 Rscript -e "devtools::install_github('davidaknowles/leafcutter/leafcutter')"
 ```
+Note: if you are having problems with devtools trying using `gtar` instead of `tar`
+```bash
+Rscript -e "Sys.setenv(TAR = '/bin/tar'); devtools::install_github('davidaknowles/leafcutter/leafcutter')"
+```
 
-## Install Majiq
+
+### Install Majiq
 
 Majiq installation requires an license that can be obtained here:
 [Acamdeic download](https://majiq.biociphers.org/app_download/).   
 Majiq have multiple licenses that should reviewed at the developers website.
 
 ```bash
-conda create --name majiq python=3.5 pysam numpy cython --yes
+conda create --name majiq python=3.6 pysam numpy cython --yes
 conda activate majiq
+conda install --yes h5py>=2.8.0 Flask==1.0.2 Flask-WTF==0.14.2 GitPython>=2.1.11 gunicorn==19.9.0 psutil>=5.4.8 h5py>=2.8.0 scipy>=1.1.0 
 env_path=$(dirname $(dirname $(which python)))
-export HTSLIB_INCLUDE_DIR=$env_path/envs/MAJIQ/lib/python3.6/site-packages/pysam/include/htslib/
-export HTSLIB_LIBRARY_DIR=$env_path/envs/MAJIQ/lib/python3.6/site-packages/pysam/include/htslib/htslib/
+python_ver=$(python --version 2>&1 | awk '{print substr($2,1,3)}')
+export HTSLIB_INCLUDE_DIR=$env_path/lib/python$python_ver/site-packages/pysam/include/htslib/
+export HTSLIB_LIBRARY_DIR=$env_path/lib/python$python_ver/site-packages/pysam/include/htslib/htslib/
 
 pip install git+https://bitbucket.org/biociphers/majiq_stable.git#egg=majiq
 ```
 
-## Install JunctionSeq
+For older versions of pip (python<3.6), you may have to use `--process-dependency-links` to install any package missing 
+from the conda installation. 
+
+### Install JunctionSeq
 Leafcutter is distributed with an [Apache License 2.0](https://github.com/davidaknowles/leafcutter/blob/master/LICENSE)
 
 ```bash
@@ -60,7 +70,7 @@ conda activate junctionseq
 Rscript -e "BiocManager::install('JunctionSeq', version = '3.8')"
 ```
 
-## Instal Whippet
+### Instal Whippet
 
 ```bash
 conda create -n whippet -c conda-forge julia=0.6 --yes 

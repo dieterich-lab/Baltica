@@ -8,7 +8,7 @@ import argparse
 import os.path
 import snakemake
 import sys
-import json
+import yaml
 from pathlib import Path
 
 from . import _program
@@ -26,72 +26,55 @@ Baltica: run snakemake workflows, using the given workflow name & parameters fil
 ''')
     rules_path = Path('../rules/')
     program_choices = [x.with_suffix('') for x in rules_path.glob('*.smk')]
-    parser.add_argument('workflowfile')
-    parser.add_argument('paramsfile')
-    parser.add_argument('program', choices=program_choices)
+    parser.add_argument('workflowfile', required=True)
+    parser.add_argument('paramsfile', required=True)
+    parser.add_argument('program', choices=program_choices, required=True)
     parser.add_argument('-n', '--dry-run', action='store_true')
     parser.add_argument('-f', '--force', action='store_true')
     args = parser.parse_args(args)
 
     # first, find the Snakefile
-    snakefile_this = os.path.join(this_dir, "Snakefile")
-    snakefile_parent = os.path.join(parent_dir, "Snakefile")
-    if os.path.exists(snakefile_this):
-        snakefile = snakefile_this
-    elif os.path.exists(snakefile_parent):
-        snakefile = snakefile_parent
-    else:
-        msg = 'Error: cannot find Snakefile at any of the following locations:\n'
-        msg += '{}\n'.format(snakefile_this)
-        msg += '{}\n'.format(snakefile_parent)
-        sys.stderr.write(msg)
+    snakefile = args.program + '.smk'
+    if not os.path.exists(snakefile):
+        msg = 'Error: cannot find Snakefile for the selected program: {} \n'
+        sys.stderr.write(msg.format(args.program))
         sys.exit(-1)
 
     # next, find the workflow config file
-    workflowfile = None
-    w1 = os.path.join(cwd, args.workflowfile)
-    w2 = os.path.join(cwd, args.workflowfile + '.json')
-    if os.path.exists(w1) and not os.path.isdir(w1):
-        workflowfile = w1
-    elif os.path.exists(w2) and not os.path.isdir(w2):
-        workflowfile = w2
-
-    if not workflowfile:
-        msg = 'Error: cannot find workflowfile {} or {} '.format(w1, w2)
-        msg += 'in directory {}\n'.format(cwd)
-        sys.stderr.write(msg)
+    workflow_file = args.workflowfile
+    if not os.path.exists(workflow_file):
+        msg = 'Error: cannot find the selected workflow file: {} \n'
+        sys.stderr.write(msg.format(workflow_file))
         sys.exit(-1)
 
-    # next, find the workflow params file
-    paramsfile = None
-    p1 = os.path.join(cwd, args.paramsfile)
-    p2 = os.path.join(cwd, args.paramsfile + '.json')
-    if os.path.exists(p1) and not os.path.isdir(p1):
-        paramsfile = p1
-    elif os.path.exists(p2) and not os.path.isdir(p2):
-        paramsfile = p2
+    # finally, check the config file for some mandatory parameters
+    parameters = {
+        "general": "sample_path workdir samples ref contrasts".split(),
+        "leafcutter": "min_samples_per_group min_samples_per_intron fdr".split(),
+        "majiq": "threshold GRCh38_90 strandness read_len".split()
+    }
 
-    if not paramsfile:
-        msg = 'Error: cannot find paramsfile {} or {} '.format(p1, p2)
-        msg += 'in directory {}\n'.format(cwd)
-        sys.stderr.write(msg)
+    with open(workflow_file) as fin:
+        workflow_info = yaml.safe_load(fin)
+
+    expected_par = set(parameters['general'] + parameters[args.program])
+    missing = expected_par.difference(workflow_info.keys())
+
+    if missing:
+        msg = 'Error: the following parameters are missing from the selected workflow file ({}): \n{}'
+        sys.stderr.write(msg.format(workflow_file, ', '.join(missing)))
         sys.exit(-1)
-
-    with open(workflowfile, 'rt') as fp:
-        workflow_info = json.load(fp)
 
     target = workflow_info['workflow_target']
-    config = dict()
 
     print('--------')
-    print('details!')
+    print('details')
     print('\tsnakefile: {}'.format(snakefile))
-    print('\tconfig: {}'.format(workflowfile))
-    print('\tparams: {}'.format(paramsfile))
+    print('\tconfig: {}'.format(workflow_file))
     print('\ttarget: {}'.format(target))
     print('--------')
 
-    # run Baltica!!
+    # run Baltica!
     status = snakemake.snakemake(snakefile, configfile=paramsfile,
                                  targets=[target], printshellcmds=True,
                                  dryrun=args.dry_run, forceall=args.force,

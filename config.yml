@@ -30,10 +30,10 @@ read_len:
 
 # LeafCutter
 min_samples_per_group:
-  2
+  3
 
 min_samples_per_intron:
-  2
+  5
 
 fdr:
   0.05
