@@ -3,18 +3,18 @@
 suppressPackageStartupMessages({
   library(GenomicRanges)
   library(optparse)
+  library(Rsamtools)
 })
 
 option_list = list(
   make_option(c("-i", "--input"), type="character", default=NULL,
               help="Differently spliced intron file", metavar="character"),
-  make_option(c("-o", "--out"), type="character", default=NULL,
-              help="output file name [default= %default]", metavar="character"),
+  # make_option(c("-o", "--out"), type="character", default=NULL,
+  #             help="output file name [default= %default]", metavar="character"),
   make_option(c("-a", "--annotation"), type="character", default=NULL,
-              help="Annotation in the GTF/GFF format", metavar="character")
-  # make_option(c("-t", "--type"), type="character", default="acceptor",
-  #             help="Extract donnor or acceptor [default \"%default\"]",
-  #             metavar="character")
+              help="Annotation in the GTF/GFF format", metavar="character"),
+  make_option(c("-s", "--sequence"), type="character", default=NULL,
+              help="Genomic sequence in the FASTA format", metavar="character")
 
 );
 
@@ -29,33 +29,34 @@ if (!file.exists(opt$annotation)) {
   print_help(opt_parser)
   stop("Pass a valid annotation to -a or --annotation ", call.=FALSE)
 }
-# if (!opt$type %in% c('donor', 'acceptor')){
-#   print_help(opt_parser)
-#   stop("Valid choices for -t --type parameters are [donor, acceptor]", call.=FALSE)
-# }
+if (!file.exists(opt$sequence)) {
+  print_help(opt_parser)
+  stop("Pass a valid annotation to -a or --annotation ", call.=FALSE)
+}
+
 
 select.exons <- function(pos, exons, flank.dist=150) {
   dist <- distanceToNearest(pos, exons)
 
-  if (any(is.na(subjectHits(acceptor.dist)))) {
+  if (any(is.na(subjectHits(dist)))) {
     warning('While trying to find nearest feature, missing values were created')
   }
 
   e <- exons[subjectHits(dist), ]
+  genes <- unique(mcols(e)$gene_id)
   annotated <- mcols(dist)$distance == 0
   # for novel exons, use junction start + flank.dist nt for as the novel exon
   novel <- pos[queryHits(dist), ][!annotated, ]
-  novel <- flank(novel, dist, start = FALSE)
-  genes <- unique(mcols(e)$gene_id)
+  novel <- flank(novel, flank.dist, start = FALSE)
 
-  mcols(novel) <- mcols(exons[!annotated])
+  mcols(novel) <- mcols(e[!annotated])
   e[!annotated] <- novel
 
   names(e) <- mcols(e)$gene_id
   score(e) <- 0
 
   exons.in.genes <- exons[mcols(exons)$gene_id %in% genes]
-  e.negative <- GenomicRanges::setdiff(exons.in.genes, acceptor.exons)
+  e.negative <- GenomicRanges::setdiff(exons.in.genes, e)
 
   list(
     positive=e,
@@ -63,102 +64,69 @@ select.exons <- function(pos, exons, flank.dist=150) {
   )
 }
 
-
-intron <- GRanges(opt$input)
-gtf <- rtracklayer::import.gff(opt$annotation)
+message('Loading input files.')
+intron <- GRanges(read.csv(opt$input)) # 'Baltica/leafcutter/leafcutter_junctions_annotated.csv'
+gtf <- rtracklayer::import.gff(opt$annotation) #  '/biodb/genomes/mus_musculus/GRCm38_90/GRCm38.90.gtf'
+seq <- FaFile(opt$sequence)
+intron <- split(intron, intron$contrast)
+names(intron) <- gsub(pattern = '\\.', replacement='_', x= make.names(names(intron)))
 
 exons <- gtf[gtf$type == 'exon']
 exons <- exons[!duplicated(exons)]
 # sequence.length <- quantile(width(exons), 0.5)
 
-fivepss <- ifelse(strand(intron) == '+', end(intron), start(intron))
+for (n in names(intron)) {
+  message("Computing exons for the 5' splice site for ", n)
+  x <- intron[[n]]
 
-acceptor <- GRanges(seqnames = seqnames(intron),
-                    IRanges(fivepss, width=1),
-                    strand = strand(intron))
+  fivepss <- ifelse(strand(x) == '+', end(x), start(x))
 
-acceptor.exons <- select.exons(acceptor, exons)
-rtracklayer::export(acceptor.exons['positive'], 'positive_exons.bed')
-rtracklayer::export(acceptor.exons['negative'], 'negative_exons.bed')
+  acceptor <- GRanges(seqnames = seqnames(x),
+                      IRanges(fivepss, width=1),
+                      strand = strand(x))
 
-threepss <- ifelse(strand(intron) == '+', start(intron), end(intron))
-donor <- GRanges(seqnames = seqnames(intron),
-                 IRanges(threepss, width=1),
-                 strand = strand(intron))
+  acceptor.exons <- select.exons(acceptor, exons)
+  # rtracklayer::export(acceptor.exons[['positive']],
+  #                     paste(n, 'acceptor_positive_exons.bed', sep = '_'))
+  # rtracklayer::export(acceptor.exons[['negative']],
+  #                     paste(n, 'acceptor_negative_exons.bed', sep='_'))
 
-donor.exons <- select.exons(donor, exons)
-rtracklayer::export(donor.exons['positive'], 'positive_exons.bed')
-rtracklayer::export(donor.exons['negative'], 'negative_exons.bed')
+  writeXStringSet(
+    getSeq(x = seq, acceptor.exons[['positive']]),
+    paste(n, 'acceptor_positive_exons.fa', sep='_'))
+
+  writeXStringSet(
+    getSeq(x = seq, acceptor.exons[['negative']]),
+    paste(n, 'acceptor_negative_exons.fa', sep='_'))
+
+
+  message("Computing exons for the 3' splice site ", n)
+  threepss <- ifelse(strand(x) == '+', start(x), end(x))
+  donor <- GRanges(seqnames = seqnames(x),
+                   IRanges(threepss, width=1),
+                   strand = strand(x))
+
+  donor.exons <- select.exons(donor, exons)
+  # rtracklayer::export(donor.exons[['positive']],
+  #                     paste(n, 'donor_positive_exons.bed', sep="_"))
+  # rtracklayer::export(donor.exons[['negative']],
+  #                     paste(n, 'donor_negative_exons.bed', sep="_"))
+
+  writeXStringSet(
+    getSeq(x = seq, donor.exons[['positive']]),
+    paste(n, 'donor_positive_exons.fa', sep='_'))
+
+  writeXStringSet(
+    getSeq(x = seq, donor.exons[['negative']]),
+    paste(n, 'donor_negative_exons.fa', sep='_'))
 
 
 
-
-
-# old #####
-
-# tst.dist <- distance(intron, exons[tst, ])
-# tst.dist
+}
 #
-# intron.foward <- intron[strand(intron) == "+"]
-# intron.reverse <- intron[strand(intron) == "-"]
-#
-# donor.exon.foward <- findOverlaps(
-#   resize(intron.foward, 1, fix='start'),
-#   resize(exons, 1, fix='end'),
-#   select = 'first')
-#
-# sum(is.na(donor.exon.foward))
-#
-# head(donor.exon.foward)
-#
-# tst <- split(
-#   subjectHits(donor.exon.foward),
-#   queryHits(donor.exon.foward))
-#
-# acceptor.exon.foward <- findOverlaps(
-#   resize(intron.foward, 1, fix='end'),
-#   resize(exons, 1, fix='start'))
-#
-# donor.exon.reverse <- findOverlaps(
-#   resize(intron.reverse, 1, fix='end'),
-#   resize(exons, 1, fix='start'))
-#
-# acceptor.exon.reverse <- findOverlaps(
-#   resize(intron.reverse, 1, fix='start'),
-#   resize(exons, 1, fix='end'))
-#
-# length(donor.exon.foward)
-# length(donor.exon.reverse)
-# length(acceptor.exon.foward)
-# length(acceptor.exon.reverse)
-#
-# # donor
-# donor <- exons[c(
-#   subjectHits(donor.exon.foward),
-#   subjectHits(donor.exon.reverse))]
-#
-# names(donor) <- c(
-#   intron.foward[ queryHits(donor.exon.foward), 'junction'],
-#   intron.reverse[ queryHits(donor.exon.reverse), 'junction'])
-# score(donor) <- 0
-#
-# rtracklayer::export(donor, 'Baltica/leafcutter/donor_exon.bed')
-#
-# # acceptor
-# acceptor <- exons[c(
-#   subjectHits(acceptor.exon.foward),
-#   subjectHits(acceptor.exon.reverse))]
-#
-# names(acceptor) <- c(
-#   intron.foward[ queryHits(acceptor.exon.foward), 'junction'],
-#   intron.reverse[ queryHits(acceptor.exon.reverse), 'junction'])
-# score(acceptor) <- 0
-#
-# rtracklayer::export(acceptor, 'Baltica/leafcutter/acceptor_exon.bed')
-#
-#
-# names(intron) <- intron$junction
-# score(intron) <- 0
-# rtracklayer::export(intron, 'Baltica/leafcutter/intron.bed')
-#
+# for f in `ls *positive_exons.fa`
+# do
+# n=${f//positive/negative}
+# sbatch --mem 32GB --partition long dreme-py3 -p $f -n $n -dna -norc -oc dreme/$f
+# done
 #
