@@ -54,10 +54,9 @@ rule create_decoder:
     run:
         with open(str(output), 'w') as fou:
             fou.write('sample.ID\tgroup.ID\n')
-            for k, v in d.items():
-                for i in v:
-                    fou.write('{}_{}\t{}\n'.format(
-                        *i, k))
+            for n in name:
+                fou.write('{}\t{}\n'.format(n, n.split('_')[0]))
+
 
 rule merge:
     input:
