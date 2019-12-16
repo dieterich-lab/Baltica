@@ -1,25 +1,30 @@
 #!/usr/bin/env Rscript
-library("optparse")
+suppressPackageStartupMessages({
+  library(tidyr)
+  library(stringr)
+  library(readr)
+  library(dplyr)
+    })
 
-option_list = list(
-  make_option(c("-f", "--file"), type="character", default=NULL,
-              help="dataset file name", metavar="character"),
-  make_option(c("-o", "--out"), type="character", default="out.txt",
-              help="output file name [default= %default]", metavar="character")
-);
+args = commandArgs(trailingOnly=TRUE)
 
-opt_parser = OptionParser(option_list=option_list);
-opt = parse_args(opt_parser);
-
-
-
-get.names <- function(x) {
-  sec.last.item(str_split(x, '/')[[1]])
+# test if there is at least one argument: if not, return an error
+if (length(args)==0) {
+  stop("At least one argument must be supplied (input file).n", call.=FALSE)
+} else if (length(args) > 1) {
+  stop("No more than 1 argument should be supplied.n", call.=FALSE)
+} else if (!dir.exists(args[1])){
+  stop("Input directory not found.n", call.=FALSE)
 }
 
+out.path <- args[1]
+
 # load the cluster significance files
-cluster_sig_file <-
-  Sys.glob('leafcutter/*/*_cluster_significance.txt')
+cluster_sig_file <- Sys.glob(
+  file.path(
+    out.path,
+    '/*/*_cluster_significance.txt')
+  )
 cluster_sig <- lapply(cluster_sig_file, read_tsv)
 names(cluster_sig) <- str_split(string = cluster_sig_file,
                                 pattern = '/',
@@ -27,7 +32,11 @@ names(cluster_sig) <- str_split(string = cluster_sig_file,
 cluster_sig <-  bind_rows(cluster_sig, .id = 'contrast')
 
 # load the effect sizes files
-effec_size_files <- Sys.glob('leafcutter/*/*effect_sizes.txt')
+effec_size_files <- Sys.glob(
+  file.path(
+    out.path,
+    '/*/*effect_sizes.txt')
+  )
 es <- lapply(effec_size_files, read_tsv)
 names(es) <- str_split(effec_size_files, '/', simplify = TRUE)[,  2]
 es <- bind_rows(es, .id = 'contrast')
@@ -48,4 +57,5 @@ df <- inner_join(es, cluster_sig, by = c('contrast', 'cluster'))
 df$chr <- gsub('chr', '', df$chr)
 df <- select(df, -c('clu', 'clu_number'))
 # create a unique junction column for each row
-write_csv(df, 'leafcutter_junctions.csv')
+message('Writting the parsed output to ', file.path(out.path, 'leafcutter_junctions.csv'))
+write_csv(df, file.path(out.path, 'leafcutter_junctions.csv'))
