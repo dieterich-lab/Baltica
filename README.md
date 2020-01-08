@@ -1,35 +1,62 @@
-# Baltica
+# baltica
 
-One stop solution for differential splicing analysis.
+Reconciling alternative splicing identification
 
+# Quick start
+
+`pip install baltica`  
+`baltica leafcutter ` 
+
+Baltica depends on python 3 (>=3.4) and snakemake, please see [Installation](Installation) for details
 
 ## Features
 
-- Document example usage of the different tools 
+Based on the results from different tools, baltica can:
 
-## Usage 
+- Document example usage, pros and cons  
+- Process and join the results  
+- Produce reports  
+- Detect, use data integration methods, events with clear biological relevance  
 
-## Documentation
+# Introduction 
 
-1) Installation  
-1) Configuration
-1) Executing 
-1) Analysis
-1) Contributing
+The increasing volume and quality in RNA-Sequencing data has reveled the importance of correct splicing to human health.
+Many computational methods to identify differential splicing from RNA-Seq experiments have been developed in the past 10
+ years. These methods can be classified in three categories:
+- Methods that compute exon usage  
+- Methods that estimate transcript abundance  
+- Methods that identify events from exon-exon junction reads   
 
-## Quickstart (LeafCutter example)
-[Instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) for SnakeMake installlation
+
+
+To understand differential splicing, due to genetic variation or mis-regulation, is critical to understand in detail
+ the molecular mechanism of disease, thus important for new . We take a pragmatic approach to this problem working with
+ the state of the art tools. The advantage 
+
+# Installation
 
 1) Clone and install Baltica:  
  ```bash
  git clone dieterich-lab/Baltica/  
  cd Baltica; pip install .
 ```
-2) [Install LeafCutter](#install-leafcutter)
-3) Within Baltica folder fill the template `config.yml` [Instructions](#Instruction_for_the_configuration_file)
-4) run baltica with ` baltica ` 
-## Installation guide
+1) [Install LeafCutter](#install-leafcutter)
+1) [Install Majiq](#install-majiq)
+1) [Install JunctionSeq](#install-junctionseq)
+1) [Install Whippet](#instal-whippet)
 
+The installation of every supported tools is optional. For detail on the SnakeMake installation, please see
+ [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html).
+
+# Configuration
+
+For project specific configuration, please see [Instructions](#Instruction_for_the_configuration_file)
+
+1) Executing 
+1) Analysis
+1) Contributing
+
+# Example Usage
 
 
 ### Install Leafcutter
@@ -50,7 +77,7 @@ Rscript -e "Sys.setenv(TAR = '/bin/tar'); devtools::install_github('davidaknowle
 ### Install Majiq
 
 Majiq installation requires an license that can be obtained here:
-[Acamdeic download](https://majiq.biociphers.org/app_download/).   
+[Academic download](https://majiq.biociphers.org/app_download/).   
 Majiq have multiple licenses that should reviewed at the developers website.
 
 ```bash
@@ -86,14 +113,20 @@ julia -e 'Pkg.add("Whippet"); using Whippet'
 ```
 
 ## Instruction for the configuration file
-
+TODO
 
 ### Citation
 TODO
 
-### Acknowledgements
+## Acknowledgements
 
-### Contribute 
-Contributions as feed-back and issues should be submitted at this project GitHub issue tracker TODO
+We acknowledge Tobias Jakobi for helping with infrastructure support. We thank the Dieterich lab at the Heidelberg 
+University Hospital for helpful discussions. 
 
+## Contribution
 
+Feedback or issue reports are welcome. Please submit via [the GitHub issue tracker](https://github.com/dieterich-lab/Baltica/issues)
+Please provide the following information while submitting issue reports:
+- Software and operation system versions
+- Command line call
+- If possible, also provide sample data so we can try to reproduce the error
