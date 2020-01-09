@@ -7,7 +7,7 @@ Reconciling alternative splicing identification
 `pip install baltica`  
 `baltica leafcutter ` 
 
-Baltica depends on python 3 (>=3.4) and snakemake, please see [Installation](Installation) for details
+Baltica depends on python 3 (>=3.4) and snakemake, please see [Installation](#installation) for details
 
 ## Features
 
@@ -16,7 +16,7 @@ Based on the results from different tools, baltica can:
 - Document example usage, pros and cons  
 - Process and join the results  
 - Produce reports  
-- Detect, use data integration methods, events with clear biological relevance  
+- Use data integration methods to detect consequences of AS  
 
 # Introduction 
 
@@ -27,11 +27,11 @@ Many computational methods to identify differential splicing from RNA-Seq experi
 - Methods that estimate transcript abundance  
 - Methods that identify events from exon-exon junction reads   
 
-
-
 To understand differential splicing, due to genetic variation or mis-regulation, is critical to understand in detail
  the molecular mechanism of disease, thus important for new . We take a pragmatic approach to this problem working with
- the state of the art tools. The advantage 
+ the state of the art tools for tools that identify events from exon-exon junction reads. This tools have a the 
+ advantage of identifying un-annotated exon-exon junctions, which pivotal for . Nonetheless, each tool has it's own pros and cons [TODO LINK]
+ and we suggest users to analyse the results from 2 or more tools.
 
 # Installation
 
@@ -104,7 +104,7 @@ conda activate junctionseq
 Rscript -e "BiocManager::install('JunctionSeq', version = '3.8')"
 ```
 
-### Instal Whippet
+### Install Whippet
 
 ```bash
 conda create -n whippet -c conda-forge julia=0.6 --yes 
