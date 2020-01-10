@@ -77,15 +77,63 @@ This section details on the implementation of each differential splicing workflo
 
 LeafCutter implements . This workflow can be explained by three tasks:
 
-1. Extracting intron from the alignments:
-Here   
-1. Intron clustering 
+1. Extracting intron from the alignments files:
+Here reads with the cigar string of type nMnNnM, where n are positive integers, are extracted from the alignments.
+These reads have only alignment matches in the overhang.
+ 
+1. Intron clustering:
+Here introns with at least `minclureads` (default: 30) reads and up to `maxintronlen` kb (default: 100000) are
+ clustered. The clustering procedure iteratively remove introns supported by less than `mincluratio` reads within a 
+ cluster.
+
+*NOTE*: Earlier versions of LeafCutter had problem with chromossome names different  from human  (chromossome) names in this step.   
+*NOTE*: By default, leafcutter clustering does not use strandness information. In Baltica we set the, over-riding 
+this default parameter. 
+
+
 1. Differential splicing analysis
 
 
 #### Software dependencies
 
+- python==2.7
+- base==3.5
+- samtools==1.9
+
+LeafCutter also depends on a series of R packages. 
+
 #### Parameters
+
+The following parameters where implemented in Baltica
+
+- `minclureads` (default: 30) 
+- `maxintronlen` (default: 100000)
+- `mincluratio` (default: 0.001)
+- `checkchrom` (default: TRUE)
+- `min_samples_per_group` (default: 2) 
+- `min_samples_per_intron` (default: 2) 
+- `fdr` (default: 0.05)
+
+#### Output
+
+The relevant output from leafcutter are `leafcutter_ds_cluster_significance.txt` and 
+`leafcutter_ds_cluster_significance.txt`, which are computed for each comparison.
+
+Column descripton:
+
+- `leafcutter_ds_cluster_significance.txt`:
+1. `cluster`: TODO check identifier on the format `{chromosome}:{intron_start}:{intron_end}`
+1. `Status`: whether this was tested or not
+1. `loglr`: log likelihood ratio between the null model and alternative 
+1. `df`: degrees of freedom, equal to the number of introns in the cluster minus one (assuming two groups)
+1. `p` unadjusted p-value dor the under the asymptotic Chi-squared distribution
+
+- `leafcutter_ds_effect_sizes.txt`:
+1. `intron`: intron identifier on the format `chromosome:intron_start:intron_end:cluster_id`
+1. `es`: TODO check fitted log effect size
+1. `{cond_1}`: fitted junction usage in condition `cond_1`
+1. `{cond_2}`: fitted junction usage in condition `cond_2`
+1. `DeltapPSI`: difference between usage in the two conditions  
 
 ## Majiq workflow
 
