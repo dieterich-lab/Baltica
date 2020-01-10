@@ -9,57 +9,49 @@ __copyright__ = "Copyright 2020, Thiago Britto Borges"
 __email__ = "tbrittoborges@uni-heidelberg.de"
 __license__ = "MIT"
 
+configfile: "config_differentiation.yaml"
+sample = config["samples"].keys()
+shell.prefix(config["qc_env"])
+
+
 rule all:
     input:
         expand("qc/fastqc/{sample}_fastqc.zip", sample=sample),
         "ref.bed12",
-        "qc/rseqc/gene_body_coverage.pdf",
-        "qc/rseqc/gene_body_coverage.pdf",
-        "qc/rseqc/inner_distance_{sample}.pdf",
-        "qc/rseqc/{sample}.GC_plot.pdf",
-        "qc/rseqc/{sample}.DupRate_plot.pdf",
-        "qc/rseqc/{sample}.splice_junction.pdf",
-        "qc/rseqc/{sample}.splice_events.pdf",
-        "qc/rseqc/{sample}.junctionSaturation_plot.pdf",
-        "qc/rseqc/{sample}_infer_experiment.txt",
-        "qc/rseqc/{sample}.bam_stat.txt",
-        "qc/resec/{sample}.read_distribution.txt"
-
-# from https://snakemake-wrappers.readthedocs.io/en/stable/wrappers/picard/markduplicates.html
-# rule mark_duplicates:
-#     input:
-#         "mapped/{sample}.bam"
-#     output:
-#         bam="dedup/{sample}.bam",
-#         metrics="dedup/{sample}.metrics.txt"
-#     log:
-#         "logs/picard/dedup/{sample}.log"
-#     params:
-#         "REMOVE_DUPLICATES=true"
-#     wrapper:
-#         "0.45.1/bio/picard/markduplicates"
-
-# java -Xmx8G -jar /biosw/picard-tools/2.5.0/picard.jar MarkDuplicates INPUT={input} OUTPUT={output.bam}  M={output.metrics}
+        "qc/rseqc/geneBodyCoverage.curves.pdf",
+        expand("qc/rseqc/{sample}.inner_distance_plot.pdf", sample=sample),
+        expand("qc/rseqc/{sample}.GC_plot.pdf", sample=sample),
+        expand("qc/rseqc/{sample}.DupRate_plot.pdf", sample=sample),
+        expand("qc/rseqc/{sample}.splice_junction.pdf", sample=sample),
+        expand("qc/rseqc/{sample}.splice_events.pdf", sample=sample),
+        expand("qc/rseqc/{sample}.junctionSaturation_plot.pdf", sample=sample),
+        expand("qc/rseqc/{sample}.infer_experiment.txt", sample=sample),
+        expand("qc/rseqc/{sample}.bam_stat.txt", sample=sample),
+        expand("qc/rseqc/{sample}.read_distribution.txt", sample=sample),
+        "qc/multiqc/multiqc_report.html"
 
 
-# from https://snakemake-wrappers.readthedocs.io/en/stable/wrappers/fastqc.html
+# from https://stackoverflow.com/a/50882104
 rule fastqc:
     input:
-        "reads/{sample}.fastq"
+        "mappings/{sample}.bam"
     output:
-        html="qc/fastqc/{sample}.html",
+        html="qc/fastqc/{sample}_fastqc.html",
         zip="qc/fastqc/{sample}_fastqc.zip"
-    params: ""
-    log:
-        "logs/fastqc/{sample}.log"
-    wrapper:
-        "0.45.1/bio/fastqc"
+    threads: 10
+    params:
+        prefix = "qc/fastqc/"
+    shell:
+        """
+        fastqc -t {threads} {input} -o {params.prefix}
+        """
+
 
 # conda install ucsc-gtftogenepred
 # conda install ucsc-genepredtobed
 rule ref_annotation_gtf_to_bed:
     input:
-        config.ref
+        config['ref']
     output:
         "ref.bed12"
     shell:
@@ -74,29 +66,30 @@ rule ref_annotation_gtf_to_bed:
 
 rule rseqc_gene_body_coverage:
     input:
-        bed = "ref.bed12",
-        bam = ','.join(expand("mapped/{sample}.bam", sample=sample))
+        bed = "ref.bed12"
     output:
-        "qc/rseqc/gene_body_coverage.pdf"
+        "qc/rseqc/geneBodyCoverage.curves.pdf"
+    params:
+        prefix = "qc/rseqc/"
     shell:
         """
-        geneBody_coverage.py -r {input.bed} -i {input.bam} -o {output}
+        geneBody_coverage.py -r {input.bed} -i mappings/ -o {params.prefix}
         """
 
 rule rseqc_inner_distance:
     input:
-        ref = "ref.bed12",
-        bam = "mapped/{sample}.bam"
+        bed = "ref.bed12",
+        bam = "mappings/{sample}.bam"
     output: "qc/rseqc/{sample}.inner_distance_plot.pdf"
     params:
         prefix = "qc/rseqc/{sample}"
     shell:
         """
-        inner_distance.py -i {input.bam} -o {params.prefix} -r {input.ref}
+        inner_distance.py -i {input.bam} -o {params.prefix} -r {input.bed}
         """
 
 rule rseqc_read_gc:
-    input: "mapped/{sample}.bam"
+    input: "mappings/{sample}.bam"
     output: "qc/rseqc/{sample}.GC_plot.pdf"
     params:
         prefix = "qc/rseqc/{sample}"
@@ -107,7 +100,7 @@ rule rseqc_read_gc:
 
 ### fix above output
 rule rseqc_read_duplication:
-    input: "mapped/{sample}.bam"
+    input: "mappings/{sample}.bam"
     output: "qc/rseqc/{sample}.DupRate_plot.pdf"
     params:
         prefix = "qc/rseqc/{sample}"
@@ -119,8 +112,8 @@ rule rseqc_read_duplication:
 
 rule rseqc_junction_annotation:
     input:
-        ref = "ref.bed12",
-        bam = "mapped/{sample}.bam"
+        bed = "ref.bed12",
+        bam = "mappings/{sample}.bam"
     output:
         "qc/rseqc/{sample}.splice_junction.pdf",
         "qc/rseqc/{sample}.splice_events.pdf"
@@ -128,13 +121,13 @@ rule rseqc_junction_annotation:
         prefix = "qc/rseqc/{sample}"
     shell:
         """
-        junction_annotation.py -i {input.bam} -r {input.bed} -o {output}
+        junction_annotation.py -i {input.bam} -r {input.bed} -o {params.prefix}
         """
 
 rule rseqc_junction_saturation:
     input:
-        ref = "ref.bed12",
-        bam = "mapped/{sample}.bam"
+        bed = "ref.bed12",
+        bam = "mappings/{sample}.bam"
     output: "qc/rseqc/{sample}.junctionSaturation_plot.pdf"
     params:
         prefix = "qc/rseqc/{sample}"
@@ -143,18 +136,18 @@ rule rseqc_junction_saturation:
         junction_saturation.py -i {input.bam} -r {input.bed} -o {params.prefix}
         """
 
-rule rseqc_infer_experiment:
+rule rseqc.infer_experiment:
     input:
-        ref = "ref.bed12",
-        bam = "mapped/{sample}.bam"
-    output: "qc/rseqc/{sample}_infer_experiment.txt"
+        bed = "ref.bed12",
+        bam = "mappings/{sample}.bam"
+    output: "qc/rseqc/{sample}.infer_experiment.txt"
     shell:
         """
-        infer_experiment.py -r {input.ref} -i {input.bam} > {output}
+        infer_experiment.py -r {input.bed} -i {input.bam} > {output}
         """
 
 rule rseqc_bam_stat:
-    input: "mapped/{sample}.bam"
+    input: "mappings/{sample}.bam",
     output: "qc/rseqc/{sample}.bam_stat.txt"
     shell:
         """
@@ -165,7 +158,7 @@ rule rseqc_bam_stat:
 rule read_distribution:
     input:
         bam = "mappings/{sample}.bam",
-        ref = "ref.bed12"
+        bed = "ref.bed12"
     output:
         "qc/rseqc/{sample}.read_distribution.txt"
     shell:
@@ -173,11 +166,12 @@ rule read_distribution:
         read_distribution.py -i {input.bam} -r {input.bed} &> {output}
         """
 
-# rule multiqc:
-#     input:
-
-#     output:
-#     shell:
-#         """
-#         multiqc --fullnames -d --dirs-depth 4 fastqc_new_fastq/ fastqc_mappings/ /prj/Niels_Gehring/newData_March_2018/workflow_spike_ins/mapping/ /prj/Niels_Gehring/newData_July_2019_CASC3/workflow/mapping/  /prj/Niels_Gehring/newData_July_2019_CASC3/workflow/rrna_free_reads/  /prj/Niels_Gehring/newData_March_2018/workflow_spike_ins/rrna_free_reads/ --force --verbose  --ignore "MATE"
-#         """
+rule multiqc:
+    input:
+        rules.all.input[:-1]
+    output:
+        "qc/multiqc/multiqc_report.html"
+    shell:
+        """
+        multiqc --fullnames -d --dirs-depth 1 qc/ -o qc/multiqc
+        """
