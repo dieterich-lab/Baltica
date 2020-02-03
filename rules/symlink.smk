@@ -1,3 +1,5 @@
+import os
+
 rule symlink:
     input:
         bam=expand("{SAMPLES}", SAMPLES=SAMPLES),
@@ -10,3 +12,7 @@ rule symlink:
             input.bam, input.bai, output.bam, output.bai):
             os.symlink(bam_in, bam_out)
             os.symlink(bai_in, bai_out)
+        try:
+            os.mkdir('logs/')
+        except os.OSError.FileExistsError:
+            pass
