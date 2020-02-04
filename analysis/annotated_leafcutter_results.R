@@ -27,7 +27,7 @@ option_list = list(
   )
 )
 
-opt = parse_args(OptionParser(option_list=option_list))
+opt <- parse_args(OptionParser(option_list=option_list))
 
 
 if (!file.exists(opt$input)) {
@@ -93,7 +93,7 @@ df[complete.cases(hits), 'annotated'] <- if_else(
   percentOverlap == 1, TRUE, FALSE)
 
 # Process events overlaps
-gr_on_gtf <- mergeByOverlaps(gr, genes)
+re
 
 df$junction <- as.character(str_glue_data(df, "{chr}:{start}-{end}:{strand}"))
 gr_on_gtf$gr <- as.character(gr_on_gtf$gr)
