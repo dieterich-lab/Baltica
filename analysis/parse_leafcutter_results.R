@@ -1,13 +1,13 @@
 #!/usr/bin/env Rscript
 suppressPackageStartupMessages({
-  library(tidyr)
-  library(stringr)
-  library(readr)
-  library(dplyr)
-  library(tidylog)
-})
+                                 library(tidyr)
+                                 library(stringr)
+                                 library(readr)
+                                 library(dplyr)
+                                 library(tidylog)
+                               })
 
-args = commandArgs(trailingOnly = TRUE)
+args <- commandArgs(trailingOnly = TRUE)
 
 # test if there is at least one argument: if not, return an error
 if (length(args) == 0) {
@@ -22,8 +22,7 @@ if (length(args) == 0) {
 out.path <- args[1]
 
 message("Loading the cluster significance files")
-cluster_sig_file <- Sys.glob(file.path(out.path,
-                                       '/*/*_cluster_significance.txt'))
+cluster_sig_file <- Sys.glob(file.path(out.path, '/*/*_cluster_significance.txt'))
 
 cluster_sig <- lapply(
   cluster_sig_file,
@@ -39,9 +38,11 @@ cluster_sig <- lapply(
   )
 )
 
-names(cluster_sig) <- str_split(string = cluster_sig_file,
-                                pattern = '/',
-                                simplify = TRUE)[, 2]
+file_names <- str_split(string = cluster_sig_file,
+                        pattern = '/',
+                        simplify = TRUE)
+
+names(cluster_sig) <- file_names[, ncol(file_names) - 1]
 cluster_sig <- bind_rows(cluster_sig, .id = 'contrast')
 
 message("Loading the effect sizes files")
@@ -58,27 +59,23 @@ es <- lapply(
   )
 )
 
-names(es) <- str_split(effec_size_files, '/', simplify = TRUE)[, 2]
+es_file_names <- str_split(string = effec_size_files, pattern = '/', simplify = TRUE)
+names(es) <- es_file_names[, ncol(es_file_names) - 1]
 es <- bind_rows(es, .id = 'contrast')
 
 # parse the intron column for merging
 es$intron <- str_replace_all(es$intron, '_', ':')
 
-intron <- read_delim(
-  es$intron,
-  delim = ':',
-  col_names = c('chr', 'start', 'end', 'clu', 'clu_number', 'strand')
+intron <- read_delim(es$intron, delim = ':', col_names = c('chr', 'start', 'end', 'clu', 'clu_number', 'strand')
 )
 es <- bind_cols(es, intron)
 # cluster will be the pivot for merging
-es$cluster <-
-  as.character(str_glue_data(es, "{chr}:{clu}_{clu_number}_{strand}"))
+es$cluster <-   as.character(str_glue_data(es, "{chr}:{clu}_{clu_number}_{strand}"))
 message("Merging tables")
 
 df <- inner_join(es, cluster_sig, by = c('contrast', 'cluster'))
 df$chr <- gsub('chr', '', df$chr)
 df <- select(df, -c('clu', 'clu_number'))
 # create a unique junction column for each row
-message('Writting the parsed output to ',
-        file.path(out.path, 'leafcutter_junctions.csv'))
+message('Writting the parsed output to ', file.path(out.path, 'leafcutter_junctions.csv'))
 write_csv(df, file.path(out.path, 'leafcutter_junctions.csv'))
