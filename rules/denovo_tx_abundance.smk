@@ -28,6 +28,10 @@ def rename_bam_to_fastq(x):
       break
   return [x.split("mapping")[0] + arg for arg in args.split()[1:3]]
 
+strand = {
+  'reverse': '--fr',
+  'foward': '--rf'}
+
 cond, rep = glob_wildcards("mappings/{cond}_{rep}.bam")
 
 name = config["samples"].keys()
@@ -50,7 +54,6 @@ rule all:
     expand("salmon/{sample}/quant.sf", sample=name),
     "denovoTx/merged/merged.fa",
     "denovoTx/salmon/salmon_index/",
-    # "salmon/quant.tsv.gz"
 
 
 rule merge_bam:
@@ -61,11 +64,12 @@ rule merge_bam:
     bam = "denovoTx/merged_bam/{group}.bam",
     bai = "denovoTx/merged_bam/{group}.bam.bai"
   conda:
-       "../envs/denovo_tx_abundance.yml"
+       srcdir("../envs/scallop.yml")
   threads:
     10
   wildcard_constraints:
     group = "|".join(cond)
+  envmodules: "samtools"
   shell:
     "samtools merge {output.bam} {input} --threads {threads};"
     "samtools index {output.bam} {output.bai} "
@@ -77,67 +81,55 @@ rule denovo_transcriptomics:
   output:
     "denovoTx/denovoTx/{group}.gtf"
   conda:
-       "../envs/denovo_tx_abundance.yml"
+       srcdir("../envs/scallop.yml")
   params:
-    library_type = "first"
-  wildcard_constraints:
-    group = "|".join(cond)
-  log:
-    "logs/denovoTx_{group}.log"
+    strandness = strand[config.get("strandness", "")],
+    min_junct_coverage = 3,
+    min_isoform_proportion = .1
+  wildcard_constraints: group = "|".join(cond)
+  log: "logs/denovoTx_{group}.log"
+  envmodules: "stringtie"
   shell:
-    "module load denovoTx "
-    "denovoTx -i {input} -o {output} "
-    "--library_type {params.library_type} "
-    "--min_flank_length 6 "
-    "--min_transcript_coverage 3 "
-    "--min_splice_bundary_hits 3 2> {log}"
+    "stringtie {input} -o {output} "
+    "-p {threads} "
+    " {params.strandness} "
+    "-j {params.min_junct_coverage} "
+    "-f {params.min_isoform_proportion} "
+    "2> {log} "
 
 
-# this step concatenates all denovo gtf to one so we can a unique index for salmon
+# Merge all denovo annotations
+# to use a single index for Salmon
 rule merge_gtf:
-  input:
-    expand("denovoTx/denovoTx/{cond}.gtf", cond=cond)
-  output:
-    "denovoTx/merged/merged.combined.gtf"
-  conda:
-       "../envs/denovo_tx_abundance.yml"
-  log:
-    "logs/gffcompare.log"
-  params:
-    gtf = config["ref"]
+  input: expand("denovoTx/denovoTx/{cond}.gtf", cond=cond)
+  output: "denovoTx/merged/merged.combined.gtf"
+  conda: srcdir("../envs/scallop.yml")
+  log: "logs/gffcompare.log"
+  params: gtf = config["ref"]
+  envmodules: "stringtie"
   shell:
     "gffcompare {input} -r {params.gtf} "
     "-R -V -o denovoTx/merged/merged 2>{log}"
 
 
 rule extract_sequences:
-  input:
-    rules.merge_gtf.output
-  output:
-    "denovoTx/merged/merged.fa"
-  conda:
-       "../envs/denovo_tx_abundance.yml"
-  log:
-    "logs/gffread.log"
-  params:
-    fasta = config["ref_fa"]
-  shell:
-    "gffread {input} -g {params.fasta} -w {output} 2>{log}"
+  input: rules.merge_gtf.output
+  output: "denovoTx/merged/merged.fa"
+  conda: srcdir("../envs/scallop.yml")
+  envmodules: "salmon"
+  log: "logs/gffread.log"
+  params: fasta = config["ref_fa"]
+  shell: "gffread {input} -g {params.fasta} -w {output} 2>{log}"
 
 
 rule salmon_index:
-  input:
-    rules.extract_sequences.output
-  output:
-    directory("denovoTx/salmon/salmon_index/")
-  conda:
-       "../envs/denovo_tx_abundance.yml"
-  threads:
-    10
-  log:
-    "logs/salmon_index.log"
-  shell :
-    "salmon index -t {input} -i {output} -p {threads} 2> {log}"
+  input: rules.extract_sequences.output
+  output: directory("denovoTx/salmon/salmon_index/")
+  conda: srcdir("../envs/scallop.yml")
+  envmodules: "salmon"
+  threads: 10
+  log: "logs/salmon_index.log"
+  shell: "salmon index -t {input} -i {output} -p {threads} 2> {log}"
 
 
 rule salmon_quant:
@@ -145,14 +137,11 @@ rule salmon_quant:
     r1 = lambda wildcards: FILES[wildcards.sample][0],
     r2 = lambda wildcards: FILES[wildcards.sample][1],
     index = "denovoTx/salmon/salmon_index/"
-  output:
-    "salmon/{sample}/quant.sf"
-  conda:
-       "../envs/denovo_tx_abundance.yml"
-  threads:
-    10
-  log:
-    "logs/{sample}_salmons_quant.log"
+  output: "salmon/{sample}/quant.sf"
+  conda: srcdir("../envs/scallop.yml")
+  envmodules: "salmon"
+  threads: 10
+  log: "logs/{sample}_salmons_quant.log"
   shell:
     "salmon quant -p {threads} -i {input.index} "
     "--libType A "
