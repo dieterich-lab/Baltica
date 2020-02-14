@@ -28,8 +28,8 @@ than the pairwise comparison, but this is currently unsupported by Baltica.
 
 - `ref`: reference transcriptome annotation in the GTF format
 
-- `ref_fa`: (optional) reference genome sequence in the fasta format. Only used for the `de novo transcriptomics` rules
-TODO link.
+- `ref_fa`: reference genome sequence in the fasta format. Used for the `de novo transcriptomics` rules
+. Also use for differential splicing with Majiq (for GC content correction) 
 
 - `*_env`: (optional) variable to activate environments, such as modules, conda environments or pyenvs. Only used if 
 the target software is *not* in path.
@@ -119,7 +119,7 @@ The following parameters where implemented in Baltica
 The relevant output from leafcutter are `leafcutter_ds_cluster_significance.txt` and 
 `leafcutter_ds_cluster_significance.txt`, which are computed for each comparison.
 
-Column descripton:
+Column description:
 
 - `leafcutter_ds_cluster_significance.txt`:
 1. `cluster`: TODO check identifier on the format `{chromosome}:{intron_start}:{intron_end}`
@@ -137,7 +137,19 @@ Column descripton:
 
 ## Majiq workflow
 
+Majiq workflow can be explained in three parts:
+1. Create the configuration file
+1. MAJIQ Builder - creates the Splice Graph database with exons and SJ from the RNA-Seq experimente
+1. PSI analysis - compute PSI and deltaPSI
+
+Majiq also provides a nice interactive visualization with the `voila view`. 
+
 ### Software dependencies
+
+python==3.5
+samtools
+
+We have a ste-by-step installation guide for user with problems.
 
 ### Parameters
 
@@ -146,8 +158,11 @@ Column descripton:
 - `strandness:` reverse
 - `read_len:` 100
 
+Extra parameters: Majiq support a series of parameters, and parameter settings can be critical
+please use `extra `
 
-## JunctionSeq worlflow
+
+## JunctionSeq workflow
 
 ### Software dependencies
 

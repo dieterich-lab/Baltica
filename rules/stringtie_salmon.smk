@@ -30,7 +30,6 @@ def rename_bam_to_fastq(x):
 
 cond, rep = glob_wildcards("mappings/{cond}_{rep}.bam")
 
-configfile: "config.yml"
 name = config["samples"].keys()
 raw_name = config["samples"].values()
 sample_path = config["sample_path"]
@@ -46,11 +45,11 @@ cond = set(cond)
 rule all:
   input:
     expand("mappings/{name}.bam", name=name),
-    expand("scallop/merged_bam/{group}.bam", group=cond),
-    expand("scallop/scallop/{group}.gtf", group=cond),
+    expand("denovoTx/merged_bam/{group}.bam", group=cond),
+    expand("denovoTx/denovoTx/{group}.gtf", group=cond),
     expand("salmon/{sample}/quant.sf", sample=name),
-    "scallop/merged/merged.fa",
-    "scallop/salmon/salmon_index/",
+    "denovoTx/merged/merged.fa",
+    "denovoTx/salmon/salmon_index/",
     # "salmon/quant.tsv.gz"
 
 
@@ -59,10 +58,10 @@ rule merge_bam:
     lambda wc:
       ["mappings/{}_{}.bam".format(*x) for x in d[wc.group]]
   output:
-    bam = "scallop/merged_bam/{group}.bam",
-    bai = "scallop/merged_bam/{group}.bam.bai"
+    bam = "denovoTx/merged_bam/{group}.bam",
+    bai = "denovoTx/merged_bam/{group}.bam.bai"
   conda:
-    "../envs/scallop.yml"
+       "../envs/denovo_tx_abundance.yml"
   threads:
     10
   wildcard_constraints:
@@ -74,20 +73,20 @@ rule merge_bam:
 
 rule denovo_transcriptomics:
   input:
-    "scallop/merged_bam/{group}.bam"
+    "denovoTx/merged_bam/{group}.bam"
   output:
-    "scallop/scallop/{group}.gtf"
+    "denovoTx/denovoTx/{group}.gtf"
   conda:
-    "../envs/scallop.yml"
+       "../envs/denovo_tx_abundance.yml"
   params:
     library_type = "first"
   wildcard_constraints:
     group = "|".join(cond)
   log:
-    "logs/scallop_{group}.log"
+    "logs/denovoTx_{group}.log"
   shell:
-    "module load scallop "
-    "scallop -i {input} -o {output} "
+    "module load denovoTx "
+    "denovoTx -i {input} -o {output} "
     "--library_type {params.library_type} "
     "--min_flank_length 6 "
     "--min_transcript_coverage 3 "
@@ -97,27 +96,27 @@ rule denovo_transcriptomics:
 # this step concatenates all denovo gtf to one so we can a unique index for salmon
 rule merge_gtf:
   input:
-    expand("scallop/scallop/{cond}.gtf", cond=cond)
+    expand("denovoTx/denovoTx/{cond}.gtf", cond=cond)
   output:
-    "scallop/merged/merged.combined.gtf"
+    "denovoTx/merged/merged.combined.gtf"
   conda:
-    "../envs/scallop.yml"
+       "../envs/denovo_tx_abundance.yml"
   log:
     "logs/gffcompare.log"
   params:
     gtf = config["ref"]
   shell:
     "gffcompare {input} -r {params.gtf} "
-    "-R -V -o scallop/merged/merged 2>{log}"
+    "-R -V -o denovoTx/merged/merged 2>{log}"
 
 
 rule extract_sequences:
   input:
     rules.merge_gtf.output
   output:
-    "scallop/merged/merged.fa"
+    "denovoTx/merged/merged.fa"
   conda:
-    "../envs/scallop.yml"
+       "../envs/denovo_tx_abundance.yml"
   log:
     "logs/gffread.log"
   params:
@@ -130,9 +129,9 @@ rule salmon_index:
   input:
     rules.extract_sequences.output
   output:
-    directory("scallop/salmon/salmon_index/")
+    directory("denovoTx/salmon/salmon_index/")
   conda:
-    "../envs/scallop.yml"
+       "../envs/denovo_tx_abundance.yml"
   threads:
     10
   log:
@@ -145,11 +144,11 @@ rule salmon_quant:
   input:
     r1 = lambda wildcards: FILES[wildcards.sample][0],
     r2 = lambda wildcards: FILES[wildcards.sample][1],
-    index = "scallop/salmon/salmon_index/"
+    index = "denovoTx/salmon/salmon_index/"
   output:
     "salmon/{sample}/quant.sf"
   conda:
-    "../envs/scallop.yml"
+       "../envs/denovo_tx_abundance.yml"
   threads:
     10
   log:
