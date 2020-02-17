@@ -15,15 +15,15 @@ import yaml
 from . import _program
 
 this_dir = os.path.abspath(os.path.dirname(__file__))
-parent_dir = os.path.join(this_dir, '..')
-cwd = os.getcwd()
+parent_dir = os.path.join(this_dir, '../..')
 
 args = tuple(sys.argv[1:])
 
 
 def main(_args=args):
     parser = argparse.ArgumentParser(prog=_program,
-                                     description='Baltica: One stop solution for differential splicing analysis.',
+                                     description='Baltica: workflows for differential junction usage and '
+                                                 'consequence analysis.',
                                      usage='''Baltica <workflow> <parameters> 
 Baltica: workflows for alternative splicing analysis.
 ''')
@@ -36,7 +36,7 @@ Baltica: workflows for alternative splicing analysis.
     _args = parser.parse_args(_args)
 
     # check if workflow file is readable
-    p = Path(__file__) / 'rules' / _args.workflow
+    p = Path(__file__).parent.parent / 'rules' / _args.workflow
     snakefile = p.with_suffix('.smk')
 
     if not os.path.exists(snakefile):
