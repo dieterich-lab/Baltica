@@ -24,11 +24,11 @@ args = tuple(sys.argv[1:])
 def main(_args=args):
     parser = argparse.ArgumentParser(prog=_program,
                                      description='Baltica: One stop solution for differential splicing analysis.',
-                                     usage='''baltica <workflow> <parameters> [<target>]
+                                     usage='''Baltica <workflow> <parameters> 
 Baltica: workflows for alternative splicing analysis.
 ''')
-    parser.add_argument('workflow', required=True)
-    parser.add_argument('program', choices=['leafcutter', 'majiq', 'junctionseq'], required=True)
+    parser.add_argument('workflow', choices=['leafcutter', 'majiq', 'junctionseq'])
+    parser.add_argument('params')
     parser.add_argument('-n', '--dry-run', action='store_true')
     parser.add_argument('-f', '--force', action='store_true')
     parser.add_argument('--use-conda', action='store_true')
@@ -40,8 +40,8 @@ Baltica: workflows for alternative splicing analysis.
     snakefile = p.with_suffix('.smk')
 
     if not os.path.exists(snakefile):
-        msg = 'Error: cannot find Snakefile for the selected program: {} \n'
-        sys.stderr.write(msg.format(snakefile))
+        msg = 'Error: cannot find Snakefile for the {} workflow: {} \n'
+        sys.stderr.write(msg.format(_args.workflow, snakefile))
         sys.exit(-1)
     # TODO check dependencies option
 
@@ -56,7 +56,7 @@ Baltica: workflows for alternative splicing analysis.
     with open(snakefile) as fin:
         workflow_info = yaml.safe_load(fin)
 
-    expected_par = set(parameters['general'] + parameters[_args.program])
+    expected_par = set(parameters['general'] + parameters[_args.workflow])
     missing = expected_par.difference(workflow_info.keys())
 
     if missing:

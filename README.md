@@ -1,17 +1,20 @@
-# baltica
+# Baltica
 
 Reconciling alternative splicing identification
 
 # Quick start
 
-`pip install baltica`  
-`baltica leafcutter ` 
+```bash
+pip install Baltica
+```
+
+`Baltica leafcutter ` 
 
 Baltica depends on python 3 (>=3.4) and snakemake, please see [Installation](#installation) for details
 
 ## Features
 
-Based on the results from different tools, baltica can:
+Based on the results from different tools, Baltica can:
 
 - Document example usage, pros and cons  
 - Process and join the results  
@@ -35,10 +38,16 @@ To understand differential splicing, due to genetic variation or mis-regulation,
 
 # Installation
 
+0) optional create a Baltica environment:
+
+```bash
+conda create --name Baltica python=3.6 snakemake PyYAML
+```
+
 1) Clone and install Baltica:  
  ```bash
- git clone dieterich-lab/Baltica/  
- cd Baltica; pip install .
+git clone dieterich-lab/Baltica/  
+cd Baltica; pip install .
 ```
 1) [Install LeafCutter](#install-leafcutter)
 1) [Install Majiq](#install-majiq)
