@@ -4,7 +4,12 @@ Created on 17:07 27/07/2018
 Snakemake de novo transcriptomics and transcript abundance estimation
 - Find the the fastq files used by DCC read alignments workflow
 - compute de novo tx with StringTie [doi:10.1038/nprot.2016.095]
-- use de novo annotation to compute transcript abundance
+- use de novo annotation to compute transcript abundance with salmon [https://doi.org/10.1038/nmeth.4197]
+
+If you use this workflow, please cite
+
+Patro, R., et al. "Salmon provides fast and bias-aware quantification of transcript expression. Nat Meth. 2017; 14 (4): 417–9."
+Pertea, Mihaela, et al. "Transcript-level expression analysis of RNA-seq experiments with HISAT, StringTie and Ballgown." Nature protocols 11.9 (2016): 1650.
 """
 __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2019, Dieterichlab"
@@ -13,30 +18,14 @@ __license__ = "MIT"
 
 from itertools import groupby
 from os.path import join
-
-
-def rename_bam_to_fastq(x):
-  # reads star log for input files
-  f = x.replace("Aligned.noS.bam", "Log.out")
-  # f.replace(f.name, 'Log.out'
-  with open(f) as fin:
-    for line in fin:
-      if line.startswith("##### Command Line:"):
-        line = next(fin)
-        break
-
-  for args in line.split("--"):
-    if args.startswith("readFilesIn"):
-      break
-  return [x.split("mapping")[0] + arg for arg in args.split()[1:3]]
-
+from .utils import rename_bam_to_fastq, extract_samples_replicates
 
 strand = {
   'reverse': '--fr',
   'foward': '--rf'}
 
-cond, rep = glob_wildcards("mappings/{cond}_{rep}.bam")
-
+workdir: config.get("path", ".")
+cond, rep = extract_samples_replicates(config["samples"].keys())
 name = config["samples"].keys()
 raw_name = config["samples"].values()
 sample_path = config["sample_path"]
@@ -58,37 +47,27 @@ rule all:
        "denovo_tx/salmon/salmon_index/",
 
 rule merge_bam:
-  input:
-       lambda wc:
-       ["mappings/{}_{}.bam".format(*x) for x in d[wc.group]]
-  output:
-        bam="denovo_tx/merged_bam/{group}.bam",
+  input: lambda wc: ["mappings/{}_{}.bam".format(*x) for x in d[wc.group]]
+  output: bam="denovo_tx/merged_bam/{group}.bam",
         bai="denovo_tx/merged_bam/{group}.bam.bai"
-  conda:
-       srcdir("../envs/scallop.yml")
-  threads:
-         10
-  wildcard_constraints:
-                      group="|".join(cond)
+  conda: srcdir("../envs/scallop.yml")
+  threads: 10
+  wildcard_constraints: group="|".join(cond)
   envmodules: "samtools"
-shell: "samtools merge {output.bam} {input} --threads {threads};" \
+  shell: "samtools merge {output.bam} {input} --threads {threads};" \
        "samtools index {output.bam} {output.bai} "
 
 rule denovo_transcriptomics:
-  input:
-       "denovo_tx/merged_bam/{group}.bam"
-  output:
-        "denovo_tx/denovo_tx/{group}.gtf"
-  conda:
-       srcdir("../envs/scallop.yml")
-  params:
-        strandness=strand[config.get("strandness", "")],
+  input: "denovo_tx/merged_bam/{group}.bam"
+  output: "denovo_tx/denovo_tx/{group}.gtf"
+  conda: srcdir("../envs/scallop.yml")
+  params: strandness=strand[config.get("strandness", "")],
         min_junct_coverage=3,
         min_isoform_proportion=.1
   wildcard_constraints: group="|".join(cond)
   log: "logs/denovo_tx_{group}.log"
   envmodules: "stringtie"
-shell: "stringtie {input} -o {output} " \
+  shell: "stringtie {input} -o {output} " \
        "-p {threads} " \
        " {params.strandness} " \
        "-j {params.min_junct_coverage} " \
@@ -104,8 +83,8 @@ rule merge_gtf:
   log: "logs/gffcompare.log"
   params: gtf=config["ref"]
   envmodules: "stringtie"
-shell: "gffcompare {input} -r {params.gtf} " \
-       "-R -V -o denovo_tx/merged/merged 2>{log}"
+  shell: "gffcompare {input} -r {params.gtf} " \
+      "-R -V -o denovo_tx/merged/merged 2>{log}"
 
 rule extract_sequences:
   input: rules.merge_gtf.output
@@ -114,7 +93,7 @@ rule extract_sequences:
   log: "logs/gffread.log"
   params: fasta=config["ref_fa"]
   envmodules: "gffread"
-shell: "gffread {input} -g {params.fasta} -w {output} 2>{log}"
+  shell: "gffread {input} -g {params.fasta} -w {output} 2>{log}"
 
 rule salmon_index:
   input: rules.extract_sequences.output
@@ -123,11 +102,10 @@ rule salmon_index:
   threads: 10
   log: "logs/salmon_index.log"
   envmodules: "salmon"
-shell: "salmon index -t {input} -i {output} -p {threads} 2> {log}"
+  shell: "salmon index -t {input} -i {output} -p {threads} 2> {log}"
 
 rule salmon_quant:
-  input:
-       r1=lambda wildcards: FILES[wildcards.sample][0],
+  input: r1=lambda wildcards: FILES[wildcards.sample][0],
        r2=lambda wildcards: FILES[wildcards.sample][1],
        index="denovo_tx/salmon/salmon_index/"
   output: "salmon/{sample}/quant.sf"
@@ -135,7 +113,7 @@ rule salmon_quant:
   threads: 10
   log: "logs/{sample}_salmons_quant.log"
   envmodules: "salmon"
-shell: "salmon quant -p {threads} -i {input.index} " \
+  shell: "salmon quant -p {threads} -i {input.index} " \
        "--libType A " \
        "-1 <(gunzip -c {input.r1}) " \
        "-2 <(gunzip -c {input.r2}) " \
