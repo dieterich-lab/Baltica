@@ -13,31 +13,22 @@ e11752.
     snakemake -s majiq.smk --configfile config.yml
 """
 __author__ = "Thiago Britto Borges"
-__copyright__ = "Copyright 2019, Dieterichlab"
+__copyright__ = "Copyright 2020, Dieterichlab"
 __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
-import re
+from .utils import natural_sort_key
 
-
-def natural_sort_key(s, _nsre=re.compile("([0-9]+)")):
-    return [int(text) if text.isdigit() else text.lower()
-            for text in _nsre.split(s)]
-
-
-def comparison(wc, index, mapping):
-    condition = wc.contrast.split("-vs-")[index]
-    return expand("majiq/{name}.majiq", name=mapping[condition])
-
-
+workdir: config.get("path", ".")
 name = config["samples"].keys()
-raw_name = config["samples"].values()
+sample = config["samples"].values()
 sample_path = config["sample_path"]
 contrasts = config["contrasts"]
 
 conditions = sorted(
     set([x.split("_")[0] for x in name]),
     key=natural_sort_key)
+
 mapping = {c: [x for x in name if x[: x.index("_")] == c]
            for c in conditions}
 
@@ -45,21 +36,18 @@ localrules: symlink, create_ini
 
 rule all:
     input:
+         "logs",
          "majiq/build.ini",
          expand("mappings/{name}.bam", name=name),
          expand("majiq/{name}.majiq", name=name),
-         expand("majiq/{contrast}/{contrast}.deltapsi.voila",
-                contrast=contrasts.keys()),
-         expand("majiq/voila/{contrast}_voila.tsv",
-                contrast=contrasts.keys())
+         expand("majiq/{contrast}/{contrast}.deltapsi.voila", contrast=contrasts.keys()),
+         expand("majiq/voila/{contrast}_voila.tsv", contrast=contrasts.keys())
 
 include: "symlink.smk"
 
 rule create_ini:
-    input:
-         expand("mappings/{name}.bam", name=name)
-    output:
-          "majiq/build.ini"
+    input: expand("mappings/{name}.bam", name=name)
+    output: "majiq/build.ini"
     run:
         lines = [
             "[info]",
@@ -78,56 +66,38 @@ rule create_ini:
             ini.writelines("\n".join(lines))
 
 rule gtf_to_gff:
-    output:
-          "majiq/ref.gff"
-    params:
-          ref=config["ref"],
+    output: "majiq/ref.gff"
+    params: ref=config["ref"],
           gtf2gff3_path=srcdir("scripts/gtf2gff3.pl")
-    shell:
-         "perl {params.gtf2gff3} {params.ref} > {output}"
+    shell: "perl {params.gtf2gff3} {params.ref} > {output}"
 
 rule build:
-    input:
-         ini="majiq/build.ini",
+    input: ini="majiq/build.ini",
          ref="majiq/ref.gff",
-    output:
-          expand("majiq/{name}.majiq", name=name),
+    output: expand("majiq/{name}.majiq", name=name),
           "majiq/splicegraph.sql"
-    conda:
-         "../envs/majiq.yml"
+    conda: "../envs/majiq.yml"
     threads: len(conditions)
-    shell:
-         " majiq build --conf {input.ini} --nproc {threads} "
-         " --output majiq/ {input.ref}"
+    shell: " majiq build --conf {input.ini} --nproc {threads} --output majiq/ {input.ref}"
 
 rule deltapsi:
-    input:
-         a=lambda wc: comparison(wc, 0, mapping),
+    input: a=lambda wc: comparison(wc, 0, mapping),
          b=lambda wc: comparison(wc, -1, mapping)
-    output:
-          "majiq/{contrast}/{contrast}.deltapsi.voila"
-    conda:
-         "../envs/majiq.yml"
-    threads:
-           10
-    params:
-          name=lambda wc: wc.contrast.replace("-vs-", " "),
+    output: "majiq/{contrast}/{contrast}.deltapsi.voila"
+    conda: "../envs/majiq.yml"
+    threads: 10
+    params: name=lambda wc: wc.contrast.replace("-vs-", " "),
           name2=lambda wc: wc.contrast.replace("-vs-", "_"),
           cont=lambda wc: wc.contrast
-    shell:
-         "majiq deltapsi -grp1 {input.a} -grp2 {input.b} "
-         "--nproc {threads} --output majiq/{params.cont} "
-         "--names {params.name} --default-prior; "
-         "mv majiq/{params.cont}/{params.name2}.deltapsi.voila "
-         "{output} "
+    shell: "majiq deltapsi -grp1 {input.a} -grp2 {input.b} " 
+           "--nproc {threads} --output majiq/{params.cont} "
+           "--names {params.name} --default-prior; "
+           "mv majiq/{params.cont}/{params.name2}.deltapsi.voila "
+           "{output} "
 
 rule voila:
-    input:
-         "majiq/splicegraph.sql",
+    input: "majiq/splicegraph.sql",
          "majiq/{contrast}/{contrast}.deltapsi.voila"
-    output:
-         "majiq/voila/{contrast}_voila.tsv"
-    params:
-         threshold = config.get('majiq_threshold', 0.1)
-    shell:
-         "voila tsv --threshold {params.threshold} {input} -f {output}"
+    output: "majiq/voila/{contrast}_voila.tsv"
+    params: threshold=config.get('majiq_threshold', 0.1)
+    shell: "voila tsv --threshold {params.threshold} {input} -f {output}"
