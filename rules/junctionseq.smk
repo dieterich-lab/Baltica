@@ -12,13 +12,15 @@ Hartley, Stephen W., and James C. Mullikin. "Detection and visualization of diff
     snakemake -s junctionseq.smk --configfile config.yml
 """
 __author__ = "Thiago Britto Borges"
-__copyright__ = "Copyright 2018, Dieterichlab"
+__copyright__ = "Copyright 2020, Dieterichlab"
 __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
 from itertools import groupby
 
+workdir: config.get("path", ".")
 name = config["samples"].keys()
+sample = config["samples"].values()
 gtf_path = config["ref"]
 comp_names = config["contrasts"].keys()
 
@@ -29,6 +31,7 @@ cond = set(cond)
 
 rule all:
     input:
+         "logs/",
          expand("junctionseq/rawCts/{name}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz",
                 name=name),
          "junctionseq/decoder.tab",
@@ -49,7 +52,7 @@ rule qc:
           max_read=config["read_len"],
     shell:
          "module load java qorts "
-         "qorts QC --stranded --maxReadLength {params.max_read} "
+         "qorts QC {params.strandness} --maxReadLength {params.max_read} "
          "--runFunctions writeKnownSplices,writeNovelSplices,writeSpliceExon "
          "{input} {params.gtf} {params.output} "
 

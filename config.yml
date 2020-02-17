@@ -18,13 +18,14 @@ ref:
 ref_fa:
   /path/GRCh38_90.fa
 
+strandness:
+  reverse
+
 # Majiq
 threshold:
   --threshold 0.1
 assembly:
   GRCh38_90
-strandness:
-  reverse
 read_len:
   100
 
