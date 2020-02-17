@@ -53,7 +53,7 @@ Baltica: workflows for alternative splicing analysis.
         "junctionseq": "stradness red_len".split()
     }
 
-    with open(snakefile) as fin:
+    with open(_args.params) as fin:
         workflow_info = yaml.safe_load(fin)
 
     expected_par = set(parameters['general'] + parameters[_args.workflow])
