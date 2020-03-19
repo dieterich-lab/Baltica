@@ -17,7 +17,16 @@ __copyright__ = "Copyright 2020, Dieterichlab"
 __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
-from .utils import natural_sort_key
+
+def comparison(wc, index, mapping):
+    condition = wc.contrast.split("-vs-")[index]
+    return expand("majiq/{name}.majiq", name=mapping[condition])
+
+
+def natural_sort_key(s, _nsre=re.compile("([0-9]+)")):
+    return [int(text) if text.isdigit() else text.lower()
+            for text in _nsre.split(s)]
+
 
 workdir: config.get("path", ".")
 name = config["samples"].keys()
@@ -68,8 +77,8 @@ rule create_ini:
 rule gtf_to_gff:
     output: "majiq/ref.gff"
     params: ref=config["ref"],
-          gtf2gff3_path=srcdir("scripts/gtf2gff3.pl")
-    shell: "perl {params.gtf2gff3} {params.ref} > {output}"
+            gtf2gff3_path=srcdir("../scripts/gtf2gff3.pl")
+    shell: "perl {params.gtf2gff3_path} {params.ref} > {output}"
 
 rule build:
     input: ini="majiq/build.ini",
