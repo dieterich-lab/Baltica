@@ -70,12 +70,12 @@ read_majiq_out <- function(x) {
 }
 
 res <- lapply(files, read_majiq_out)
-names(res) <-
-  lapply(files, function(x) {
-    tools::file_path_sans_ext(basename(x))
-  })
 
-names(res) <- sub('deltapsi', '', names(res))
+names(res) <- gsub(
+  x = files,
+  replacement = '\\1',
+  pattern = file.path(opt$input, '(.*)_voila.tsv')
+)
 
 res <- bind_rows(res, .id = 'comparison') %>%
   separate_rows(
@@ -88,6 +88,18 @@ res <- bind_rows(res, .id = 'comparison') %>%
     sep = ';',
     convert = T
   )
+# rank SJ by usage proportion
+ref_rank <- res %>%
+  group_by(comparison, LSV_ID) %>%
+  group_modify(~dense_rank(.$ref_E_PSI) %>%
+    tibble::enframe(value = 'ref_rank'))
+
+alt_rank <- res %>%
+  group_by(comparison, LSV_ID) %>%
+  group_modify(~dense_rank(.$alt_E_PSI) %>%
+    tibble::enframe(value = 'alt_rank'))
+
+ranks <- alt_rank %>% inner_join(ref_ranke)
 
 junction_pattern <- "(\\d+)-(\\d+)"
 junctions_coords <- str_match(
@@ -95,15 +107,15 @@ junctions_coords <- str_match(
 
 res['start'] <- junctions_coords[, 1]
 res['end'] <- junctions_coords[, 2]
-res <- res %>% select(comparison,
-                      chr,
-                      start,
-                      end,
-                      strand,
-                      P_dPSI_beq_per_LSV_junction,
-                      P_dPSI_leq_per_LSV_junction,
-                      E_dPSI_per_LSV_junction,
-                      Gene_Name,
-                      Gene_ID)
+res <- res %>% select(
+  comparison,
+  chr,
+  start,
+  end.
+  strand,
+  P_dPSI_beq_per_LSV_junction,
+  P_dPSI_leq_per_LSV_junction,
+  E_dPSI_per_LSV_junction,
+  LSV_ID)
 
 write_csv(res, opt$output)
