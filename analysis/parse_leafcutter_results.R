@@ -75,6 +75,21 @@ message("Merging tables")
 
 df <- inner_join(es, cluster_sig, by = c('contrast', 'cluster'))
 df$chr <- gsub('chr', '', df$chr)
+# add ranks for psi per cluster
+ref_rank <- df %>%
+    group_by(contrast, cluster) %>%
+    group_modify(~ dense_rank(.$ref_psi) %>%
+                 tibble::enframe(value = 'ref_rank'))
+
+alt_rank <- df %>%
+    group_by(contrast, cluster) %>%
+    group_modify(~ dense_rank(.$alt_psi) %>%
+    tibble::enframe(value = 'alt_rank'))
+
+ranks  <- alt_rank %>% inner_join(ref_rank)
+df$name <- ranks$name
+df <- df %>% left_join(ranks)
+
 df <- select(df, -c('clu', 'clu_number'))
 # create a unique junction column for each row
 message('Writting the parsed output to ', file.path(out.path, 'leafcutter_junctions.csv'))
