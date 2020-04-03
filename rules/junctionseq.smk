@@ -23,7 +23,6 @@ name = config["samples"].keys()
 sample = config["samples"].values()
 gtf_path = config["ref"]
 comp_names = config["contrasts"].keys()
-
 cond, rep = glob_wildcards("mappings/{cond}_{rep}.bam")
 d = {k: list(v) for k, v in groupby(
     sorted(zip(cond, rep)), key=lambda x: x[0])}
@@ -91,6 +90,8 @@ rule junctioseq_analysis:
     output:
           directory("junctionseq/analysis/")
     threads: 10
+    params:
+        configpath=workflow.overwrite_configfile
     shell:
          "module load R "
-         "Rscript scripts/junctionSeq.R {threads} "
+         "Rscript scripts/junctionSeq.R {threads} {params.configpath}"

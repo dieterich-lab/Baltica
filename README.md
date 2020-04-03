@@ -21,20 +21,6 @@ Based on the results from different tools, Baltica can:
 - Produce reports  
 - Use data integration methods to detect consequences of AS  
 
-# Introduction 
-
-The increasing volume and quality in RNA-Sequencing data has reveled the importance of correct splicing to human health.
-Many computational methods to identify differential splicing from RNA-Seq experiments have been developed in the past 10
- years. These methods can be classified in three categories:
-- Methods that compute exon usage  
-- Methods that estimate transcript abundance  
-- Methods that identify events from exon-exon junction reads   
-
-To understand differential splicing, due to genetic variation or mis-regulation, is critical to understand in detail
- the molecular mechanism of disease, thus important for new . We take a pragmatic approach to this problem working with
- the state of the art tools for tools that identify events from exon-exon junction reads. This tools have a the 
- advantage of identifying un-annotated exon-exon junctions, which pivotal for . Nonetheless, each tool has it's own pros and cons [TODO LINK]
- and we suggest users to analyse the results from 2 or more tools.
 
 # Installation
 
@@ -68,58 +54,123 @@ For project specific configuration, please see [Instructions](#Instruction_for_t
 # Example Usage
 
 
-### Install Leafcutter
+# Software requirement installation
+
+I recommend restarting the shell after each successful installation.
+
+## Using conda
+
+1) Install miniconda
+```
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh
+``` 
+Follow the instructions in the screen to finish your installation, which by default is at /home/username/miniconda3
+
+Make sure you initialize conda with `conda init`
+You can test whether your installation was successful or not by running `conda --version`
+and you may start a new shell instance. 
+
+2) Install SnakeMake
+As of today, SnakeMake requires python 3.6
+
+Install with 
+
+```bash
+conda install python=3.6 --yes
+conda install snakemake -c bioconda --yes
+```
+and test with `snakemake --version`
+
+In general, R packages do not play nicely with conda, but we still use it because it's flexibility and the ability to create isolated software environments.
+
+3) Install LeafCutter
+
+We can create conda enviroments with LeafCutter dependencies: 
+Leafcutter is distributed with an [Apache License 2.0](https://github.com/davidaknowles/leafcutter/blob/master/LICENSE)
+
 ```bash
 conda create --name leafcutter python=2.7 --yes
 conda activate leafcutter
-conda install -c bioconda samtools r-base=3.5 --yes
+conda install -c bioconda samtools r-base=3.6 --yes
+```
+Or simply `conda env create -f leafcutter-env.yml`
 
+And next, install it from github:
+```
 Rscript -e "install.packages('devtools', repos='http://cran.us.r-project.org')"
-Rscript -e "devtools::install_github('davidaknowles/leafcutter/leafcutter')"
 ```
-Note: if you are having problems with devtools trying using `gtar` instead of `tar`
+
+5) Install JunctionSeq
+
+
 ```bash
-Rscript -e "Sys.setenv(TAR = '/bin/tar'); devtools::install_github('davidaknowles/leafcutter/leafcutter')"
+conda env create -f leafcutter-env.yml
+Rscript -e "BiocManager::install('JunctionSeq',  INSTALL_opts = c('--no-lock'))"
 ```
 
-
-### Install Majiq
-
+4) Install Majiq
 Majiq installation requires an license that can be obtained here:
 [Academic download](https://majiq.biociphers.org/app_download/).   
 Majiq have multiple licenses that should reviewed at the developers website.
 
 ```bash
-conda create --name majiq python=3.6 pysam numpy cython --yes
-conda activate majiq
-conda install --yes h5py>=2.8.0 Flask==1.0.2 Flask-WTF==0.14.2 GitPython>=2.1.11 gunicorn==19.9.0 psutil>=5.4.8 h5py>=2.8.0 scipy>=1.1.0 
-env_path=$(dirname $(dirname $(which python)))
-python_ver=$(python --version 2>&1 | awk '{print substr($2,1,3)}')
-export HTSLIB_INCLUDE_DIR=$env_path/lib/python$python_ver/site-packages/pysam/include/htslib/
-export HTSLIB_LIBRARY_DIR=$env_path/lib/python$python_ver/site-packages/pysam/include/htslib/htslib/
+conda create --name majiq_env python=3.6 pysam numpy cython --yes -c bioconda
+conda activate majiq_env
+conda install --yes waitress==1.1.0 h5py>=2.8.0 Flask==1.0.2 Flask-WTF==0.14.2 GitPython>=2.1.11 gunicorn==19.9.0 psutil>=5.4.8 h5py>=2.8.0 scipy>=1.1.0
+conda install --yes -c bioconda htslib 
 
-pip install git+https://bitbucket.org/biociphers/majiq_stable.git#egg=majiq
+python3 -m pip install --upgrade pip
+python3 -m pip install git+https://bitbucket.org/biociphers/majiq_stable.git#egg=majiq
 ```
 
-For older versions of pip (python<3.6), you may have to use `--process-dependency-links` to install any package missing 
-from the conda installation. 
+6) Install Stringtie
+```bash
+conda env create -f stringtie-env.yml
+```
 
-### Install JunctionSeq
-Leafcutter is distributed with an [Apache License 2.0](https://github.com/davidaknowles/leafcutter/blob/master/LICENSE)
+## Using [Environment Modules](https://modules.readthedocs.io/en/latest/index.html) for requirements 
+
+1) LeafCutter
 
 ```bash
-conda create --name junctionseq qorts r-biocmanager -c bioconda -c conda-forge --yes  
-conda activate junctionseq
+module load R/3.6 samtools python/2.7
+
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+export R_LIBS_USER=$(realpath ~/R)
+
+Rscript -e "install.packages('devtools', repos='http://cran.us.r-project.org', dependencies=TRUE, INSTALL_opts = c('--no-lock'))"
+Rscript -e "Sys.setenv(TAR = '/bin/tar'); devtools::install_github('stan-dev/rstantools')"
+Rscript -e "Sys.setenv(TAR = '/bin/tar'); devtools::install_github('davidaknowles/leafcutter/leafcutter')"
+```
+
+This assumes perl is available. Now you can export this as a module named leafcutter
+
+2) JunctionSeq
+
+```bash
+module load R/3.6 qorts
+
+Rscript -e "install.packages('devtools', repos='http://cran.us.r-project.org', dependencies=TRUE, INSTALL_opts = c('--no-lock'))"
 Rscript -e "BiocManager::install('JunctionSeq', version = '3.8')"
 ```
+And export this 
 
-### Install Whippet
-
+3) Majiq
 ```bash
-conda create -n whippet -c conda-forge julia=0.6 --yes 
-conda activate whippet
-julia -e 'Pkg.add("Whippet"); using Whippet'
+module load python3
+wget "https://github.com/samtools/htslib/releases/download/1.9/htslib-1.9.tar.bz2"
+tar -xvf htslib-1.9.tar.bz2
+cd htslib-1.9/
+./configure && make && make prefix=~/htslib-1.9 install
+cd
+export HTSLIB_LIBRARY_DIR=~/htslib-1.9/lib
+export HTSLIB_INCLUDE_DIR=~/htslib-1.9/include
+python3 -m pip install -U wheel setuptools numpy GitPython Flask==1.0.2 waitress==1.1.0 scipy>=1.1.0 psutil>=5.4.8 h5py>=2.8.0 gunicorn==19.9.0 Flask-WTF==0.14.2 Werkzeug==0.16.0
+python3 -m pip install git+https://bitbucket.org/biociphers/majiq_stable.git#egg=majiq
 ```
+
 
 ## Instruction for the configuration file
 TODO
