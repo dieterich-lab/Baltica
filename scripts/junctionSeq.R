@@ -6,13 +6,10 @@
 suppressPackageStartupMessages(library(JunctionSeq))
 options(stringsAsFactors = FALSE);
 
-args <- commandArgs(TRUE)
-threads <- snakemake@config[["threads"]]
+threads <- 1 # snakemake@threads
 
 decoder <- read.table(
-  'junctionseq/decoder.tab', header = T, stringsAsFactors = F);
-
-config <- yaml::read_yaml(snakemake@params[['configpath']])
+  snakemake@input[["decoder"]], header = T, stringsAsFactors = F);
 
 sample.files <- paste0(
   "junctionseq/mergedOutput/",
@@ -20,32 +17,22 @@ sample.files <- paste0(
   "/QC.spliceJunctionAndExonCounts.withNovel.forJunctionSeq.txt.gz")
 message("Starting runJunctionSeqAnalyses (", date(), ")");
 
-for (x in names(config$contrasts)){
-    message("Starting runJunctionSeqAnalyses (", date(), ") for ", x)
+jscs <- runJunctionSeqAnalyses(
+  sample.files = sample.files,
+  sample.names = decoder$sample.ID,
+  condition = decoder$group.ID,
+  nCores = threads,
+  verbose = TRUE,
+  debug.mode = TRUE,
+  flat.gff.file = 'junctionseq/mergedOutput/withNovel.forJunctionSeq.gff.gz',
+  use.multigene.aggregates = TRUE,
+  analysis.type = "junctionsOnly");
 
-    subset_ <- decoder$group.ID %in% config$contrasts[[x]]
+prefix <- sub('sigGenes.results.txt.gz', '', snakemake@output[[1]])
+message("Starting writeCompleteResults (", date(), ")")
+writeCompleteResults(
+  jscs,
+  outfile.prefix = prefix,
+  save.jscs = TRUE)
 
-    jscs <- runJunctionSeqAnalyses(
-      sample.files = sample.files[subset_],
-      sample.names = decoder[subset_, 'sample.ID'],
-      condition = decoder[subset_, 'group.ID'],
-      nCores = threads,
-      verbose = TRUE,
-      debug.mode = TRUE,
-      flat.gff.file = 'junctionseq/mergedOutput/withNovel.forJunctionSeq.gff.gz',
-      use.multigene.aggregates = TRUE,
-      analysis.type = "junctionsOnly");
-
-    out_path <- file.path('junctionseq/analysis/', x)
-    dir.create(out_path)
-    message("Starting writeCompleteResults (", date(), ") for ", x)
-    writeCompleteResults(
-      jscs,
-      outfile.prefix = out_path,
-      save.bedTracks = FALSE,
-      save.jscs = TRUE)
-
-    message("Done with writeCompleteResults for ", x, (", date(),  ")")
-
-}
-message("Done with all comparisons (", date(), ")")
+message("Done with writeCompleteResults (", date(), ")")

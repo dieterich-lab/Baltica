@@ -1,4 +1,3 @@
-# -*- coding: utf-8
 """
 Created on 17:07 27/02/2018
 Snakemake workflow for JunctionSeq.
@@ -30,42 +29,50 @@ cond = set(cond)
 
 rule all:
     input:
-         "logs/",
-         expand("junctionseq/rawCts/{name}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz",
+        "logs/",
+        expand(
+            "junctionseq/rawCts/{name}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz",
                 name=name),
-         "junctionseq/decoder.tab",
-         "junctionseq/mergedOutput/withNovel.forJunctionSeq.gff.gz",
-         "junctionseq/analysis/"
+        expand("junctionseq/{comparison}_decoder.tab",
+            comparison=comp_names),
+        "junctionseq/mergedOutput/withNovel.forJunctionSeq.gff.gz",
+        expand("junctionseq/analysis/{comparison}_sigGenes.results.txt.gz",
+            comparison=comp_names)
+
 
 include: "symlink.smk"
 
 rule qc:
     input:
-         "mappings/{name}.bam"
+        "mappings/{name}.bam"
     output:
-          "junctionseq/rawCts/{name}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz"
+        "junctionseq/rawCts/{name}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz"
     params:
-          gtf=config["ref"],
-          output="junctionseq/rawCts/{name}/",
-          strandness="--stranded" if config.get("stradness") else "",
-          max_read=config["read_len"],
+        gtf=config["ref"],
+        output="junctionseq/rawCts/{name}/",
+        strandness="--stranded" if config.get("strandness") else "",
+        max_read=config["read_len"]
+    envmodules:
+        "java qorts "
     shell:
-         "module load java qorts "
          "qorts QC {params.strandness} --maxReadLength {params.max_read} "
          "--runFunctions writeKnownSplices,writeNovelSplices,writeSpliceExon "
          "{input} {params.gtf} {params.output} "
 
+
 rule create_decoder:
-    output: "junctionseq/decoder.tab"
+    output:
+        "junctionseq/{comparison}_decoder.tab"
     run:
-        with open(str(output), "w") as fou:
+        ref, alt = wildcards[0].split('-vs-') 
+        with open(str( output), "w") as fou:
             fou.write("sample.ID\tgroup.ID\n")
-            for n in name:
-                fou.write("{}\t{}\n".format(n, n.split("_")[0]))
+            for x in [*d[ref], *d[alt]]:
+                fou.write("{}_{}\t{}\n".format(x[0], x[1], x[0]))
+
 
 rule merge:
     input:
-         rules.create_decoder.output,
          expand("junctionseq/rawCts/{name}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz",
                 name=name)
     output: "junctionseq/mergedOutput/withNovel.forJunctionSeq.gff.gz"
@@ -73,8 +80,9 @@ rule merge:
           gtf=config["ref"],
           min_count=config.get("mincount", 6),
           strandness="--stranded" if config.get("stradness") else ""
+    envmodules:
+        "java qorts "
     shell:
-         "module load java qorts "
          "qorts mergeNovelSplices "
          "--minCount {params.min_count} "
          "{params.stranded} "
@@ -83,15 +91,13 @@ rule merge:
          "{params.gtf} "
          " junctionseq/mergedOutput/ "
 
+
 rule junctioseq_analysis:
     input:
-         rules.merge.output,
-         rules.create_decoder.output
+        reads= "junctionseq/mergedOutput/withNovel.forJunctionSeq.gff.gz",
+        decoder= "junctionseq/{comparison}_decoder.tab"
     output:
-          directory("junctionseq/analysis/")
+        "junctionseq/analysis/{comparison}_sigGenes.results.txt.gz"
     threads: 10
-    params:
-        configpath=workflow.overwrite_configfile
-    shell:
-         "module load R "
-         "Rscript scripts/junctionSeq.R {threads} {params.configpath}"
+    script:
+        "scripts/junctionSeq.R"

@@ -34,15 +34,26 @@ filter_hits_by_diff <- function(query, subject, max_start = 2, max_end = 2) {
 }
 
 
+filter_hits_by_reciprocal_fraction <- function(query, subject, cutoff = 0.95) {
+  stopifnot(is(query, "GRanges"))
+  stopifnot(is(subject, "GRanges"))
+  hits <- findOverlaps(query, subject)
+  query <- query[queryHits(hits)]
+  subject <- subject[subjectHits(hits)]
+  fraction_query_subject <- width(subject) / width(query)
+  fraction_subject_query <- width(query) / width(subject)
+
+  hits[fraction_query_subject >= cutoff & fraction_subject_query >= cutoff ]
+}
+
+
 #' Compute a set of introns from GTF files, tested with the ones produced by StringTie
 #'
 #' @param gtf_path path to to the gtf file
 #' @param read_gtf function to read the gtf_file
 #' @return a GRange that obj with the introns named by their parent trancripts
 #' @export
-get_introns <- function(gtf_path, read_gtf = rtracklayer::import.gff2) {
-  gtf <- import.gff2(gtf_path)
-  tx <- subset(gtf, type == 'transcript')
+get_introns <- function(gtf) {
   ex <- subset(gtf, type == 'exon')
   multi_ex <- table(ex$transcript_id) > 1
   ex <- subset(ex, mcols(ex)$transcript_id %in% names(multi_ex[multi_ex]))
@@ -55,3 +66,4 @@ get_introns <- function(gtf_path, read_gtf = rtracklayer::import.gff2) {
   introns <- unlist(introns)
   introns
 }
+
