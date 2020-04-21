@@ -42,13 +42,40 @@ add_containers <-  function (junctionseq_result){
 }
 
 read_junctionseq_out <- function(x) {
-  read_table2(
+
+  col_names  <- "featureID
+geneID
+countbinID
+testable
+status
+allZero
+baseMean
+baseVar
+dispBeforeSharing
+dispFitted
+dispersion
+pvalue
+padjust
+chr
+start
+end
+strand
+transcripts
+featureType
+padjust_noFilter
+log2FC_alt_vs_ref
+log2FCvst_alt_vs_ref
+expr_ref
+expr_alt
+geneWisePadj"
+
+  tmp <- read_table2(
     x,
+    col_names = strsplit(col_names, '\n')[[1]],
+    skip = 1,
     col_types = cols(
       .default = col_double(),
       chr = col_character(),
-      start = col_integer(),
-      end = col_integer(),
       featureID = col_character(),
       geneID = col_character(),
       countbinID = col_character(),
@@ -60,20 +87,22 @@ read_junctionseq_out <- function(x) {
       featureType = col_character()
     )
   )
+
+ tmp  %>% filter(tmp$testable == T )
+
 }
 
 message("Loading processing the table")
-
 res <- lapply(files, read_junctionseq_out)
 names(res) <- gsub(
   x = files,
   replacement = '\\1',
-  pattern = sub('\\*', '(.*)', files)
+  pattern = sub('\\*', '(.*)', opt$input )
 )
 
 res  <- lapply(res, add_containers)
 res <-  bind_rows(res, .id = 'comparison')
-
+message("Computing SJ ranks")
 res <- res %>%
     arrange(comparison, container, expr_ref) %>%
     group_by(comparison, container) %>%
