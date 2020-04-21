@@ -67,7 +67,7 @@ res <- lapply(files, read_junctionseq_out)
 names(res) <- gsub(
   x = files,
   replacement = '\\1',
-  pattern = sub('\\*', '(.*)', x)
+  pattern = sub('\\*', '(.*)', files)
 )
 
 res  <- lapply(res, add_containers)
