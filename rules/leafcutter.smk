@@ -65,9 +65,10 @@ rule concatenate:
         comp = output.junc.split("/")[1]
         cond_a, cond_b = comp.split("-vs-")
         with open(output.junc, 'w') as file_out:
+            work_path = Path(config.get("path", "."))
             for n in name:
                 if n.startswith(cond_a) or n.startswith(cond_b):
-                    file_out.write("leafcutter/{}.junc\n".format(n))
+                    file_out.write(str(work_path / "leafcutter/{}.junc\n".format(n)))
 
         with open(output.test, 'w') as file_out:
             for n in name:
@@ -84,10 +85,11 @@ rule intron_clustering:
           l=500000,
           prefix="leafcutter/{comp_names}/{comp_names}",
           n="{comp_names}",
-          strand="--strand True" if config.get("strandness") else ""
+          strand="--strand True" if config.get("strandness") else "",
+          script_path=srcdir("../scripts/leafcutter_cluster.py")
     output: "leafcutter/{comp_names}/{comp_names}_perind_numers.counts.gz"
     shell: """
-         python2 scripts/leafcutter_cluster.py \
+         python2  {params.script_path} \
          -j {input} -m {params.m} -o {params.prefix} -l {params.l} {params.strand}
          rm *{params.n}.sorted.gz
          """
