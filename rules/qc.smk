@@ -49,7 +49,7 @@ rule ref_annotation_gtf_to_bed:
         """
         gtfToGenePred {input} temp.genepred
         genePredToBed temp.genepred {output}
-        rm temp.genepred gtfToGenePred genePredToBed
+        rm temp.genepred
         """
 
 rule rseqc_gene_body_coverage:
