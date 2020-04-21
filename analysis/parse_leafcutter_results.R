@@ -1,11 +1,13 @@
 #!/usr/bin/env Rscript
 suppressPackageStartupMessages({
-                                 library(tidyr)
-                                 library(stringr)
-                                 library(readr)
-                                 library(dplyr)
-                                 library(tidylog)
-                               })
+  library(tidyr)
+  library(stringr)
+  library(readr)
+  library(dplyr)
+  library(optparse)
+  library(GenomicRanges)
+})
+
 
 args <- commandArgs(trailingOnly = TRUE)
 
@@ -43,7 +45,7 @@ file_names <- str_split(string = cluster_sig_file,
                         simplify = TRUE)
 
 names(cluster_sig) <- file_names[, ncol(file_names) - 1]
-cluster_sig <- bind_rows(cluster_sig, .id = 'contrast')
+cluster_sig <- bind_rows(cluster_sig, .id = 'comparison')
 
 message("Loading the effect sizes files")
 effec_size_files <- Sys.glob(file.path(out.path,
@@ -61,7 +63,7 @@ es <- lapply(
 
 es_file_names <- str_split(string = effec_size_files, pattern = '/', simplify = TRUE)
 names(es) <- es_file_names[, ncol(es_file_names) - 1]
-es <- bind_rows(es, .id = 'contrast')
+es <- bind_rows(es, .id = 'comparison')
 
 # parse the intron column for merging
 es$intron <- str_replace_all(es$intron, '_', ':')
@@ -70,27 +72,23 @@ intron <- read_delim(es$intron, delim = ':', col_names = c('chr', 'start', 'end'
 )
 es <- bind_cols(es, intron)
 # cluster will be the pivot for merging
-es$cluster <-   as.character(str_glue_data(es, "{chr}:{clu}_{clu_number}_{strand}"))
+es$cluster <- as.character(str_glue_data(es, "{chr}:{clu}_{clu_number}_{strand}"))
 message("Merging tables")
 
-df <- inner_join(es, cluster_sig, by = c('contrast', 'cluster'))
-df$chr <- gsub('chr', '', df$chr)
+res <- inner_join(es, cluster_sig, by = c('comparison', 'cluster'))
+res$chr <- gsub('chr', '', res$chr)
 # add ranks for psi per cluster
-ref_rank <- df %>%
-    group_by(contrast, cluster) %>%
-    group_modify(~ dense_rank(.$ref_psi) %>%
-                 tibble::enframe(value = 'ref_rank'))
+res <- res %>%
+  arrange(contrast, cluster, ref_psi) %>%
+  group_by(contrast, cluster) %>%
+  mutate(ref_rank = rank(ref_psi, ties.method = "average")) %>%
+  ungroup() %>%
+  arrange(contrast, cluster, alt_psi) %>%
+  group_by(contrast, cluster) %>%
+  mutate(alt_rank = rank(alt_psi, ties.method = "average")) %>%
+  ungroup()
 
-alt_rank <- df %>%
-    group_by(contrast, cluster) %>%
-    group_modify(~ dense_rank(.$alt_psi) %>%
-    tibble::enframe(value = 'alt_rank'))
-
-ranks  <- alt_rank %>% inner_join(ref_rank)
-df$name <- ranks$name
-df <- df %>% left_join(ranks)
-
-df <- select(df, -c('clu', 'clu_number'))
+res <- select(res, -c('clu', 'clu_number'))
 # create a unique junction column for each row
 message('Writting the parsed output to ', file.path(out.path, 'leafcutter_junctions.csv'))
-write_csv(df, file.path(out.path, 'leafcutter_junctions.csv'))
+write_csv(res, file.path(out.path, 'leafcutter_junctions.csv'))

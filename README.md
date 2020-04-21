@@ -98,14 +98,17 @@ Or simply `conda env create -f leafcutter-env.yml`
 
 And next, install it from github:
 ```
-Rscript -e "install.packages('devtools', repos='http://cran.us.r-project.org')"
+Rscript -e "install.packages('devtools', repos='http://cran.us.r-project.org', dependencies=TRUE, INSTALL_opts = c('--no-lock'))"
+Rscript -e "Sys.setenv(TAR = '/bin/tar'); devtools::install_github('stan-dev/rstantools')"
+Rscript -e "Sys.setenv(TAR = '/bin/tar'); devtools::install_github('davidaknowles/leafcutter/leafcutter')"
+
 ```
 
 5) Install JunctionSeq
 
 
 ```bash
-conda env create -f leafcutter-env.yml
+conda env create -f junctionseq-env.yml
 Rscript -e "BiocManager::install('JunctionSeq',  INSTALL_opts = c('--no-lock'))"
 ```
 

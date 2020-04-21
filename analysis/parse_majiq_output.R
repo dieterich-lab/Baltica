@@ -1,12 +1,12 @@
 #!/usr/bin/env Rscript
 suppressPackageStartupMessages({
-                                 library(tidyr)
-                                 library(stringr)
-                                 library(readr)
-                                 library(dplyr)
-                                 library(tidylog)
-                                 library(optparse)
-                               })
+  library(tidyr)
+  library(stringr)
+  library(readr)
+  library(dplyr)
+  library(optparse)
+})
+
 
 
 option_list <- list(
@@ -14,14 +14,14 @@ option_list <- list(
     c("-i", "--input"),
     type = "character",
     default = "majiq/voila/*.tsv",
-    help = "Path to Majiq result files",
+    help = "Path with glob character to Majiq result files. [default %default]",
     metavar = "character"
   ),
   make_option(
     c("-o", "--output"),
     type = "character",
     default = "majiq/majiq_junctions.csv",
-    help = "Output file",
+    help = "Path to output file [default %default]",
     metavar = "character"
   )
 )
@@ -31,7 +31,9 @@ opt <- parse_args(OptionParser(option_list = option_list))
 files <- Sys.glob(paste0(opt$input, '/*.tsv'))
 
 # rename column names from majiq result due to the presence of spaces
-col_names <- "Gene_Name
+
+read_majiq_out <- function(x) {
+  col_names <- "Gene_Name
 Gene_ID
 LSV_ID
 E_dPSI_per_LSV_junction
@@ -53,11 +55,11 @@ Exons_coords
 IR_coords
 UCSC_LSV_Link"
 
-read_majiq_out <- function(x) {
   read_tsv(
     x,
     col_names = strsplit(col_names, '\n')[[1]],
     comment = '#',
+    skip = 1,
     cols(
       .default = col_character(),
       A5SS = col_logical(),
@@ -89,17 +91,16 @@ res <- bind_rows(res, .id = 'comparison') %>%
     convert = T
   )
 # rank SJ by usage proportion
-ref_rank <- res %>%
+res <- res %>%
+  arrange(comparison, LSV_ID, ref_E_PSI) %>%
   group_by(comparison, LSV_ID) %>%
-  group_modify(~dense_rank(.$ref_E_PSI) %>%
-    tibble::enframe(value = 'ref_rank'))
-
-alt_rank <- res %>%
+  mutate(ref_rank = rank(ref_E_PSI, ties.method = "average")) %>%
+  ungroup() %>%
+  arrange(comparison, LSV_ID, alt_E_PSI) %>%
   group_by(comparison, LSV_ID) %>%
-  group_modify(~dense_rank(.$alt_E_PSI) %>%
-    tibble::enframe(value = 'alt_rank'))
+  mutate(alt_rank = rank(alt_E_PSI, ties.method = "average")) %>%
+  ungroup()
 
-ranks <- alt_rank %>% inner_join(ref_ranke)
 
 junction_pattern <- "(\\d+)-(\\d+)"
 junctions_coords <- str_match(
@@ -107,15 +108,20 @@ junctions_coords <- str_match(
 
 res['start'] <- junctions_coords[, 1]
 res['end'] <- junctions_coords[, 2]
-res <- res %>% select(
-  comparison,
+res <- select(res, c(
   chr,
   start,
-  end.
-  strand,
+  end,
+  comparison,
   P_dPSI_beq_per_LSV_junction,
+  strand,
+  LSV_ID,
   P_dPSI_leq_per_LSV_junction,
   E_dPSI_per_LSV_junction,
-  LSV_ID)
+  ref_E_PSI,
+  alt_E_PSI,
+  ref_rank,
+  alt_rank)
+)
 
 write_csv(res, opt$output)
