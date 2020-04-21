@@ -5,6 +5,7 @@ suppressPackageStartupMessages({
   library(readr)
   library(dplyr)
   library(optparse)
+  library(GenomicRanges)
 })
 
 option_list <- list(
