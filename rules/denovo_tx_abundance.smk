@@ -18,7 +18,37 @@ __license__ = "MIT"
 
 from itertools import groupby
 from os.path import join
-from .utils import rename_bam_to_fastq, extract_samples_replicates
+import re
+
+def extract_samples_replicates(samples, _pattern=re.compile('^(.+)_(.+)$')):
+    """
+    Extract pairs of condition and replicate name from sample files
+
+    :param str _pattern: pattern to . Default uses {condition}_{replicate} template
+    :param list samples:
+    :return:
+    :rtype: list
+    """
+    return list(zip(*[re.match(_pattern, x).groups() for x in samples]))
+
+
+def rename_bam_to_fastq(x):
+    # reads star log for input and output files
+    f = x.replace("Aligned.noS.bam", "Log.out")
+    with open(f) as fin:
+        for line in fin:
+            if line.startswith("##### Command Line:"):
+                line = next(fin)
+                break
+
+    params = dict(
+      [arg.split(maxsplit=1) for arg in  line.split(' --')[1:]])
+
+    in_ =  params['readFilesIn']
+    out_ = params['outFileNamePrefix']
+    # process log, input and output files to get the realpath for fastq
+    return [f.split(out_.split('/')[0])[0] + x for x in in_.split()]
+
 
 strand = {
   'reverse': '--fr',
@@ -61,7 +91,7 @@ rule denovo_transcriptomics:
   input: "denovo_tx/merged_bam/{group}.bam"
   output: "denovo_tx/denovo_tx/{group}.gtf"
   conda: srcdir("../envs/scallop.yml")
-  params: strandness=strand[config.get("strandness", "")],
+  params: strandness=strand.get(config.get("strandness", ""), ""),
         min_junct_coverage=3,
         min_isoform_proportion=.1
   wildcard_constraints: group="|".join(cond)
