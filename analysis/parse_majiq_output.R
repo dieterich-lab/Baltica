@@ -7,13 +7,11 @@ suppressPackageStartupMessages({
   library(optparse)
 })
 
-
-
 option_list <- list(
   make_option(
     c("-i", "--input"),
     type = "character",
-    default = "majiq/voila/*.tsv",
+    default = "majiq/voila/*_voila.tsv",
     help = "Path with glob character to Majiq result files. [default %default]",
     metavar = "character"
   ),
@@ -23,15 +21,20 @@ option_list <- list(
     default = "majiq/majiq_junctions.csv",
     help = "Path to output file [default %default]",
     metavar = "character"
+  ),
+  make_option(
+    c("-c", "--cutoff"),
+    type = "double",
+    default = 0.90,
+    help = "Discard junction with probability threshold < than --cutoff [default %default]"
   )
 )
 
 opt <- parse_args(OptionParser(option_list = option_list))
 
-files <- Sys.glob(paste0(opt$input, '/*.tsv'))
+files <- Sys.glob(opt$input)
 
 # rename column names from majiq result due to the presence of spaces
-
 read_majiq_out <- function(x) {
   col_names <- "Gene_Name
 Gene_ID
@@ -76,7 +79,7 @@ res <- lapply(files, read_majiq_out)
 names(res) <- gsub(
   x = files,
   replacement = '\\1',
-  pattern = file.path(opt$input, '(.*)_voila.tsv')
+  pattern = sub(x=opt$input, pattern='\\*', replacement = '(.*)'),
 )
 
 res <- bind_rows(res, .id = 'comparison') %>%
@@ -90,15 +93,11 @@ res <- bind_rows(res, .id = 'comparison') %>%
     sep = ';',
     convert = T
   )
-# rank SJ by usage proportion
+# flag canonical SJ
 res <- res %>%
   arrange(comparison, LSV_ID, ref_E_PSI) %>%
   group_by(comparison, LSV_ID) %>%
-  mutate(ref_rank = rank(ref_E_PSI, ties.method = "average")) %>%
-  ungroup() %>%
-  arrange(comparison, LSV_ID, alt_E_PSI) %>%
-  group_by(comparison, LSV_ID) %>%
-  mutate(alt_rank = rank(alt_E_PSI, ties.method = "average")) %>%
+  mutate(is_canonical = row_number() == 1) %>%
   ungroup()
 
 
@@ -108,6 +107,8 @@ junctions_coords <- str_match(
 
 res['start'] <- junctions_coords[, 1]
 res['end'] <- junctions_coords[, 2]
+
+message('Number of junctions output by Majiq', nrow(res))
 res <- select(res, c(
   chr,
   start,
@@ -120,8 +121,11 @@ res <- select(res, c(
   E_dPSI_per_LSV_junction,
   ref_E_PSI,
   alt_E_PSI,
-  ref_rank,
-  alt_rank)
-)
+  is_canonical)
+) %>%
+  filter(P_dPSI_beq_per_LSV_junction > opt$cutoff) %>%
+  mutate(method = 'majiq')
+
+message('Number of junctions after filtering', nrow(res))
 
 write_csv(res, opt$output)

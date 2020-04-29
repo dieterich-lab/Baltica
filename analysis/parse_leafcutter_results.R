@@ -8,7 +8,6 @@ suppressPackageStartupMessages({
   library(GenomicRanges)
 })
 
-
 args <- commandArgs(trailingOnly = TRUE)
 
 # test if there is at least one argument: if not, return an error
@@ -53,6 +52,8 @@ effec_size_files <- Sys.glob(file.path(out.path,
 es <- lapply(
   effec_size_files,
   read_tsv,
+  col_names = c('intron', 'logef', 'ref_psi', 'alt_psi', 'deltapsi'),
+  skip = 1,
   col_types = c(
     .default = col_double(),
     intron = col_character(),
@@ -60,7 +61,6 @@ es <- lapply(
     deltapsi = col_double()
   )
 )
-
 es_file_names <- str_split(string = effec_size_files, pattern = '/', simplify = TRUE)
 names(es) <- es_file_names[, ncol(es_file_names) - 1]
 es <- bind_rows(es, .id = 'comparison')
@@ -79,16 +79,17 @@ res <- inner_join(es, cluster_sig, by = c('comparison', 'cluster'))
 res$chr <- gsub('chr', '', res$chr)
 # add ranks for psi per cluster
 res <- res %>%
-  arrange(contrast, cluster, ref_psi) %>%
-  group_by(contrast, cluster) %>%
-  mutate(ref_rank = rank(ref_psi, ties.method = "average")) %>%
-  ungroup() %>%
-  arrange(contrast, cluster, alt_psi) %>%
-  group_by(contrast, cluster) %>%
-  mutate(alt_rank = rank(alt_psi, ties.method = "average")) %>%
+  arrange(comparison, cluster, ref_psi) %>%
+  group_by(comparison, cluster) %>%
+  mutate(is_canonical = row_number() == 1) %>%
   ungroup()
 
 res <- select(res, -c('clu', 'clu_number'))
 # create a unique junction column for each row
+nrow(res)
+res <- res %>%
+  filter(p.adjust < 0.05) %>%
+  mutate(method = 'LeafCutter')
+nrow(res)
 message('Writting the parsed output to ', file.path(out.path, 'leafcutter_junctions.csv'))
 write_csv(res, file.path(out.path, 'leafcutter_junctions.csv'))

@@ -23,6 +23,12 @@ option_list <- list(
     help = "Path to output file [default %default]",
     metavar = "character"
   )
+  make_option(
+    c("-c", "--cutoff"),
+    type = "double",
+    default = 0.05,
+    help = "Discard junctions not called at the cutoff of [default %default]"
+  )
 )
 
 opt <- parse_args(OptionParser(option_list = option_list))
@@ -103,17 +109,16 @@ names(res) <- gsub(
 res  <- lapply(res, add_containers)
 res <-  bind_rows(res, .id = 'comparison')
 message("Computing SJ ranks")
-res <- res %>%
-    arrange(comparison, container, expr_ref) %>%
-    group_by(comparison, container) %>%
-    mutate(ref_rank = rank(expr_ref, ties.method = "average")) %>%
-    ungroup() %>%
-    arrange(comparison, container, expr_alt) %>%
-    group_by(comparison, container) %>%
-    mutate(alt_rank = rank(expr_alt, ties.method = "average")) %>%
-    ungroup()
 
-res <- res %>% select(
+res <- res %>%
+  arrange(comparison, container, expr_ref) %>%
+  group_by(comparison, expr_ref) %>%
+  mutate(is_canonical = row_number() == 1) %>%
+  ungroup()
+
+message('Number of junctions output by JunctionSeq', nrow(res))
+res <- res %>%
+  select(
     comparison,
     chr,
     start,
@@ -127,6 +132,8 @@ res <- res %>% select(
     expr_ref,
     expr_alt,
     ref_rank,
-    alt_rank)
-
+    alt_rank) %>%
+  filter(padjust < opt$cutoff) %>%
+  mutate(method = 'JunctionSeq')
+message('Number of junctions after filtering', nrow(res))
 write_csv(res, opt$output)
