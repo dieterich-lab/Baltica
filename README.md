@@ -2,32 +2,20 @@
 
 Reconciling alternative splicing identification
 
-# Quick start
-
-```bash
-pip install Baltica
-```
-
-`Baltica leafcutter ` 
-
-Baltica depends on python 3 (>=3.4) and snakemake, please see [Installation](#installation) for details
-
 ## Features
 
 Based on the results from different tools, Baltica can:
 
-- Document example usage, pros and cons  
-- Process and join the results  
-- Produce reports  
+- Document method usage and SnakeMake workflows   
+- Process and integrate the results  
 - Use data integration methods to detect consequences of AS  
-
 
 # Installation
 
 0) optional create a Baltica environment:
 
 ```bash
-conda create --name Baltica python=3.6 snakemake PyYAML
+conda create --name baltica python=3.6 snakemake PyYAML
 ```
 
 1) Clone and install Baltica:  
