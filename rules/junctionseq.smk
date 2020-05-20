@@ -26,7 +26,10 @@ cond, rep = glob_wildcards("mappings/{cond}_{rep}.bam")
 d = {k: list(v) for k, v in groupby(
     sorted(zip(cond, rep)), key=lambda x: x[0])}
 cond = set(cond)
-
+strandness = {
+    'forward': '--stranded --fr_secondStrand',
+    'reverse': '--stranded'
+}
 rule all:
     input:
         "logs/",
@@ -50,12 +53,13 @@ rule qc:
     params:
         gtf=config["ref"],
         output="junctionseq/rawCts/{name}/",
-        strandness="--stranded" if config.get("strandness") else "",
-        max_read=config["read_len"]
+        strandness= strandness.get(config.get("strandness"),  ""),
+        max_read=config["read_len"],
+	is_paired_end='--singleEnded' if config.get("is_single_end") == True  else ''
     envmodules:
         "java qorts "
     shell:
-         "qorts QC {params.strandness} --maxReadLength {params.max_read} "
+         "qorts QC {params.strandness} {params.is_paired_end} --maxReadLength {params.max_read} "
          "--runFunctions writeKnownSplices,writeNovelSplices,writeSpliceExon "
          "{input} {params.gtf} {params.output} "
 
@@ -64,7 +68,7 @@ rule create_decoder:
     output:
         "junctionseq/{comparison}_decoder.tab"
     run:
-        ref, alt = wildcards[0].split('-vs-') 
+        ref, alt = wildcards[0].split('-vs-')
         with open(str( output), "w") as fou:
             fou.write("sample.ID\tgroup.ID\n")
             for x in [*d[ref], *d[alt]]:
@@ -73,23 +77,25 @@ rule create_decoder:
 
 rule merge:
     input:
-         expand("junctionseq/rawCts/{name}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz",
+         decoder=expand("junctionseq/{comparison}_decoder.tab", comparison=comp_names ),
+         counts=expand("junctionseq/rawCts/{name}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz",
                 name=name)
     output: "junctionseq/mergedOutput/withNovel.forJunctionSeq.gff.gz"
     params:
           gtf=config["ref"],
           min_count=config.get("mincount", 6),
-          strandness="--stranded" if config.get("stradness") else ""
+          strandness= strandness.get(config.get("strandness"),  "")
     envmodules:
-        "java qorts "
+        "java qorts"
     shell:
+         "cat {input.decoder} > junctionseq/decoder.tab; "
          "qorts mergeNovelSplices "
          "--minCount {params.min_count} "
-         "{params.stranded} "
+         "{params.strandness} "
          "junctionseq/rawCts "
-         "{input[0]} "
+         "junctionseq/decoder.tab "
          "{params.gtf} "
-         " junctionseq/mergedOutput/ "
+         "junctionseq/mergedOutput/ "
 
 
 rule junctioseq_analysis:
@@ -99,5 +105,7 @@ rule junctioseq_analysis:
     output:
         "junctionseq/analysis/{comparison}_sigGenes.results.txt.gz"
     threads: 10
+    envmodules:
+	"R/3.5.1 junctionseq"
     script:
-        "scripts/junctionSeq.R"
+        "../scripts/junctionSeq.R"

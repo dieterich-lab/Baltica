@@ -10,7 +10,7 @@ regulation through the lens of local splicing variations." elife 5 (2016):
 e11752.
 
 .. usage:
-    snakemake -s majiq.smk --configfile config.yml
+    snakemake -s majiq.smk --configfile config.yaml -j 10
 """
 __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2020, Dieterichlab"
@@ -33,26 +33,25 @@ name = config["samples"].keys()
 sample = config["samples"].values()
 sample_path = config["sample_path"]
 contrasts = config["contrasts"]
-
 conditions = sorted(
     set([x.split("_")[0] for x in name]),
     key=natural_sort_key)
 
 mapping = {c: [x for x in name if x[: x.index("_")] == c]
            for c in conditions}
-
 localrules: symlink, create_ini
+
+include: "symlink.smk"
 
 rule all:
     input:
-         "logs",
-         "majiq/build.ini",
+         "logs/",
          expand("mappings/{name}.bam", name=name),
+         "majiq/build.ini",
          expand("majiq/{name}.majiq", name=name),
          expand("majiq/{contrast}/{contrast}.deltapsi.voila", contrast=contrasts.keys()),
          expand("majiq/voila/{contrast}_voila.tsv", contrast=contrasts.keys())
 
-include: "symlink.smk"
 
 rule create_ini:
     input: expand("mappings/{name}.bam", name=name)
@@ -74,11 +73,13 @@ rule create_ini:
         with open(str(output), "w") as ini:
             ini.writelines("\n".join(lines))
 
+
 rule gtf_to_gff:
     output: "majiq/ref.gff"
     params: ref=config["ref"],
             gtf2gff3_path=srcdir("../scripts/gtf2gff3.pl")
     shell: "perl {params.gtf2gff3_path} {params.ref} > {output}"
+
 
 rule build:
     input: ini="majiq/build.ini",
@@ -87,6 +88,7 @@ rule build:
           "majiq/splicegraph.sql"
     conda: "../envs/majiq.yml"
     threads: len(conditions)
+    envmodules: "majiq/2.1"
     shell: " majiq build --conf {input.ini} --nproc {threads} --output majiq/ {input.ref}"
 
 rule deltapsi:
@@ -98,6 +100,7 @@ rule deltapsi:
     params: name=lambda wc: wc.contrast.replace("-vs-", " "),
           name2=lambda wc: wc.contrast.replace("-vs-", "_"),
           cont=lambda wc: wc.contrast
+    envmodules: "majiq/2.1"
     shell: "majiq deltapsi -grp1 {input.a} -grp2 {input.b} " 
            "--nproc {threads} --output majiq/{params.cont} "
            "--names {params.name} --default-prior; "
@@ -108,5 +111,7 @@ rule voila:
     input: "majiq/splicegraph.sql",
          "majiq/{contrast}/{contrast}.deltapsi.voila"
     output: "majiq/voila/{contrast}_voila.tsv"
-    params: threshold=config.get('majiq_threshold', 0.1)
+    conda: "../envs/majiq.yml"
+    envmodules: "majiq/2.1"
+    params: threshold=config.get('majiq_threshold', 0.2)
     shell: "voila tsv --threshold {params.threshold} {input} -f {output}"

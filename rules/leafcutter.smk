@@ -34,12 +34,14 @@ comp_names = config["contrasts"].keys()
 
 localrules: all, concatenate, symlink
 
-rule all:
-    input: "logs",
-         expand("leafcutter/{comp_names}/{comp_names}_cluster_significance.txt", comp_names=comp_names),
-         expand("leafcutter/{name}.junc", name=name)
-
 include: "symlink.smk"
+
+rule all:
+    input:
+        "logs/",
+        expand("mappings/{name}.bam", name=name),
+        expand("leafcutter/{comp_names}/{comp_names}_cluster_significance.txt", comp_names=comp_names),
+        expand("leafcutter/{name}.junc", name=name)
 
 # step 1.1
 rule bam2junc:
@@ -50,6 +52,7 @@ rule bam2junc:
           sam2bed_path=srcdir("../scripts/sam2bed.pl"),
           bed2junc_path=srcdir("../scripts/bed2junc.pl"),
           use_strand="--use-RNA-strand" if config.get("strandness") else ""
+    envmodules: "python2 samtools"
     shell: """
          samtools view {input} \
          | python2 {params.filter_cs_path} \
@@ -88,6 +91,7 @@ rule intron_clustering:
           strand="--strand True" if config.get("strandness") else "",
           script_path=srcdir("../scripts/leafcutter_cluster.py")
     output: "leafcutter/{comp_names}/{comp_names}_perind_numers.counts.gz"
+    envmodules: "python2 "
     shell: """
          python2  {params.script_path} \
          -j {input} -m {params.m} -o {params.prefix} -l {params.l} {params.strand}
@@ -100,6 +104,8 @@ rule gtf_to_exon:
     output: a="leafcutter/" + basename(gtf_path, suffix=".gz"),
           b="leafcutter/exons.gtf.gz"
     params: gtf_to_exon=srcdir("../scripts/gtf_to_exons.R")
+    envmodules:
+        "R/3.6 leafcutter"
     shell: """
          gzip -c {input} > {output.a}
          Rscript {params.gtf_to_exon} {output.a} {output.b}
@@ -116,6 +122,8 @@ rule differential_splicing:
           prefix="leafcutter/{comp_names}/{comp_names}",
           leafcutter_ds_path=srcdir("../scripts/leafcutter_ds.R")
     threads: 10
+    envmodules:
+        "R/3.6 leafcutter"
     shell: """
          Rscript {params.leafcutter_ds_path} --exon_file={input.a} \
          {input.b} {input.c} --num_threads {threads} --output_prefix={params.prefix} \
