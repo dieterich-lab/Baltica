@@ -8,7 +8,6 @@ __copyright__ = "Copyright 2019, Dieterichlab"
 __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
-from pathlib import Path
 
 name, = glob_wildcards("mappings/{name}.bam")
 
