@@ -65,3 +65,6 @@ out
 gen
 .idea/
 .old/
+*.DS_Store
+*.snakemake
+sirv_test/*
