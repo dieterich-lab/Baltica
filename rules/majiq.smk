@@ -60,7 +60,7 @@ rule create_ini:
         lines = [
             "[info]",
             "readlen={}".format(config["read_len"]),
-            "samdir={}".format("mappings/"),
+            "bamdirs={}".format("mappings/"),
             "genome={}".format(config["assembly"]),
             "genome_path={}".format(config["ref_fa"]),
             "strandness={}".format(config["strandness"]),

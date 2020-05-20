@@ -1,22 +1,28 @@
 #!/usr/bin/env python
 
-from setuptools import setup, find_packages
+from setuptools import setup
+from cli import __version__, _program
+import pathlib
 
 with open('requirements.txt') as f:
     required = [x for x in f.read().splitlines() if not x.startswith("#")]
 
-# Note: the _program variable is set in __init__.py.
-# it determines the name of the package/final command line tool.
-from cli import __version__, _program
+HERE = pathlib.Path(__file__).parent
+README = (HERE / "README.md").read_text()
 
 setup(name=_program,
       version=__version__,
       packages=['cli'],
-      description='Baltica command line interface',
+      description='Workflows for differential splicing with Baltica ',
+      longdescription=README,
       url='https://github.com/dieterich-lab/Baltica',
       author='@tbrittoborges',
       author_email='thiago.brittoborges@uni-heidelberg.de',
       license='MIT',
+      classifiers=[
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
+        "Intended Audience :: Science/Research"],
       entry_points="""
       [console_scripts]
       {program} = cli.command:main

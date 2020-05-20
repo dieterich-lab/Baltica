@@ -46,6 +46,8 @@ d = {k: list(v) for k, v in groupby(
 
 cond = set(cond)
 
+include: "symlink.smk"
+
 rule all:
   input:
        expand("mappings/{name}.bam", name=name),

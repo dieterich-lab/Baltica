@@ -23,5 +23,5 @@ rule create_log:
     run:
         try:
             os.mkdir('logs/')
-        except os.OSError.FileExistsError:
+        except IOError:
             pass

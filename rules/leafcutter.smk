@@ -105,7 +105,7 @@ rule gtf_to_exon:
           b="leafcutter/exons.gtf.gz"
     params: gtf_to_exon=srcdir("../scripts/gtf_to_exons.R")
     envmodules:
-        "R/3.6 leafcutter"
+        "R/3.6.0"
     shell: """
          gzip -c {input} > {output.a}
          Rscript {params.gtf_to_exon} {output.a} {output.b}
@@ -123,7 +123,7 @@ rule differential_splicing:
           leafcutter_ds_path=srcdir("../scripts/leafcutter_ds.R")
     threads: 10
     envmodules:
-        "R/3.6 leafcutter"
+        "R/3.6.0 leafcutter"
     shell: """
          Rscript {params.leafcutter_ds_path} --exon_file={input.a} \
          {input.b} {input.c} --num_threads {threads} --output_prefix={params.prefix} \

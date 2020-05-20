@@ -6,10 +6,11 @@
 suppressPackageStartupMessages(library(JunctionSeq))
 options(stringsAsFactors = FALSE);
 
-threads <- 1 # snakemake@threads
+args<-commandArgs(TRUE)
 
 decoder <- read.table(
-  snakemake@input[["decoder"]], header = T, stringsAsFactors = F);
+  args[1], header = T, stringsAsFactors = F);
+threads <- as.integer(args[3])
 
 sample.files <- paste0(
   "junctionseq/mergedOutput/",
@@ -28,7 +29,7 @@ jscs <- runJunctionSeqAnalyses(
   use.multigene.aggregates = TRUE,
   analysis.type = "junctionsOnly");
 
-prefix <- sub('sigGenes.results.txt.gz', '', snakemake@output[[1]])
+prefix <- sub('sigGenes.results.txt.gz', '', args[2])
 message("Starting writeCompleteResults (", date(), ")")
 writeCompleteResults(
   jscs,

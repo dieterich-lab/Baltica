@@ -42,7 +42,7 @@ rule all:
         expand("junctionseq/analysis/{comparison}_sigGenes.results.txt.gz",
             comparison=comp_names)
 
-
+localrules: cat_decoder, create_decoder
 include: "symlink.smk"
 
 rule qc:
@@ -56,8 +56,7 @@ rule qc:
         strandness= strandness.get(config.get("strandness"),  ""),
         max_read=config["read_len"],
 	is_paired_end='--singleEnded' if config.get("is_single_end") == True  else ''
-    envmodules:
-        "java qorts "
+    envmodules: "java qorts "
     shell:
          "qorts QC {params.strandness} {params.is_paired_end} --maxReadLength {params.max_read} "
          "--runFunctions writeKnownSplices,writeNovelSplices,writeSpliceExon "
@@ -74,10 +73,15 @@ rule create_decoder:
             for x in [*d[ref], *d[alt]]:
                 fou.write("{}_{}\t{}\n".format(x[0], x[1], x[0]))
 
+rule cat_decoder:
+    input: decoder=expand("junctionseq/{comparison}_decoder.tab", comparison=comp_names )
+    output: "junctionseq/decoder.tab"
+    shell:
+        "awk 'FNR>1 || NR==1 ' {input.decoder} | awk '!x[$0]++' > {output} "
 
 rule merge:
     input:
-         decoder=expand("junctionseq/{comparison}_decoder.tab", comparison=comp_names ),
+         decoder='junctionseq/decoder.tab',
          counts=expand("junctionseq/rawCts/{name}/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt.gz",
                 name=name)
     output: "junctionseq/mergedOutput/withNovel.forJunctionSeq.gff.gz"
@@ -85,15 +89,13 @@ rule merge:
           gtf=config["ref"],
           min_count=config.get("mincount", 6),
           strandness= strandness.get(config.get("strandness"),  "")
-    envmodules:
-        "java qorts"
+    envmodules: "java qorts"
     shell:
-         "cat {input.decoder} > junctionseq/decoder.tab; "
          "qorts mergeNovelSplices "
          "--minCount {params.min_count} "
          "{params.strandness} "
          "junctionseq/rawCts "
-         "junctionseq/decoder.tab "
+         "{input.decoder} "
          "{params.gtf} "
          "junctionseq/mergedOutput/ "
 
@@ -105,7 +107,7 @@ rule junctioseq_analysis:
     output:
         "junctionseq/analysis/{comparison}_sigGenes.results.txt.gz"
     threads: 10
-    envmodules:
-	"R/3.5.1 junctionseq"
-    script:
-        "../scripts/junctionSeq.R"
+    params: script = srcdir("../scripts/junctionSeq.R")
+    envmodules: "R/3.6.0 junctionseq"
+    shell:
+        "Rscript --vanilla {params.script} {input.decoder} {output} {threads}"
