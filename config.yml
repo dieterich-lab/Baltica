@@ -1,47 +1,70 @@
+# the paths below assume youre are running the test
+# from withing Baltica directory
 
+path:
+  /beegfs/homes/tbrittoborges/sirv_test/
+
+# full path to the alignment files
 sample_path:
-  /path/to/samples
-
-workdir:
-  /path/to/workdir
+  /beegfs/homes/tbrittoborges/Baltica/data/
 
 
 samples:
-  ctr_1: /path/1.bam
-  ctr_2: /path/2.bam
-  trt_1: /path/3.bam
-  trt_2: /path/4.bam
+  mix1_1: mix1_1.bam
+  mix2_1: mix2_1.bam
+  mix3_1: mix3_1.bam
+  mix1_2: mix1_2.bam
+  mix2_2: mix2_2.bam
+  mix3_2: mix3_2.bam
+  mix1_3: mix1_3.bam
+  mix2_3: mix2_3.bam
+  mix3_3: mix3_3.bam
+  mix1_4: mix1_4.bam
+  mix2_4: mix2_4.bam
+  mix3_4: mix3_4.bam
+  mix1_5: mix1_5.bam
+  mix2_5: mix2_5.bam
+  mix3_5: mix3_5.bam
 
-ref:
-  /path/GRCh38_90.gtf
+# which comparison should we make?
+# in the format case-vs-control
+# conditions groups are extracted from '{group}_{replicate}'
+contrasts:
+  mix2-vs-mix1:
+    - mix2
+    - mix1
+  mix3-vs-mix1:
+    - mix3
+    - mix1
+  mix3-vs-mix2:
+    - mix3
+    - mix2
 
-ref_fa:
-  /path/GRCh38_90.fa
-
+# This parameters is not currently used in Baltica
+assembly:
+  GRCh38_90_SIRV
+# In case of doubt, please RSeQC infer_experiment result
 strandness:
   reverse
-
-# Majiq
-threshold:
-  --threshold 0.1
-assembly:
-  GRCh38_90
+# If the read length is variable, use the maximum
 read_len:
   100
+# full path to the reference transcriptome model
+ref:
+  /beegfs/homes/tbrittoborges/Baltica/data/SIRV.gtf
+# full path to the reference sequence
+ref_fa:
+  /beegfs/homes/tbrittoborges/Baltica/data/SIRV.fa
 
-# LeafCutter
+# LeafCutter parameters to define cluster
 min_samples_per_group:
   3
-
 min_samples_per_intron:
   5
 
+# Probability cut-off for Majiq
+majiq_threshold:
+  0.2
+# adjusted p-value threshold for LeafCutter and JunctionSeq
 fdr:
   0.05
-
-contrasts:
-  ctr-vs-trt:
-    - ctr
-    - trt
-
-
