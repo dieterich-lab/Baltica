@@ -1,94 +1,86 @@
 #!/usr/bin/env python
 """
-Command line interface driver for snakemake workflows
-Based on https://github.com/charlesreid1/2019-snakemake-cli
+Command line interface driver for Baltica
+
+Modified from https://github.com/charlesreid1/2019-snakemake-cli
 """
 import argparse
-
 import os.path
 from pathlib import Path
-
-import snakemake
 import sys
 import yaml
 
-from . import _program
+import snakemake
 
-this_dir = os.path.abspath(os.path.dirname(__file__))
-parent_dir = os.path.join(this_dir, '../..')
+# from . import __version__, _program
+_program = 'B'
+__version__ = '0.0'
 
-args = tuple(sys.argv[1:])
 
-
-def main(_args=args):
+def main(_args):
     parser = argparse.ArgumentParser(prog=_program,
                                      description='Baltica: workflows for differential junction usage and '
                                                  'consequence analysis.',
-                                     usage='''Baltica <workflow> <parameters> 
+                                     usage='''Baltica <workflow> <config> 
 Baltica: workflows for alternative splicing analysis.
 ''')
-    parser.add_argument('workflow', choices=['leafcutter', 'majiq', 'junctionseq'])
-    parser.add_argument('params')
-    parser.add_argument('-n', '--dry-run', action='store_true')
-    parser.add_argument('-f', '--force', action='store_true')
-    parser.add_argument('--use-conda', action='store_true')
-    parser.add_argument('--use-envmodule', action='store_true')
-    _args = parser.parse_args(_args)
+    parser.add_argument(
+        'workflow', choices=[
+            'leafcutter', 'majiq', 'junctionseq', 'qc', 'stringtie', 'analysis'],
+        help='Workflow to be run')
+    parser.add_argument('config', help='Configuration file for the workflow', type=Path)
+    parser.add_argument('-n', '--dry-run', action='store_true', help='')
+    parser.add_argument('-f', '--force', action='store_true',
+                        help='Force the workflow to run despite the presence of an output')
+    parser.add_argument('--use-conda', action='store_true',
+                        help='Use conda to install the requirements')
+    parser.add_argument('--use-envmodule', action='store_true', help='Use environment modules for requirements')
+    parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
 
+    _args = parser.parse_args(_args)
+    print(_args.config)
     # check if workflow file is readable
     p = Path(__file__).parent.parent / 'rules' / _args.workflow
     snakefile = p.with_suffix('.smk')
 
-    if not os.path.exists(snakefile):
-        msg = 'Error: cannot find Snakefile for the {} workflow: {} \n'
-        sys.stderr.write(msg.format(_args.workflow, snakefile))
-        sys.exit(-1)
-    # TODO check dependencies option
-
-    # check the config file for some mandatory parameters
-    parameters = {
-        "general": "sample_path workdir samples ref contrasts".split(),
-        "leafcutter": "min_samples_per_group min_samples_per_intron fdr".split(),
-        "majiq": "threshold GRCh38_90 strandness read_len".split(),
-        "junctionseq": "stradness red_len".split()
-    }
-
-    with open(_args.params) as fin:
+    with open(_args.config) as fin:
         workflow_info = yaml.safe_load(fin)
 
-    expected_par = set(parameters['general'] + parameters[_args.workflow])
-    missing = expected_par.difference(workflow_info.keys())
+    target = workflow_info['path']
 
-    if missing:
-        msg = 'Error: the following parameters are missing from the selected workflow file ({}): \n{}'
-        sys.stderr.write(msg.format(snakefile, ', '.join(missing)))
+    if not snakefile.exists:
+        msg = f'Error: cannot find Snakefile for the {_args.workflow} workflow: {snakefile} \n'
+        sys.stderr.write(msg)
         sys.exit(-1)
 
-    target = workflow_info['path']
+    if not _args.config.exists:
+        msg = f'Error: cannot find configuration file {_args.config} \n'
+        sys.stderr.write(msg)
+        sys.exit(-1)
 
     print('--------')
     print('details:')
     print('\tsnakefile: {}'.format(snakefile))
-    print('\tconfig: {}'.format(snakefile))
-    print('\ttarget: {}'.format(target))
+    print('\tconfiguration file: {}'.format(_args.config))
+    print('\twork directory: {}'.format(target))
     print('--------')
 
-    # run Baltica!
+    # run Baltica workflow
     status = snakemake.snakemake(
         snakefile,
-        configfile=_args.params,
-        targets=[target],
+        configfiles=[_args.config],
+        workdir=str(target),
         printshellcmds=True,
         dryrun=_args.dry_run,
         forceall=_args.force,
         use_conda=_args.use_conda,
-        use_envmodule=_args.use_envmodule
+        use_env_modules=_args.use_envmodule
     )
 
-    if status:  # translate "success" into shell exit code of 0
+    if status:
         return 0
     return 1
 
 
 if __name__ == '__main__':
-    main()
+    main(_args=tuple(sys.argv[1:]))
