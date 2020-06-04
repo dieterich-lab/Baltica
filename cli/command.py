@@ -4,83 +4,148 @@ Command line interface driver for Baltica
 
 Modified from https://github.com/charlesreid1/2019-snakemake-cli
 """
+import os
 import argparse
-import os.path
 from pathlib import Path
 import sys
 import yaml
 
 import snakemake
 
-# from . import __version__, _program
-_program = 'B'
-__version__ = '0.0'
+from . import __version__, _program
+
+desc = f"{_program} implements workflows for differential junction usage and consequence analysis. Visit https://github.com/dieterich-lab/Baltica for more information. "
 
 
-def main(_args):
+def main(argv):
     parser = argparse.ArgumentParser(prog=_program,
-                                     description='Baltica: workflows for differential junction usage and '
-                                                 'consequence analysis.',
-                                     usage='''Baltica <workflow> <config> 
-Baltica: workflows for alternative splicing analysis.
-''')
+                                     description=desc,
+                                     usage="""Baltica <workflow> <config> <options>""")
     parser.add_argument(
-        'workflow', choices=[
-            'leafcutter', 'majiq', 'junctionseq', 'qc', 'stringtie', 'analysis'],
-        help='Workflow to be run')
-    parser.add_argument('config', help='Configuration file for the workflow', type=Path)
-    parser.add_argument('-n', '--dry-run', action='store_true', help='')
-    parser.add_argument('-f', '--force', action='store_true',
-                        help='Force the workflow to run despite the presence of an output')
-    parser.add_argument('--use-conda', action='store_true',
-                        help='Use conda to install the requirements')
-    parser.add_argument('--use-envmodule', action='store_true', help='Use environment modules for requirements')
-    parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
-
-    _args = parser.parse_args(_args)
-    print(_args.config)
-    # check if workflow file is readable
-    p = Path(__file__).parent.parent / 'rules' / _args.workflow
-    snakefile = p.with_suffix('.smk')
-
-    with open(_args.config) as fin:
-        workflow_info = yaml.safe_load(fin)
-
-    target = workflow_info['path']
-
-    if not snakefile.exists:
-        msg = f'Error: cannot find Snakefile for the {_args.workflow} workflow: {snakefile} \n'
-        sys.stderr.write(msg)
-        sys.exit(-1)
-
-    if not _args.config.exists:
-        msg = f'Error: cannot find configuration file {_args.config} \n'
-        sys.stderr.write(msg)
-        sys.exit(-1)
-
-    print('--------')
-    print('details:')
-    print('\tsnakefile: {}'.format(snakefile))
-    print('\tconfiguration file: {}'.format(_args.config))
-    print('\twork directory: {}'.format(target))
-    print('--------')
-
-    # run Baltica workflow
-    status = snakemake.snakemake(
-        snakefile,
-        configfiles=[_args.config],
-        workdir=str(target),
-        printshellcmds=True,
-        dryrun=_args.dry_run,
-        forceall=_args.force,
-        use_conda=_args.use_conda,
-        use_env_modules=_args.use_envmodule
+        "workflow",
+        choices=["leafcutter", "majiq", "junctionseq", "qc", "stringtie", "analysis"],
+        help="Workflow to be run"
+    )
+    parser.add_argument(
+        "config",
+        type=Path,
+        help="Configuration file for the workflow."
+    )
+    parser.add_argument(
+        "-n",
+        "--dry-run",
+        action="store_true",
+        help="Execute a test run and output commands to be run."
+    )
+    parser.add_argument(
+        "-f",
+        "--force",
+        action="store_true",
+        help="Force the workflow to run despite the presence of an output."
+    )
+    parser.add_argument(
+        "--use-conda",
+        action="store_true",
+        help="Use conda to install the requirements."
+    )
+    # TODO add slurm profile
+    # parser.add_argument(
+    #     "--profile",
+    #     default="slurm",
+    #     help="Snakemake cluster profile used to run the workflows"
+    # ),
+    parser.add_argument(
+        "--use-envmodule",
+        action="store_true",
+        help="Use environment modules for requirements."
+    )
+    parser.add_argument(
+        "--cluster",
+        metavar='str',
+        default="sbatch --parsable --mem {cluster.mem} --out {cluster.out} --error {cluster.out} -c {cluster.cpu}",
+        help='Snajemake cluster parameter (default: %(default)s)'
+    ),
+    parser.add_argument(
+        "--cluster-config",
+        metavar='str',
+        default="/prj/Niels_Gehring/newData_March_2018/tbb_analysis/cluster.yaml",
+        help='Snajemake cluster configuration (default: %(default)s)'
+    ),
+    parser.add_argument(
+        "--nodes",
+        metavar='int',
+        default=10
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version="%(prog)s " + __version__
     )
 
-    if status:
+    # Error if older version of snakemake is installed
+    min_snakemake_version = "5.2"
+    try:
+        snakemake.utils.min_version(min_snakemake_version)
+    except snakemake.exceptions.WorkflowError as e:
+        print(f'{_program} requires Snakemake version >= {min_snakemake_version}:', file=sys.stderr)
+        print(e, file=sys.stderr)
+        sys.exit(1)
+
+    argv = parser.parse_args(argv)
+    # check if workflow file is readable
+    p = Path(__file__).parent.parent / "rules" / argv.workflow
+    snakefile = p.with_suffix(".smk")
+
+    with open(argv.config) as fin:
+        workflow_info = yaml.safe_load(fin)
+
+    target = workflow_info["path"]
+
+    if not snakefile.exists:
+        print(f"Error: cannot find Snakefile for the {argv.workflow} workflow: {snakefile} \n", file=sys.stderr)
+        sys.exit(1)
+
+    if not argv.config.exists:
+        print(f"Error: cannot find configuration file {argv.config} \n", file=sys.stderr)
+        sys.exit(1)
+
+    # TODO handling cluster profile
+    # profile_config = Path(snakemake.get_profile_file(argv.profile, 'config.yaml', return_default=True))
+    # SBATCH_DEFAULTS = """'sbatch -p {cluster.partition} --mem {cluster.mem} --out {cluster.out} --error {cluster.out} -c {cluster.cpu}'"""
+    # CLUSTER_CONFIG = "cluster.yaml"
+
+    print("--------")
+    print("details:")
+    print("\tsnakefile: {}".format(snakefile))
+    print("\tconfiguration file: {}".format(argv.config))
+    print("\twork directory: {}".format(target))
+    print("--------")
+
+    try:
+        os.makedirs(Path(target) / 'logs/')
+    except FileExistsError:
+        pass
+
+    # run Baltica workflow
+    success = snakemake.snakemake(
+        snakefile,
+        configfiles=[argv.config],
+        workdir=str(target),
+        printshellcmds=True,
+        dryrun=argv.dry_run,
+        forceall=argv.force,
+        use_conda=argv.use_conda,
+        use_env_modules=argv.use_envmodule,
+        cluster=argv.cluster,
+        cluster_config=argv.cluster_config,
+        cluster_sync=None,
+        nodes=argv.nodes
+    )
+
+    if success:
         return 0
     return 1
 
 
-if __name__ == '__main__':
-    main(_args=tuple(sys.argv[1:]))
+if __name__ == "__main__":
+    main(argv=tuple(sys.argv[1:]))
