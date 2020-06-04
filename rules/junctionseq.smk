@@ -30,6 +30,10 @@ strandness = {
     'forward': '--stranded --fr_secondStrand',
     'reverse': '--stranded'
 }
+
+if config["junctionseq_env_prefix"]:
+    shell.prefix(config["junctionseq_env_prefix"])
+
 rule all:
     input:
         "logs/",

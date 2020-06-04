@@ -4,7 +4,6 @@ sample_path = config["sample_path"]
 name = config["samples"].keys()
 sample = config["samples"].values()
 
-
 rule symlink:
     input:
         bam=expand("{samples_dir}{sample}", sample=sample, samples_dir=sample_path),
@@ -18,10 +17,3 @@ rule symlink:
             os.symlink(bam_in, bam_out)
             os.symlink(bai_in, bai_out)
 
-rule create_log:
-    output: directory('logs/')
-    run:
-        try:
-            os.mkdir('logs/')
-        except IOError:
-            pass

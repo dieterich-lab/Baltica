@@ -36,9 +36,11 @@ localrules: all, concatenate, symlink
 
 include: "symlink.smk"
 
+if config["leafcutter_env_prefix"]:
+    shell.prefix(config["leafcutter_env_prefix"])
+
 rule all:
     input:
-        "logs/",
         expand("mappings/{name}.bam", name=name),
         expand("leafcutter/{comp_names}/{comp_names}_cluster_significance.txt", comp_names=comp_names),
         expand("leafcutter/{name}.junc", name=name)
@@ -53,6 +55,7 @@ rule bam2junc:
           bed2junc_path=srcdir("../scripts/bed2junc.pl"),
           use_strand="--use-RNA-strand" if config.get("strandness") else ""
     envmodules: "python2 samtools"
+    conda: "../envs/leafcutter.yml"
     shell: """
          samtools view {input} \
          | python2 {params.filter_cs_path} \
@@ -91,6 +94,7 @@ rule intron_clustering:
           strand="--strand True" if config.get("strandness") else "",
           script_path=srcdir("../scripts/leafcutter_cluster.py")
     output: "leafcutter/{comp_names}/{comp_names}_perind_numers.counts.gz"
+    conda: "../envs/leafcutter.yml"
     envmodules: "python2 "
     shell: """
          python2  {params.script_path} \
@@ -104,6 +108,7 @@ rule gtf_to_exon:
     output: a="leafcutter/" + basename(gtf_path, suffix=".gz"),
           b="leafcutter/exons.gtf.gz"
     params: gtf_to_exon=srcdir("../scripts/gtf_to_exons.R")
+    conda: "../envs/leafcutter.yml"
     envmodules:
         "R/3.6.0"
     shell: """
@@ -122,6 +127,7 @@ rule differential_splicing:
           prefix="leafcutter/{comp_names}/{comp_names}",
           leafcutter_ds_path=srcdir("../scripts/leafcutter_ds.R")
     threads: 10
+    conda: "../envs/leafcutter.yml"
     envmodules:
         "R/3.6.0 leafcutter"
     shell: """

@@ -18,6 +18,9 @@ workdir: config.get("path", ".")
 
 include: "symlink.smk"
 
+if config["qc_env_prefix"]:
+    shell.prefix(config["qc_env_prefix"])
+
 rule all:
     input:
          expand("qc/fastqc/{name}_fastqc.zip", name=name),
@@ -124,4 +127,4 @@ rule multiqc:
     input: rules.all.input[:-1]
     envmodules: "multiqc"
     output: "qc/multiqc/multiqc_report.html"
-    shell: "multiqc --full -d --dirs-depth 1 qc/ -o qc/multiqc"
+    shell: "multiqc -d --dirs-depth 1 qc/ -o qc/multiqc"
