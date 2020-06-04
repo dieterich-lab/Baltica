@@ -1,0 +1,10 @@
+name:
+  qc
+
+channels:
+  - bioconda
+
+dependencies:
+  - rseqc
+  - multiqc
+  - fastqc

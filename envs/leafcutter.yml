@@ -1,0 +1,10 @@
+name:
+  leafcutter
+
+channels:
+  - bioconda
+
+dependencies:
+  - python = 2.7
+  - samtools
+  - R = 3.6
