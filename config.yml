@@ -48,7 +48,7 @@ strandness:
   reverse
 # If the read length is variable, use the maximum
 read_len:
-  100
+  101
 # full path to the reference transcriptome model
 ref:
   /beegfs/homes/tbrittoborges/Baltica/data/SIRV.gtf
@@ -68,3 +68,10 @@ majiq_threshold:
 # adjusted p-value threshold for LeafCutter and JunctionSeq
 fdr:
   0.05
+
+qc_env_prefix: source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate qc;
+leafcutter_env_prefix: source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate leafcutter;
+majiq_env_prefix: source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate majiq;
+junctionseq_env_prefix: source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate junctionseq;
+stringtie_env_prefix: source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate stringtie;
+#analysis_env_prefix: ""
