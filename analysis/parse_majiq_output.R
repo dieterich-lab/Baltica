@@ -29,10 +29,30 @@ option_list <- list(
     help = "Discard junction with probability threshold < than --cutoff [default %default]"
   )
 )
+tryCatch(
+  {
+    opt <- list(
+      input = snakemake@input,
+      output = snakemake@output[[1]],
+      cutoff = snakemake@params[['cutoff']]
+      )
+    files <- opt$input
+    file_names <- gsub(
+     x = opt$input,
+     pattern = 'majiq/voila/(.+)_voila.tsv',
+     replacement = '\\1')
 
-opt <- parse_args(OptionParser(option_list = option_list))
+  }, error = function(e) {
 
-files <- Sys.glob(opt$input)
+    opt <- parse_args(OptionParser(option_list = option_list))
+    files <- Sys.glob(opt$input)
+    file_names <- gsub(
+      x = files,
+      replacement = '\\1',
+      pattern = sub(x=opt$input, pattern='\\*', replacement = '(.*)')
+)
+})
+
 
 # rename column names from majiq result due to the presence of spaces
 read_majiq_out <- function(x) {
@@ -76,11 +96,7 @@ UCSC_LSV_Link"
 
 res <- lapply(files, read_majiq_out)
 
-names(res) <- gsub(
-  x = files,
-  replacement = '\\1',
-  pattern = sub(x=opt$input, pattern='\\*', replacement = '(.*)'),
-)
+names(res) <- file_names
 
 res <- bind_rows(res, .id = 'comparison') %>%
   separate_rows(
@@ -108,8 +124,8 @@ junctions_coords <- str_match(
 res['start'] <- junctions_coords[, 1]
 res['end'] <- junctions_coords[, 2]
 
-message('Number of junctions output by Majiq', nrow(res))
-res <- select(res, c(
+message('Number of junctions output by Majiq ', nrow(res))
+res <- dplyr::select(res, c(
   chr,
   start,
   end,
@@ -126,6 +142,6 @@ res <- select(res, c(
   filter(P_dPSI_beq_per_LSV_junction > opt$cutoff) %>%
   mutate(method = 'majiq')
 
-message('Number of junctions after filtering', nrow(res))
+message('Number of junctions after filtering ', nrow(res))
 
 write_csv(res, opt$output)
