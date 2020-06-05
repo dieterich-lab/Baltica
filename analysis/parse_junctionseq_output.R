@@ -22,7 +22,7 @@ option_list <- list(
     default = "junctionseq/junctionseq_junctions.csv",
     help = "Path to output file [default %default]",
     metavar = "character"
-  )
+  ),
   make_option(
     c("-c", "--cutoff"),
     type = "double",
@@ -31,9 +31,30 @@ option_list <- list(
   )
 )
 
-opt <- parse_args(OptionParser(option_list = option_list))
+tryCatch(
+  {
+    opt <- list(
+      input = snakemake@input,
+      output = snakemake@output[[1]],
+      cutoff = snakemake@params[['cutoff']]
+      )
+    files <- opt$input
+    file_names <- gsub(
+     x = opt$input,
+     pattern = 'junctionseq/analysis/(.+)_sigGenes.results.txt.gz',
+     replacement = '\\1')
 
-files <- Sys.glob(opt$input)
+  }, error = function(e) {
+
+    opt <- parse_args(OptionParser(option_list = option_list))
+    files <- Sys.glob(opt$input)
+    file_names <- gsub(
+      x = files,
+      replacement = '\\1',
+      pattern = sub(x=opt$input, pattern='\\*', replacement = '(.*)')
+)
+})
+
 
 message("Loading JunctionSeq result")
 add_containers <-  function (junctionseq_result){
@@ -100,11 +121,7 @@ geneWisePadj"
 
 message("Loading processing the table")
 res <- lapply(files, read_junctionseq_out)
-names(res) <- gsub(
-  x = files,
-  replacement = '\\1',
-  pattern = sub('\\*', '(.*)', opt$input )
-)
+names(res) <- file_names
 
 res  <- lapply(res, add_containers)
 res <-  bind_rows(res, .id = 'comparison')
@@ -116,8 +133,9 @@ res <- res %>%
   mutate(is_canonical = row_number() == 1) %>%
   ungroup()
 
-message('Number of junctions output by JunctionSeq', nrow(res))
+message('Number of junctions output by JunctionSeq ', nrow(res))
 res <- res %>%
+  filter(padjust < opt$cutoff) %>%
   select(
     comparison,
     chr,
@@ -125,15 +143,12 @@ res <- res %>%
     end,
     strand,
     padjust,
-    contains('log2FC('),
+    contains('log2FC'),
     geneID,
     featureType,
     container,
     expr_ref,
-    expr_alt,
-    ref_rank,
-    alt_rank) %>%
-  filter(padjust < opt$cutoff) %>%
+    expr_alt) %>%
   mutate(method = 'JunctionSeq')
-message('Number of junctions after filtering', nrow(res))
+message('Number of junctions after filtering ', nrow(res))
 write_csv(res, opt$output)

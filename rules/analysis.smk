@@ -14,8 +14,8 @@ contrasts = config["contrasts"]
 rule all:
     input:
         "majiq/majiq_junctions.csv",
-    # "leafcutter/leafcutter_junctions.csv",
-    # "junctionseq/junctionseq_junctionse.csv",
+        "leafcutter/leafcutter_junctions.csv",
+        "junctionseq/junctionseq_junctionse.csv",
     # "{method}/{method}_junctions_annotated.csv"
 
 
@@ -31,20 +31,27 @@ rule parse_majiq:
     script:
         '../analysis/parse_majiq_output.R'
 
-# rule parse_leafcutter:
-#     input: expand("leafcutter/{contrast}_cluster_significance.txt",
-#                   contrast=contrasts.keys())
-#     # _effect_sizes.txt
-#     output: "leafcutter/leafcutter_junctions.csv"
-#     envmodules: "R/3.6.0"
-#     shell: "Rscript --vanilla analysis/parse_leafcutter_results.R leafcutter"
-#
-# rule parse_junctionseq:
-#     input: expand("junctionseq/analysis/*_sigGenes.results.txt.gz",
-#                   contrast=contrasts.keys())
-#     output: "junctionseq/junctionseq_junctionse.csv"
-#     envmodules: "R/3.6.0"
-#     shell: "Rscript --vanilla analysis/parse_junctionseq_output.R"
+rule parse_leafcutter:
+    input:
+        expand("leafcutter/{contrast}/{contrast}_cluster_significance.txt", contrast=contrasts.keys())
+    output:
+        "leafcutter/leafcutter_junctions.csv"
+    envmodules:
+        "R/3.6.0"
+    params:
+        cutoff = 0.05
+    script: "../analysis/parse_leafcutter_output.R"
+
+rule parse_junctionseq:
+    input:
+        expand("junctionseq/analysis/{contrast}_sigGenes.results.txt.gz", contrast=contrasts.keys())
+    output:
+        "junctionseq/junctionseq_junctionse.csv"
+    envmodules:
+        "R/3.6.0"
+    params:
+        cutoff = 0.05
+    script: "../analysis/parse_junctionseq_output.R"
 #
 # rule annotate:
 #     input:
