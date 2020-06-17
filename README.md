@@ -12,7 +12,9 @@
 
 ## Instructions for using Baltica
 
-This instructions are specific for computer cluster using Slurm.
+This instructions are specific for computer cluster using Slurm. Baltica uses Snakemake, which support many difference 
+grid engines systems, for instructions on how to use it on different systems please see 
+[Setting up Baltica: long edition](docs/other_file.md) or contact us. 
 
 ### Setting up Baltica (once):
 - Clone Baltica
@@ -43,9 +45,9 @@ This instructions are specific for computer cluster using Slurm.
 - (optional) Clone baltica to keep changes under version control
 - set the configuration file
 - run baltica
-	- (optional) QC
+	- (optional) quality control 
 	- DJU workflows
-	- de novo transcripomics
+	- de novo transcripts 
 	- Analysis 
 
 If Baltica or snakemake is not in your $PATH use
@@ -54,9 +56,8 @@ The cluster-profile allow us to centralize the cluster configuration for snakema
 Snakemake can be run with `snakemake --profile slurm`.
 For other cluster configuration templates see [Snakemake profiles](https://github.com/Snakemake-Profiles/)
 ## Documentation
-(TODO missing internal links)
 Please see documentation:
-   - [Setting up Baltica: verbose edition](docs/other_file.md)
+   - [Setting up Baltica: long edition](docs/setup.md)
    - [Method installation](docs/other_file.md)  
    - [Analysis](docs/other_file.md)
    - [Benchmark](docs/other_file.md)
