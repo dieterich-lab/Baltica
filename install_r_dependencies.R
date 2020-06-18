@@ -22,7 +22,7 @@ install_many <- function (pkgs, install_fun, ...){
 
 }
 pkgs.cran <- c(
-  "UpSetR", "dplyr", "openxlsx", "optparse",  "stringr",  "tidyr", "readr"
+  "UpSetR", "dplyr", "openxlsx", "optparse",  "stringr",  "tidyr", "readr", "here"
 )
 # First install packages from CRAN
 install_many(pkgs.cran, install.packages)
@@ -32,6 +32,6 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install(version = "3.10")
 pkgs.bioc <- c(
-  "GenomicRanges", "Rsamtools", "UpSetR", "yaml"
+  "GenomicRanges", "Rsamtools", "yaml"
 )
 install_many(pkgs.bioc, BiocManager::install)
