@@ -74,14 +74,16 @@ rule denovo_transcriptomics:
   input: "stringtie/merged_bam/{group}.bam"
   output: "stringtie/stringtie/{group}.gtf"
   params: strandness=strand.get(config.get("strandness", ""), ""),
-        min_junct_coverage=3,
-        min_isoform_proportion=.1
+          min_junct_coverage=config.get("min_junct_coverage", 3),
+          min_isoform_proportion=config.get("min_isoform_proportion", 0.001),
+          minimum_read_per_bp_coverage=config.get("minimum_read_per_bp_coverage", 3)
   wildcard_constraints: group="|".join(cond)
   log: "logs/stringtie_{group}.log"
   envmodules: "stringtie"
   shell: "stringtie {input} -o {output} " \
        "-p {threads} " \
        " {params.strandness} " \
+       "-c {params.minimum_read_per_bp_coverage} " \
        "-j {params.min_junct_coverage} " \
        "-f {params.min_isoform_proportion} " \
        "2> {log} "
@@ -91,7 +93,9 @@ rule merge_gtf:
   input: expand("stringtie/stringtie/{cond}.gtf", cond=cond)
   output: "stringtie/merged/merged.combined.gtf"
   log: "logs/gffcompare.log"
-  params: gtf=config["ref"], out="stringtie/merged/merged"
+  params:
+    gtf=config["ref"],
+    out="stringtie/merged/merged"
   envmodules: "rnaseqtools"
   shell: "gffcompare {input} -r {params.gtf} " \
       "-R -V -o {params.out} 2>{log}"
