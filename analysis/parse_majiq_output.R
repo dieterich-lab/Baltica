@@ -29,6 +29,7 @@ option_list <- list(
     help = "Discard junction with probability threshold < than --cutoff [default %default]"
   )
 )
+# enabling both cli or snakemake input
 tryCatch(
   {
     opt <- list(
