@@ -129,3 +129,56 @@ aggregate_metadata <- function(gr){
 append_to_basename <- function(filepath, to_append='_nomatch'){
   sub("\\.([^\\.]*)$", paste0(to_append, "\\.\\1"), filepath)
 }
+
+as.type <- function(junction.gr, exon.gr) {
+#   if (any(as.logical(strand(.gr) != strand(.ex)))) {
+#     warning('Junction and exon have different strand')
+#     return("NA")
+#   }
+
+#   if (length(junction.gr) != 1 | length(exon.gr) != 1) {
+#     warning('as.type function take one junction and exon per function call')
+#     return("NA")
+#   }
+
+  j.strand <- as.character(strand(junction.gr)[1])
+  j.start <- as.integer(start(junction.gr)[1])
+  j.end <- as.integer(end(junction.gr)[1])
+  e.start <- as.integer(start(exon.gr)[1])
+  e.end <- as.integer(end(exon.gr)[1])
+
+  is.annotated <- dplyr::case_when(
+    j.strand == '+' & j.end == e.start ~ "JE",
+    j.strand == '+' & j.start == e.end ~ "JS",
+    j.strand == '-' & j.end == e.start ~ "JE",
+    j.strand == '-' & j.start == e.end ~ "JS",
+    TRUE ~ "NA"
+  )
+
+  if (is.annotated != "NA") {
+    return(is.annotated)
+  }
+
+  if (j.strand == '+'){
+    a <- e.start - j.start
+    b <- j.end - e.end
+    c <- e.end - j.start
+    d = j.end - e.start
+  } else if (j.strand == '-'){
+    a = j.end - e.end
+    b = e.start - j.start
+    c = j.end - e.start
+    d = e.end - j.start
+  } else {
+    message('AS type definition needs strand information')
+    return("NA")
+  }
+
+  type <- dplyr::case_when(
+    all(c(a > 0, b > 0, c > 0, d > 0)) ~ "ES",
+    all(c(a < 0, b > 0, c > 0, d > 0)) ~ "A5SS",
+    all(c(a > 0, b < 0, c > 0, d > 0)) ~ "A3SS",
+    all(c(a > 0, b > 0, c > 0, d > 0)) ~ "EXITRON",
+    TRUE ~ "NA")
+  return(type)
+}

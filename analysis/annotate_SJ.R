@@ -9,14 +9,27 @@ suppressPackageStartupMessages({
                                  library(rtracklayer)
                                })
 
-source("utils.R", chdir = TRUE)
+# from https://stackoverflow.com/a/15373917/1694714
+thisFile <- function() {
+  cmdArgs <- commandArgs(trailingOnly = FALSE)
+  needle <- "--file="
+  match <- grep(needle, cmdArgs)
+  if (length(match) > 0) {
+    # Rscript
+    return(normalizePath(sub(needle, "", cmdArgs[match])))
+  } else {
+    # 'source'd via R console
+    return(normalizePath(sys.frames()[[1]]$ofile))
+  }
+}
 
 option_list <- list(
   make_option(
     c("-i", "--input"),
     type = "character",
     help = "Path to parsed DJU result", ,
-    metavar = "character"
+    metavar = "character",
+    default = "junctionseq/junctionseq_junctions.csv,leafcutter/leafcutter_junctions.csv,majiq/majiq_junctions.csv"
   ),
   make_option(
     c("-a", "--annotation"),
@@ -32,18 +45,28 @@ option_list <- list(
   )
 )
 # enabling both cli or snakemake input
-tryCatch({
-           opt <- list(
-             input = snakemake@input[[1]],
-             annotation = snakemake@input[[2]],
-             output = snakemake@output[[1]]
-           )
-         }, error = function() {
+if(exists('snakemake')){
+  opt <- list(
+    input = paste0(c(snakemake@input[[1]], snakemake@input[[2]], snakemake@input[[3]]), collapse = ','),
+    annotation = snakemake@input[[4]],
+    output = snakemake@output[[1]]
+  )
+  snakemake@source("utils.R")
+  } else {
   opt <- parse_args(OptionParser(option_list = option_list))
-})
+  source(file.path(dirname(thisFile()), "utils.R"))
+}
+files <- strsplit(opt$input, ',')[[1]]
+
+if (!any(lapply(files, file.exists))) {
+  stop("Input file not found.", call.=FALSE)
+} else if (!file.exists(opt$annotation)) {
+  stop("Annotation not found.", call.=FALSE)
+}
 
 message('Loading input')
-data <- read.csv(opt$input)
+files <- strsplit(opt$input, ',')[[1]]
+suppressWarnings({data <- dplyr::bind_rows(lapply(files, read.csv)) })
 gr <- GRanges(data)
 gtf <- rtracklayer::import.gff2(opt$annotation)
 
@@ -87,5 +110,5 @@ introns_with_match <- merge(
 )
 introns_with_match <- subset(introns_with_match, select = -Row.names)
 write.csv(introns_with_match, opt$output)
-introns_wo_match  <- data[setdiff(seq_along(data), unique(queryHits(hits))) ]
+introns_wo_match <- data[setdiff(seq_along(data), unique(queryHits(hits))), ]
 write.csv(introns_wo_match, append_to_basename(opt$output))
