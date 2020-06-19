@@ -11,13 +11,14 @@ workdir: config.get("path", ".")
 name = config["samples"].keys()
 contrasts = config["contrasts"]
 
+
 rule all:
     input:
         "majiq/majiq_junctions.csv",
         "leafcutter/leafcutter_junctions.csv",
-        "junctionseq/junctionseq_junctionse.csv",
-    # "{method}/{method}_junctions_annotated.csv"
-
+        "junctionseq/junctionseq_junctions.csv",
+        "results/SJ_annotated.csv",
+        "results/SJ_annotated_assigned.csv"
 
 rule parse_majiq:
     input:
@@ -31,6 +32,7 @@ rule parse_majiq:
     script:
         '../analysis/parse_majiq_output.R'
 
+
 rule parse_leafcutter:
     input:
         expand("leafcutter/{contrast}/{contrast}_cluster_significance.txt", contrast=contrasts.keys())
@@ -40,30 +42,42 @@ rule parse_leafcutter:
         "R/3.6.0"
     params:
         cutoff = 0.05
-    script: "../analysis/parse_leafcutter_output.R"
+    script:
+        "../analysis/parse_leafcutter_output.R"
+
 
 rule parse_junctionseq:
     input:
         expand("junctionseq/analysis/{contrast}_sigGenes.results.txt.gz", contrast=contrasts.keys())
     output:
-        "junctionseq/junctionseq_junctionse.csv"
+        "junctionseq/junctionseq_junctions.csv"
     envmodules:
         "R/3.6.0"
     params:
         cutoff = 0.05
-    script: "../analysis/parse_junctionseq_output.R"
-#
-# rule annotate:
-#     input:
-#         table = "{method}/{method}_junctions.csv",
-#         annotation = "stringtie/merged/merged.combined.gtf"
-#     output:
-#         "{method}/{method}_junctions_annotated.csv"
-#     shell:
-#         "Rscript analysis/annotate_SJ.R -i {input.table} -a {input.annotation} -o {output}"Rscript analysis/annotate_SJ.R -i majiq/majiq_junctions.csv -a denovo_tx/merged/merged.combined.gtf -o majiq/majiq_junctions_annotated.csv
-#
-#
-# # rule write_simplified_result:
-# #     input:
-# #     output:
-# #     shell: "Rscript simplify.R"
+    script:
+        "../analysis/parse_junctionseq_output.R"
+
+
+rule annotate:
+    input:
+        expand("{method}/{method}_junctions.csv", method=['majiq', 'leafcutter', 'junctionseq']),
+        "stringtie/merged/merged.combined.gtf"
+    envmodules:
+        "R/3.6.0"
+    output:
+        "results/SJ_annotated.csv"
+    script:
+        "../analysis/annotate_SJ.R"
+
+
+rule assign_AS_type:
+    input:
+        "results/SJ_annotated.csv",
+        "stringtie/merged/merged.combined.gtf"
+    envmodules:
+        "R/3.6.0"
+    output:
+        "results/SJ_annotated_assigned.csv"
+    script:
+        "../analysis/assign_AS_type.R"
