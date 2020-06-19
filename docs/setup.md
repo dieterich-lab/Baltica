@@ -20,16 +20,16 @@ Baltica can be used with the [modules system](https://modules.readthedocs.io/en/
 environments. Here we describe the installation with conda. 
 
 - Install snakemake 
-	```bash
-    conda install -c bioconda snakemake==5.2 --yes
-	```
+```bash
+conda install -c bioconda snakemake==5.2 --yes
+```
 
-Many of dependencies can created with environments with conda, go to `baltica/envs` directory and install with:
+Some of dependencies can be directly created with conda, go to `baltica/envs` directory and install with:
     - `conda env create -f stringtie.yml --yes` 
     - `conda env create -f qc.yml --yes`
 
-
-In general, R packages do not play nicely with conda, but we still use it because it's flexibility and the ability to create isolated software environments.
+In general, R packages do not play nicely with conda, but we still use it because it's flexibility and the ability to 
+create isolated software environments.
 
 
 ## Majiq installation
@@ -77,3 +77,7 @@ conda env create -f junctionseq-env.yml --yes
 conda activate leafcutter
 Rscript -e "BiocManager::install('JunctionSeq',  INSTALL_opts = c('--no-lock'))"
 ```
+
+## Clone or installing baltica?
+Baltica can either installed as python package or cloned from github for each project.
+Users who intend to modify the workflows should clone the framework and keep the change under version.

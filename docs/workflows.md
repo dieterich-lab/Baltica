@@ -1,6 +1,7 @@
+
 This document details on the implementation and usage for each workflow in Baltica.
 
-Baltica comprises a series of SnakeMake workflows (snakemake files with extension .smk). Each file comprise a series 
+Baltica comprises a collection of SnakeMake workflows (snakemake files with extension .smk). Each file determines a series 
 of sub-tasks (rules). Generally, the sub-tasks should be executed in a specific order. 
 
 

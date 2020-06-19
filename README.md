@@ -58,9 +58,9 @@ For other cluster configuration templates see [Snakemake profiles](https://githu
 ## Documentation
 Please see documentation:
    - [Setting up Baltica: long edition](docs/setup.md)
-   - [Method installation](docs/other_file.md)  
-   - [Analysis](docs/other_file.md)
-   - [Benchmark](docs/other_file.md)
+   - [Workflows](docs/worflows.md)  
+   - [Analysis](docs/analysis.md)
+   - [Benchmark](docs/benchmark.md)
  
 ## Contribution
 
