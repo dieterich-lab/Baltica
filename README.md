@@ -14,7 +14,7 @@
 
 This instructions are specific for computer cluster using Slurm. Baltica uses Snakemake, which support many difference 
 grid engines systems, for instructions on how to use it on different systems please see 
-[Setting up Baltica: long edition](docs/other_file.md) or contact us. 
+[Setting up Baltica: long edition](docs/setup.md) or contact us. 
 
 ### Setting up Baltica (once):
 - Clone Baltica
@@ -58,7 +58,7 @@ For other cluster configuration templates see [Snakemake profiles](https://githu
 ## Documentation
 Please see documentation:
    - [Setting up Baltica: long edition](docs/setup.md)
-   - [Workflows](docs/worflows.md)  
+   - [Workflows](docs/workflows.md)  
    - [Analysis](docs/analysis.md)
    - [Benchmark](docs/benchmark.md)
  
