@@ -69,9 +69,9 @@ majiq_threshold:
 fdr:
   0.05
 
-qc_env_prefix: source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate qc;
-leafcutter_env_prefix: source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate leafcutter;
-majiq_env_prefix: source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate majiq;
-junctionseq_env_prefix: source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate junctionseq;
-stringtie_env_prefix: source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate stringtie;
+#qc_env_prefix: source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate qc;
+#leafcutter_env_prefix: source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate leafcutter;
+#majiq_env_prefix: source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate majiq;
+#junctionseq_env_prefix: source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate junctionseq;
+#stringtie_env_prefix: source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate stringtie;
 #analysis_env_prefix: ""

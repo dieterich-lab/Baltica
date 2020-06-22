@@ -9,3 +9,7 @@ build:
    mem: 64000
    cpus-per-task: 20
    out: logs/{rule}_{wildcards}.log
+
+rseqc_read_duplication:
+    mem: 32000
+    out: logs/{rule}_{wildcards}.log
