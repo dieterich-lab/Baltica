@@ -36,11 +36,12 @@ localrules: all, concatenate, symlink
 
 include: "symlink.smk"
 
-if config["leafcutter_env_prefix"]:
+if "leafcutter_env_prefix" in config:
     shell.prefix(config["leafcutter_env_prefix"])
 
 rule all:
     input:
+        'logs/'
         expand("mappings/{name}.bam", name=name),
         expand("leafcutter/{comp_names}/{comp_names}_cluster_significance.txt", comp_names=comp_names),
         expand("leafcutter/{name}.junc", name=name)

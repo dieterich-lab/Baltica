@@ -1,4 +1,5 @@
-
+rule all:
+    input: 'results/SJ_annotated_assigned.csv'
 
 subworkflow qc:
     workdir:
@@ -24,5 +25,9 @@ subworkflow junctionseq:
     snakefile:
         "rules/qc.smk"
 
-rule analysis:
-    pass
+subworkflow analysis:
+    workdir:
+        config.get("path", ".")
+    snakefile:
+        "rules/analysis.smk"
+

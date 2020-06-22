@@ -18,7 +18,7 @@ workdir: config.get("path", ".")
 
 include: "symlink.smk"
 
-if config["qc_env_prefix"]:
+if "qc_env_prefix" in config:
     shell.prefix(config["qc_env_prefix"])
 
 rule all:

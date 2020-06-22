@@ -41,7 +41,7 @@ mapping = {c: [x for x in name if x[: x.index("_")] == c]
            for c in conditions}
 localrules: symlink, create_ini
 
-if config["majiq_env_prefix"]:
+if 'majiq_env_prefix' in config:
     shell.prefix(config["majiq_env_prefix"])
 
 include: "symlink.smk"

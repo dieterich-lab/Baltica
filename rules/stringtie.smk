@@ -48,7 +48,7 @@ cond = set(cond)
 
 include: "symlink.smk"
 
-if config["stringtie_env_prefix"]:
+if "stringtie_env_prefix" in config:
     shell.prefix(config["stringtie_env_prefix"])
 
 rule all:

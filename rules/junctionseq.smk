@@ -15,23 +15,21 @@ __copyright__ = "Copyright 2020, Dieterichlab"
 __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
-from itertools import groupby
-
+from itertools import groupby, chain
 workdir: config.get("path", ".")
 name = config["samples"].keys()
 sample = config["samples"].values()
 gtf_path = config["ref"]
 comp_names = config["contrasts"].keys()
 cond, rep = glob_wildcards("mappings/{cond}_{rep}.bam")
-d = {k: list(v) for k, v in groupby(
-    sorted(zip(cond, rep)), key=lambda x: x[0])}
 cond = set(cond)
+
 strandness = {
     'forward': '--stranded --fr_secondStrand',
     'reverse': '--stranded'
 }
 
-if config["junctionseq_env_prefix"]:
+if "junctionseq_env_prefix" in config:
     shell.prefix(config["junctionseq_env_prefix"])
 
 rule all:
@@ -72,10 +70,11 @@ rule create_decoder:
         "junctionseq/{comparison}_decoder.tab"
     run:
         ref, alt = wildcards[0].split('-vs-')
-        with open(str( output), "w") as fou:
+        with open(str(output), "w") as fou:
             fou.write("sample.ID\tgroup.ID\n")
-            for x in [*d[ref], *d[alt]]:
-                fou.write("{}_{}\t{}\n".format(x[0], x[1], x[0]))
+            for n in name:
+                if n.startswith(ref) or n.startswith(alt):
+                    fou.write("{0}\t{1}\n".format(n, n.split('_')[0]))
 
 rule cat_decoder:
     input: decoder=expand("junctionseq/{comparison}_decoder.tab", comparison=comp_names )
