@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import sys
 
 valid_spliced_reads=0

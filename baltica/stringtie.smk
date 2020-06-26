@@ -19,6 +19,7 @@ __license__ = "MIT"
 from itertools import groupby
 import re
 
+
 def extract_samples_replicates(samples, _pattern=re.compile('^(.+)_(.+)$')):
     """
     Extract pairs of condition and replicate name from sample files

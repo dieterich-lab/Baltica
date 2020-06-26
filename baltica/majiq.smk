@@ -16,7 +16,14 @@ __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2020, Dieterichlab"
 __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
+try:
+    import baltica
+    baltica_installed = True
+except ImportError:
+    baltica_installed = False
 
+def dir_source(script, ex):
+    return script if baltica_installed else srcdir(f"{ex} ../scripts/{script}")
 
 def comparison(wc, index, mapping):
     condition = wc.contrast.split("-vs-")[index]
@@ -48,7 +55,7 @@ include: "symlink.smk"
 
 rule all:
     input:
-         'logs/'
+         'logs/',
          expand("mappings/{name}.bam", name=name),
          "majiq/build.ini",
          expand("majiq/{name}.majiq", name=name),
@@ -80,8 +87,8 @@ rule create_ini:
 rule gtf_to_gff:
     output: "majiq/ref.gff"
     params: ref=config["ref"],
-            gtf2gff3_path=srcdir("../scripts/gtf2gff3.pl")
-    shell: "perl {params.gtf2gff3_path} {params.ref} > {output}"
+            gtf2gff3_path=dir_source("gtf2gff3.pl", 'perl')
+    shell: "{params.gtf2gff3_path} {params.ref} > {output}"
 
 
 rule build:

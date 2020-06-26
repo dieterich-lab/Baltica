@@ -1,4 +1,4 @@
-#!/usr/bin/Rscript --vanilla
+#!/usr/bin/env Rscript
 suppressPackageStartupMessages({
   library(tidyr)
   library(stringr)

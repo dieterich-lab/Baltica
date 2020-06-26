@@ -1,4 +1,4 @@
-#!/usr/bin/Rscript --vanilla
+#!/usr/bin/env Rscript
 # Title     : annotate_SJ from many DJU methods
 # Objective : To annotate SJ called DS by many DJU methods with gene and transcript level information
 # Created by: Thiago Britto-Borges (thiago.brittoborges@uni-heidelberg.de)

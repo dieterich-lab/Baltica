@@ -1,13 +1,5 @@
-#!/usr/bin/env python
-# -*- coding: utf-8
-"""
-Created on 11:13 2019-03-14 2019 
-
-"""
-from pathlib import Path
+from itertools import combinations
 
 
-def basename(path, suffix=None):
-    if suffix:
-        return str(Path(path).with_suffix(suffix).name)
-    return str(Path(path).name)
+def all_against_all_design(conditions):
+    return [(a, b) for a, b in combinations(conditions, 2)]

@@ -1,4 +1,4 @@
-#!/usr/bin/env Rscript --vanila
+#!/usr/bin/env Rscript
 # Title : JunctionSeq analysis
 # Objective : Call functions for JunctionSeq analysis in context of Baltica
 # Created by: tbrittoborges

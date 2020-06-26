@@ -17,6 +17,15 @@ __license__ = "MIT"
 
 from pathlib import Path
 
+try:
+    import baltica
+    baltica_installed = True
+except ImportError:
+    baltica_installed = False
+
+def dir_source(script, ex):
+    return script if baltica_installed else srcdir(f"{ex} ../scripts/{script}")
+
 
 def basename(path, suffix=None):
     if suffix:
@@ -49,24 +58,28 @@ rule all:
 # step 1.1
 rule bam2junc:
     input: "mappings/{name}.bam"
-    output: bed="leafcutter/{name}.bed",
+    output:
+          bed="leafcutter/{name}.bed",
           junc="leafcutter/{name}.junc"
-    params: filter_cs_path=srcdir("../scripts/filter_cs.py"),
-          sam2bed_path=srcdir("../scripts/sam2bed.pl"),
-          bed2junc_path=srcdir("../scripts/bed2junc.pl"),
+    params:
+          filter_cs_path=dir_source("filter_cs.py", "python"),
+          sam2bed_path=dir_source("sam2bed.pl", "perl"),
+          bed2junc_path=dir_source("bed2junc.pl", "perl"),
           use_strand="--use-RNA-strand" if config.get("strandness") else ""
-    envmodules: "python2 samtools"
+    envmodules: "samtools"
     conda: "../envs/leafcutter.yml"
-    shell: """
+    shell:
+         """
          samtools view {input} \
-         | python2 {params.filter_cs_path} \
-         | perl {params.sam2bed_path} {params.use_strand} - {output.bed}
-         perl {params.bed2junc_path} {output.bed} {output.junc}
+         | {params.filter_cs_path} \
+         | {params.sam2bed_path} {params.use_strand} - {output.bed}
+          {params.bed2junc_path} {output.bed} {output.junc}
          """
 
 rule concatenate:
     input: expand(rules.bam2junc.output, name=name)
-    output: junc="leafcutter/{comp_names}/juncfiles.txt",
+    output:
+          junc="leafcutter/{comp_names}/juncfiles.txt",
           test="leafcutter/{comp_names}/diff_introns.txt"
     run:
         comp = output.junc.split("/")[1]
@@ -88,17 +101,18 @@ rule concatenate:
 # m= min numb reads per cluster, l = intron length
 rule intron_clustering:
     input: rules.concatenate.output.junc
-    params: m=50,
+    params:
+          m=50,
           l=500000,
           prefix="leafcutter/{comp_names}/{comp_names}",
           n="{comp_names}",
           strand="--strand True" if config.get("strandness") else "",
-          script_path=srcdir("../scripts/leafcutter_cluster.py")
+          script_path=dir_source("leafcutter_cluster.py", "python")
     output: "leafcutter/{comp_names}/{comp_names}_perind_numers.counts.gz"
     conda: "../envs/leafcutter.yml"
-    envmodules: "python2 "
-    shell: """
-         python2  {params.script_path} \
+    shell:
+         """
+         {params.script_path} \
          -j {input} -m {params.m} -o {params.prefix} -l {params.l} {params.strand}
          rm *{params.n}.sorted.gz
          """
@@ -106,33 +120,38 @@ rule intron_clustering:
 # step 3.1
 rule gtf_to_exon:
     input: gtf_path
-    output: a="leafcutter/" + basename(gtf_path, suffix=".gz"),
+    output:
+          a="leafcutter/" + basename(gtf_path, suffix=".gz"),
           b="leafcutter/exons.gtf.gz"
-    params: gtf_to_exon=srcdir("../scripts/gtf_to_exons.R")
+    params: gtf_to_exon=dir_source("gtf_to_exons.R", "Rscript")
     conda: "../envs/leafcutter.yml"
     envmodules:
         "R/3.6.0"
-    shell: """
+    shell:
+         """
          gzip -c {input} > {output.a}
-         Rscript {params.gtf_to_exon} {output.a} {output.b}
+         {params.gtf_to_exon} {output.a} {output.b}
          """
 
 # step 3.2
 rule differential_splicing:
-    input: a=rules.gtf_to_exon.output.b,
+    input:
+         a=rules.gtf_to_exon.output.b,
          b="leafcutter/{comp_names}/{comp_names}_perind_numers.counts.gz",
          c="leafcutter/{comp_names}/diff_introns.txt"
     output: "leafcutter/{comp_names}/{comp_names}_cluster_significance.txt"
-    params: min_samples_per_group=config["min_samples_per_group"],
+    params:
+          min_samples_per_group=config["min_samples_per_group"],
           min_samples_per_intron=config["min_samples_per_intron"],
           prefix="leafcutter/{comp_names}/{comp_names}",
-          leafcutter_ds_path=srcdir("../scripts/leafcutter_ds.R")
+          leafcutter_ds_path=dir_source("leafcutter_ds.R", "Rscript")
     threads: 10
     conda: "../envs/leafcutter.yml"
     envmodules:
         "R/3.6.0 leafcutter"
-    shell: """
-         Rscript {params.leafcutter_ds_path} --exon_file={input.a} \
+    shell:
+         """
+         {params.leafcutter_ds_path} --exon_file={input.a} \
          {input.b} {input.c} --num_threads {threads} --output_prefix={params.prefix} \
          -i {params.min_samples_per_intron} -g {params.min_samples_per_group}
          """

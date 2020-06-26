@@ -16,6 +16,12 @@ __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
 from itertools import groupby, chain
+try:
+    import baltica
+    baltica_installed = True
+except ImportError:
+    baltica_installed = False
+
 workdir: config.get("path", ".")
 name = config["samples"].keys()
 sample = config["samples"].values()
@@ -28,6 +34,9 @@ strandness = {
     'forward': '--stranded --fr_secondStrand',
     'reverse': '--stranded'
 }
+def dir_source(script, ex):
+    return script if baltica_installed else srcdir(f"{ex} ../scripts/{script}")
+
 
 if "junctionseq_env_prefix" in config:
     shell.prefix(config["junctionseq_env_prefix"])
@@ -110,7 +119,7 @@ rule junctioseq_analysis:
     output:
         "junctionseq/analysis/{comparison}_sigGenes.results.txt.gz"
     threads: 10
-    params: script = srcdir("../scripts/junctionSeq.R")
+    params: script = dir_source("junctionSeq.R", "Rscript")
     envmodules: "R/3.6.0 junctionseq"
     shell:
-        "Rscript --vanilla {params.script} {input.decoder} {output} {threads}"
+        "{params.script} {input.decoder} {output} {threads}"

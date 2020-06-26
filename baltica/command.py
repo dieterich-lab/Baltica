@@ -12,15 +12,24 @@ import yaml
 
 import snakemake
 
-from . import __version__, _program
+try:
+    import baltica
+    baltica_installed = True
+except ImportError:
+    baltica_installed = False
 
-desc = f"{_program} implements workflows for differential junction usage and consequence analysis. Visit https://github.com/dieterich-lab/Baltica for more information. "
+_program = "baltica"
+__version__ = "0.1.0"
+p = Path(__file__)
+
+desc = f"{_program} implements workflows for differential junction usage and consequence analysis. Visit " \
+       f"https://github.com/dieterich-lab/Baltica for more information. "
 
 
-def main(argv):
+def main():
     parser = argparse.ArgumentParser(prog=_program,
                                      description=desc,
-                                     usage="""Baltica <workflow> <config> <options>""")
+                                     usage=f"{_program} <workflow> <config> <options>")
     parser.add_argument(
         "workflow",
         choices=["leafcutter", "majiq", "junctionseq", "qc", "stringtie", "analysis"],
@@ -63,13 +72,13 @@ def main(argv):
         "--cluster",
         metavar='str',
         default="sbatch --parsable --mem {cluster.mem} --out {cluster.out} --error {cluster.out} -c {cluster.cpu}",
-        help='Snajemake cluster parameter (default: %(default)s)'
+        help='Snakemake cluster parameter (default: %(default)s)'
     ),
     parser.add_argument(
         "--cluster-config",
         metavar='str',
-        default="/prj/Niels_Gehring/newData_March_2018/tbb_analysis/cluster.yaml",
-        help='Snajemake cluster configuration (default: %(default)s)'
+        default=str(p.parent / 'cluster.yml'),
+        help='Snakemake cluster configuration (default: %(default)s)'
     ),
     parser.add_argument(
         "--nodes",
@@ -91,10 +100,9 @@ def main(argv):
         print(e, file=sys.stderr)
         sys.exit(1)
 
-    argv = parser.parse_args(argv)
+    argv = parser.parse_args(tuple(sys.argv[1:]))
     # check if workflow file is readable
-    p = Path(__file__).parent.parent / "rules" / argv.workflow
-    snakefile = p.with_suffix(".smk")
+    snakefile = (p.parent / argv.workflow).with_suffix(".smk")
 
     with open(argv.config) as fin:
         workflow_info = yaml.safe_load(fin)
@@ -109,10 +117,9 @@ def main(argv):
         print(f"Error: cannot find configuration file {argv.config} \n", file=sys.stderr)
         sys.exit(1)
 
-    # TODO handling cluster profile
-    # profile_config = Path(snakemake.get_profile_file(argv.profile, 'config.yaml', return_default=True))
-    # SBATCH_DEFAULTS = """'sbatch -p {cluster.partition} --mem {cluster.mem} --out {cluster.out} --error {cluster.out} -c {cluster.cpu}'"""
-    # CLUSTER_CONFIG = "cluster.yaml"
+    # TODO handling cluster profile profile_config = Path(snakemake.get_profile_file(argv.profile, 'config.yaml',
+    #  return_default=True)) SBATCH_DEFAULTS = """'sbatch -p {cluster.partition} --mem {cluster.mem} --out {
+    #  cluster.out} --error {cluster.out} -c {cluster.cpu}'""" CLUSTER_CONFIG = "cluster.yaml"
 
     print("--------")
     print("details:")
@@ -139,7 +146,7 @@ def main(argv):
         cluster=argv.cluster,
         cluster_config=argv.cluster_config,
         cluster_sync=None,
-        nodes=argv.nodes
+        # nodes=argv.nodes
     )
 
     if success:
@@ -148,4 +155,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    main(argv=tuple(sys.argv[1:]))
+    main()

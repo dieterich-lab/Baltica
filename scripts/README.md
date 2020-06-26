@@ -1,3 +1,6 @@
-# Leafcutter helper scripts
+# Scripts source:
 
-For usage documentation see https://github.com/davidaknowles/leafcutter
+|Tool|Repository|  
+|:---|:----------|
+| Leafcutter | https://github.com/davidaknowles/leafcutter |
+| JunctionSeq | https://github.com/hartleys/JunctionSeq |

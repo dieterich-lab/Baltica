@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 # Title     : TODO
 # Objective : TODO
 # Created by: thiago

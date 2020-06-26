@@ -1,5 +1,4 @@
 #!/usr/bin/env Rscript
-
 suppressPackageStartupMessages({
   library(GenomicRanges)
   library(optparse)
