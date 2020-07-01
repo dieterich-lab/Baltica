@@ -37,7 +37,7 @@ grid engines systems, for instructions on how to use it on different systems ple
     
  - (optional) Test with the majiq workflow with a toy dataset. Should take less than a minute:
     ```bash
-    snakemake -s rules/majiq.smk --configfile config.yml --cores 10 --use-envmodule
+    snakemake -s baltica/majiq.smk --configfile config.yml --cores 10 --use-envmodule
     ```
   
    
