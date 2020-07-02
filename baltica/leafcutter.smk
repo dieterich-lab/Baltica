@@ -144,7 +144,7 @@ rule differential_splicing:
           min_samples_per_group=config["min_samples_per_group"],
           min_samples_per_intron=config["min_samples_per_intron"],
           prefix="leafcutter/{comp_names}/{comp_names}",
-          leafcutter_ds_path=dir_source("leafcutter_ds.R", "Rscript")
+          leafcutter_ds_path=dir_source("leafcutter_ds_pair.R", "Rscript")
     threads: 10
     conda: "../envs/leafcutter.yml"
     envmodules:
