@@ -1,8 +1,11 @@
 #!/usr/bin/env python
-
-from setuptools import setup
-from baltica.command import __version__, _program
+import os
 import pathlib
+import sys
+from setuptools.command.install import install
+from setuptools import setup
+
+from baltica.command import __version__, _program
 
 with open('requirements.txt') as f:
     required = [x for x in f.read().splitlines() if not x.startswith("#")]
@@ -10,7 +13,32 @@ with open('requirements.txt') as f:
 HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 
+
+def post_install():
+    import shutil
+    import fileinput
+
+    path = shutil.which("leafcutter_cluster.py")
+    with fileinput.input(files=path, inplace=True) as f:
+        for i, line in enumerate(f):
+            if i != 0:
+                print(line, end='')
+            else:
+                print('#!/usr/bin/env python2')
+
+
+# use a custom install https://blog.niteo.co/setuptools-run-custom-code-in-setup-py/
+class CustomInstallCommand(install):
+    """Customized setuptools install command - prints a friendly greeting."""
+    def run(self):
+        install.run(self)
+        print('Running post install task')
+        post_install()
+
+
+
 setup(name=_program,
+      cmdclass={'install': CustomInstallCommand},
       version=__version__,
       packages=['baltica'],
       description='Workflows for differential junction usage with Baltica',
@@ -40,7 +68,7 @@ setup(name=_program,
           "scripts/gtf_to_exons.R",
           "scripts/junctionSeq.R",
           "scripts/leafcutter_cluster.py",
-          "scripts/leafcutter_ds.R",
+          "scripts/leafcutter_ds_pair.R",
           "scripts/parse_junctionseq_output.R",
           "scripts/parse_leafcutter_output.R",
           "scripts/parse_majiq_output.R",
