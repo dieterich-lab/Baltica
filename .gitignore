@@ -67,4 +67,4 @@ gen
 .old/
 *.DS_Store
 *.snakemake
-sirv_test/*
+sirv_test/*site/

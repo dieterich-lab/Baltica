@@ -1,0 +1,35 @@
+site_name: Baltica Documentation
+site_url: https://github.com/dieterich-lab/Baltica
+site_author: Thiago Britto-Borges
+repo_url: https://github.com/dieterich-lab/Baltica
+edit_uri: tree/master/docs/
+site_description: Integrated differential junction usage (DJU) and consequence analysis with an ensemble of methods
+copyright: |
+  <br><span class="md-footer-custom-text"> Baltica is distribuited with a MIT License </span>
+  <br><span class="md-footer-custom-text">  <a href="https://www.klinikum.uni-heidelberg.de/en/zentrum-fuer-innere-medizin-medizin-klinik/innere-medizin-iii-kardiologie-angiologie-und-pneumologie/forschung/forschung/klaus-tschira-institut-fuer-computational-cardiology/">Dieterich lab</a>  </span>
+docs_dir: docs/
+theme:
+  name: material
+  features:
+    - instant
+  palette:
+    primary: blue
+    accent: blue-grey
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+nav:
+  - Index: README.md
+  - Getting started: setup.md 
+  - Methods: workflows.md 
+  - Result analysis: analysis.md
+  - Benchmark: benchmark.md  
+  - Tips: tips.md 
+  # - License: license.md
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - footnotes
+
