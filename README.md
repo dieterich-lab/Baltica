@@ -1,9 +1,11 @@
 # Baltica
+_________________
 
-![Baltica: integrated differential junction usage (DJU) and consequence analysis with an ensemble of methods](baltica_logo.png?raw=true "Baltica")
+![Baltica: integrated differential junction usage (DJU) and consequence analysis with an ensemble of methods](baltica_logo.png)
 *Baltica*: integrated differential junction usage (DJU) and consequence analysis with an ensemble of methods
 
 ## Features
+_________________
 
 - SnakeMake workflows for DJU: JunctionSeq, Majiq and LeafCutter
 - Process and integrate the results from the methods  
@@ -12,6 +14,7 @@
 - (WIP) Consequence of differently spliced junctions
 
 ## Instructions for using Baltica
+_________________
 
 This instructions are specific for computer cluster using Slurm. Baltica uses Snakemake, which support many difference 
 grid engines systems, for instructions on how to use it on different systems please see 
@@ -47,13 +50,11 @@ grid engines systems, for instructions on how to use it on different systems ple
     baltica majiq --configfile baltica/config.yml --use-envmodule
  ```
 
-
  - (optional) Use baltica without installing in a toy dataset :
     ```bash
     snakemake -s baltica/majiq.smk --configfile config.yml --cores 10 --use-envmodule
     ```
   
-   
 ### For a specific project (for each project)
 - (optional) Clone baltica to keep changes under version control
 - set the configuration file
@@ -76,6 +77,7 @@ Please see documentation:
    - [Benchmark](docs/benchmark.md)
  
 ## Contribution
+_________________
 
 Feedback or issue reports are welcome. Please submit via [the GitHub issue tracker](https://github.com/dieterich-lab/Baltica/issues)
 Please provide the following information while submitting issue reports:
@@ -84,4 +86,5 @@ Please provide the following information while submitting issue reports:
 - If possible, also provide sample data so we can try to reproduce the error
 
 ## Citation
+_________________
 TBD
