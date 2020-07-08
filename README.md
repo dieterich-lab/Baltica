@@ -1,5 +1,6 @@
 # Baltica
 
+![Baltica: integrated differential junction usage (DJU) and consequence analysis with an ensemble of methods](baltica_logo.png?raw=true "Baltica")
 *Baltica*: integrated differential junction usage (DJU) and consequence analysis with an ensemble of methods
 
 ## Features
@@ -34,8 +35,20 @@ grid engines systems, for instructions on how to use it on different systems ple
     ```bash
     export PATH="$HOME/.local/bin/:$PATH"
     ```
-    
- - (optional) Test with the majiq workflow with a toy dataset. Should take less than a minute:
+
+ - Install baltica with:
+ ```bash 
+    cd Baltica/
+    python setup.py install
+ ```
+
+ - Test with the toy dataset:
+ ```bash 
+    baltica majiq --configfile baltica/config.yml --use-envmodule
+ ```
+
+
+ - (optional) Use baltica without installing in a toy dataset :
     ```bash
     snakemake -s baltica/majiq.smk --configfile config.yml --cores 10 --use-envmodule
     ```
