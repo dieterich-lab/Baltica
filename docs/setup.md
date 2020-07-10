@@ -71,7 +71,7 @@ Rscript -e "Sys.setenv(TAR = '/bin/tar'); devtools::install_github('davidaknowle
 ```{bash}
 Rscript -e "Sys.setenv(TAR = '/bin/tar'); devtools::install_github('davidaknowles/leafcutter/leafcutter')"
 ```
-## Install Junctionseq
+## Install Junctionseq[^4]
 
 JunctionSeq should be installed directly from BioConductor
 
