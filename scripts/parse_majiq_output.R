@@ -11,7 +11,7 @@ option_list <- list(
   make_option(
     c("-i", "--input"),
     type = "character",
-    default = "majiq/voila/*_voila.tsv",
+    default = "majiq/*/*.deltapsi.tsv",
     help = "Path with glob character to Majiq result files. [default %default]",
     metavar = "character"
   ),
@@ -30,8 +30,7 @@ option_list <- list(
   )
 )
 # enabling both baltica or snakemake input
-tryCatch(
-  {
+if (exists('snakemake')) {
     opt <- list(
       input = snakemake@input,
       output = snakemake@output[[1]],
@@ -43,7 +42,7 @@ tryCatch(
      pattern = 'majiq/voila/(.+)_voila.tsv',
      replacement = '\\1')
 
-  }, error = function(e) {
+  } else {
 
     opt <- parse_args(OptionParser(option_list = option_list))
     files <- Sys.glob(opt$input)
@@ -51,8 +50,9 @@ tryCatch(
       x = files,
       replacement = '\\1',
       pattern = sub(x=opt$input, pattern='\\*', replacement = '(.*)')
-)
-})
+      )
+  }
+
 
 
 # rename column names from majiq result due to the presence of spaces

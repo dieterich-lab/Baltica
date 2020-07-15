@@ -6,11 +6,20 @@ Snakemake workflow for analysis within Baltica.
 usage:
     snakemake -s majiq.smk --configfile config.yaml -j 10
 """
+
+try:
+    import baltica
+    baltica_installed = True
+except ImportError:
+    baltica_installed = False
+
 workdir: config.get("path", ".")
 
 name = config["samples"].keys()
 contrasts = config["contrasts"]
 
+def dir_source(script, ex):
+    return script if baltica_installed else srcdir(f"{ex} ../scripts/{script}")
 
 rule all:
     input:
@@ -28,9 +37,12 @@ rule parse_majiq:
     envmodules:
         "R/3.6.0"
     params:
-        cutoff = 0.90
-    script:
-        '../analysis/parse_majiq_output.R'
+        cutoff = 0.90,
+    shell:
+        """
+        path=$(which parse_majiq_output.R)
+        $path --cutoff {params.cutoff}
+        """
 
 
 rule parse_leafcutter:
@@ -42,8 +54,11 @@ rule parse_leafcutter:
         "R/3.6.0"
     params:
         cutoff = 0.05
-    script:
-        "../analysis/parse_leafcutter_output.R"
+    shell:
+        """
+        path=$(which parse_leafcutter_output.R)
+        $path --cutoff {params.cutoff}
+        """
 
 
 rule parse_junctionseq:
@@ -55,8 +70,11 @@ rule parse_junctionseq:
         "R/3.6.0"
     params:
         cutoff = 0.05
-    script:
-        "../analysis/parse_junctionseq_output.R"
+    shell:
+        """
+        path=$(which parse_junctionseq_output.R)
+        $path --cutoff {params.cutoff}
+        """
 
 
 rule annotate:
@@ -67,8 +85,13 @@ rule annotate:
         "R/3.6.0"
     output:
         "results/SJ_annotated.csv"
-    script:
-        "../analysis/annotate_SJ.R"
+    params:
+        ref=config['ref']
+    shell:
+        """
+        path=$(which annotate_SJ.R)
+        $path --annotation {params.ref}         
+        """
 
 
 rule assign_AS_type:
@@ -79,5 +102,10 @@ rule assign_AS_type:
         "R/3.6.0"
     output:
         "results/SJ_annotated_assigned.csv"
-    script:
-        "../analysis/assign_AS_type.R"
+    params:
+        ref=config['ref']
+    shell:
+        """
+        path=$(which assign_AS_type.R)
+        $path --annotation {params.ref}
+        """

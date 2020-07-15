@@ -12,7 +12,7 @@ option_list <- list(
   make_option(
     c("-i", "--input"),
     type = "character",
-    default = "leafcutter/*_cluster_significance.txt",
+    default = "leafcutter/*/*_cluster_significance.txt",
     help = "Path with glob character to Leafcutter result files. [default %default]",
     metavar = "character"
   ),
@@ -31,8 +31,7 @@ option_list <- list(
   )
 )
 # enabling both baltica or snakemake input
-tryCatch(
-  {
+if (exists('snakemake')) {
     opt <- list(
       input = snakemake@input,
       output = snakemake@output[[1]],
@@ -44,7 +43,7 @@ tryCatch(
      pattern = 'leafcutter/(.+)_cluster_significance.txt',
      replacement = '\\1')
 
-  }, error = function(e) {
+  } else {
 
     opt <- parse_args(OptionParser(option_list = option_list))
     files <- Sys.glob(opt$input)
@@ -52,8 +51,8 @@ tryCatch(
       x = files,
       replacement = '\\1',
       pattern = sub(x=opt$input, pattern='\\*', replacement = '(.*)')
-)
-})
+      )
+  }
 
 
 message("Loading the cluster significance files")
@@ -73,13 +72,12 @@ cluster_sig <- lapply(
   )
 )
 
-file_names <- file_names
-
 names(cluster_sig) <- file_names
 cluster_sig <- bind_rows(cluster_sig, .id = 'comparison')
 
 message("Loading the effect sizes files")
 effec_size_files <- gsub(x = files, pattern = 'cluster_significance', replacement = 'effect_sizes')#  Sys.glob(file.path(out.path, '/*/*effect_sizes.txt'))
+message(files)
 es <- lapply(
   effec_size_files,
   read_tsv,
@@ -98,8 +96,7 @@ es <- bind_rows(es, .id = 'comparison')
 # parse the intron column for merging
 es$intron <- str_replace_all(es$intron, '_', ':')
 
-intron <- read_delim(es$intron, delim = ':', col_names = c('chr', 'start', 'end', 'clu', 'clu_number', 'strand')
-)
+intron <- read_delim(es$intron, delim = ':', col_names = c('chr', 'start', 'end', 'clu', 'clu_number', 'strand'))
 es <- bind_cols(es, intron)
 # cluster will be the pivot for merging
 es$cluster <- as.character(str_glue_data(es, "{chr}:{clu}_{clu_number}_{strand}"))

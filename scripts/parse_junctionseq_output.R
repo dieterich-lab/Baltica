@@ -31,8 +31,7 @@ option_list <- list(
   )
 )
 
-tryCatch(
-  {
+if (exists('snakemake')) {
     opt <- list(
       input = snakemake@input,
       output = snakemake@output[[1]],
@@ -44,16 +43,15 @@ tryCatch(
      pattern = 'junctionseq/analysis/(.+)_sigGenes.results.txt.gz',
      replacement = '\\1')
 
-  }, error = function(e) {
-
+  } else {
     opt <- parse_args(OptionParser(option_list = option_list))
     files <- Sys.glob(opt$input)
     file_names <- gsub(
       x = files,
       replacement = '\\1',
       pattern = sub(x=opt$input, pattern='\\*', replacement = '(.*)')
-)
-})
+    )
+  }
 
 
 message("Loading JunctionSeq result")
