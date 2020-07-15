@@ -7,9 +7,12 @@ __default__:
 build:
    partition: long
    mem: 64000
-   cpus-per-task: 20
    out: logs/{rule}_{wildcards}.log
 
-rseqc_read_duplication:
+qc:
    mem: 32000
+
+junctioseq_analysis:
+   mem: 32000
+   cpu: 10
    out: logs/{rule}_{wildcards}.log
