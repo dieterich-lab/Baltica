@@ -69,6 +69,11 @@ def main():
         help="Use environment modules for requirements."
     )
     parser.add_argument(
+        "--unlock",
+        action="store_true",
+        help="Use directory from previously running DAG that was interrupted."
+    ),
+    parser.add_argument(
         "--cluster",
         metavar='str',
         default="sbatch --parsable --mem {cluster.mem} --out {cluster.out} --error {cluster.out} -c {cluster.cpu}",
@@ -82,7 +87,7 @@ def main():
     ),
     parser.add_argument(
         "--nodes",
-        metavar='int',
+        type=int,
         default=10
     )
     parser.add_argument(
@@ -146,7 +151,8 @@ def main():
         cluster=argv.cluster,
         cluster_config=argv.cluster_config,
         cluster_sync=None,
-        # nodes=argv.nodes
+        unlock=argv.unlock,
+        nodes=argv.nodes
     )
 
     if success:
