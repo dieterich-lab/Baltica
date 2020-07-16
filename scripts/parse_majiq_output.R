@@ -11,7 +11,7 @@ option_list <- list(
   make_option(
     c("-i", "--input"),
     type = "character",
-    default = "majiq/*/*.deltapsi.tsv",
+    default = "majiq/voila/*voila.tsv",
     help = "Path with glob character to Majiq result files. [default %default]",
     metavar = "character"
   ),
@@ -53,44 +53,17 @@ if (exists('snakemake')) {
       )
   }
 
-
-
 # rename column names from majiq result due to the presence of spaces
 read_majiq_out <- function(x) {
-  col_names <- "Gene_Name
-Gene_ID
-LSV_ID
-E_dPSI_per_LSV_junction
-P_dPSI_beq_per_LSV_junction
-P_dPSI_leq_per_LSV_junction
-ref_E_PSI
-alt_E_PSI
-LSV_Type
-A5SS
-A3SS
-ES
-Num_Junctions
-Num_Exons
-De_Novo_Junctions
-chr
-strand
-Junctions_coords
-Exons_coords
-IR_coords
-UCSC_LSV_Link"
-
+  #           "Gene_Name Gene_ID LSV_ID E_dPSI_per_LSV_junction P_dPSI_beq_per_LSV_junction P_dPSI_leq_per_LSV_junction ref_E_PSI alt_E_PSI LSV_Type A5SS A3SS ES Num_Junctions Num_Exons De_Novo_Junctions chr strand Junctions_coords Exons_coords IR_coords UCSC_LSV_Link"  
+  col_names <- "gene_name gene_id lsv_id mean_dpsi_per_lsv_junction probability_changing probability_non_changing ref_mean_psi alt_mean_psi lsv_type num_junctions num_exons de_novo_junctions chr strand junctions_coords exons_coords ir_coords ucsc_lsv_link"
   read_tsv(
     x,
-    col_names = strsplit(col_names, '\n')[[1]],
+    col_names = strsplit(col_names, ' ')[[1]],
     comment = '#',
     skip = 1,
     cols(
-      .default = col_character(),
-      A5SS = col_logical(),
-      A3SS = col_logical(),
-      ES = col_logical(),
-      Num_Junctions = col_double(),
-      Num_Exons = col_double()
+      .default = col_character()
     )
   )
 }
@@ -101,26 +74,26 @@ names(res) <- file_names
 
 res <- bind_rows(res, .id = 'comparison') %>%
   separate_rows(
-    "Junctions_coords",
-    "E_dPSI_per_LSV_junction",
-    "P_dPSI_beq_per_LSV_junction",
-    "P_dPSI_leq_per_LSV_junction",
-    "ref_E_PSI",
-    "alt_E_PSI",
+    "junctions_coords",
+    "mean_dpsi_per_lsv_junction",
+    "probability_changing",
+    "probability_non_changing",
+    "ref_mean_psi",
+    "alt_mean_psi",
     sep = ';',
     convert = T
   )
 # flag canonical SJ
 res <- res %>%
-  arrange(comparison, LSV_ID, ref_E_PSI) %>%
-  group_by(comparison, LSV_ID) %>%
+  arrange(comparison, lsv_id, ref_mean_psi) %>%
+  group_by(comparison, lsv_id) %>%
   mutate(is_canonical = row_number() == 1) %>%
   ungroup()
 
 
 junction_pattern <- "(\\d+)-(\\d+)"
 junctions_coords <- str_match(
-  res$Junctions_coords, junction_pattern)[, c(2, 3)]
+  res$junctions_coords, junction_pattern)[, c(2, 3)]
 
 res['start'] <- junctions_coords[, 1]
 res['end'] <- junctions_coords[, 2]
@@ -130,17 +103,16 @@ res <- dplyr::select(res, c(
   chr,
   start,
   end,
-  comparison,
-  P_dPSI_beq_per_LSV_junction,
   strand,
-  LSV_ID,
-  P_dPSI_leq_per_LSV_junction,
-  E_dPSI_per_LSV_junction,
-  ref_E_PSI,
-  alt_E_PSI,
+  comparison,
+  probability_changing,
+  probability_non_changing,
+  lsv_id,
+  ref_mean_psi,
+  alt_mean_psi,
   is_canonical)
 ) %>%
-  filter(P_dPSI_beq_per_LSV_junction > opt$cutoff) %>%
+  filter(probability_changing > opt$cutoff) %>%
   mutate(method = 'majiq')
 
 message('Number of junctions after filtering ', nrow(res))
