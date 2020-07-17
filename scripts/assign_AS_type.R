@@ -14,21 +14,39 @@ option_list <- list(
     c("-i", "--input"),
     type = "character",
     help = "Path to parsed DJU result",,
-    metavar = "character"
+    metavar = "character",
+    default = "results/SJ_annotated.csv"
   ),
   make_option(
     c("-a", "--annotation"),
     type = "character",
     help = "Path to annotation, in the GTF/GFF format",
-    metavar = "character"
+    metavar = "character",
+    default = "stringtie/merged/merged.combined.gtf"
   ),
     make_option(
     c("-o", "--output"),
     type = "character",
     help = "Path to the output file",
-    metavar = "character"
+    metavar = "character",
+    default = "results/SJ_annotated_assigned.csv"
+
   )
 )
+
+# from https://stackoverflow.com/a/15373917/1694714
+thisFile <- function() {
+  cmdArgs <- commandArgs(trailingOnly = FALSE)
+  needle <- "--file="
+  match <- grep(needle, cmdArgs)
+  if (length(match) > 0) {
+    # Rscript
+    return(normalizePath(sub(needle, "", cmdArgs[match])))
+  } else {
+    # 'source'd via R console
+    return(normalizePath(sys.frames()[[1]]$ofile))
+  }
+}
 
 if(exists('snakemake')){
   opt <- list(
