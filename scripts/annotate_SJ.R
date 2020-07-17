@@ -4,10 +4,10 @@
 # Created by: Thiago Britto-Borges (thiago.brittoborges@uni-heidelberg.de)
 # Created on: 30.04.20
 suppressPackageStartupMessages({
-                                 library(optparse)
-                                 library(GenomicRanges)
-                                 library(rtracklayer)
-                               })
+  library(optparse)
+  library(GenomicRanges)
+  library(rtracklayer)
+})
 
 # from https://stackoverflow.com/a/15373917/1694714
 thisFile <- function() {
@@ -41,7 +41,8 @@ option_list <- list(
     c("-o", "--output"),
     type = "character",
     help = "Path to output",
-    metavar = "character"
+    metavar = "character",
+    default = "results/SJ_annotated.csv"
   )
 )
 # enabling both baltica or snakemake input
@@ -109,6 +110,6 @@ introns_with_match <- merge(
   by.y = "idx"
 )
 introns_with_match <- subset(introns_with_match, select = -Row.names)
-write.csv(introns_with_match, opt$output)
-introns_wo_match <- data[setdiff(seq_along(data), unique(queryHits(hits))), ]
-write.csv(introns_wo_match, append_to_basename(opt$output))
+write.csv(introns_with_match, opt$output, row.names=FALSE)
+#introns_wo_match <- data[setdiff(seq_along(data), unique(queryHits(hits))), ]
+#write.csv(introns_wo_match, sub('csv', opt$output, 'nomatch.csv'))
