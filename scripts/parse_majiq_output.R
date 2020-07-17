@@ -57,15 +57,15 @@ if (exists('snakemake')) {
 read_majiq_out <- function(x) {
   #           "Gene_Name Gene_ID LSV_ID E_dPSI_per_LSV_junction P_dPSI_beq_per_LSV_junction P_dPSI_leq_per_LSV_junction ref_E_PSI alt_E_PSI LSV_Type A5SS A3SS ES Num_Junctions Num_Exons De_Novo_Junctions chr strand Junctions_coords Exons_coords IR_coords UCSC_LSV_Link"  
   col_names <- "gene_name gene_id lsv_id mean_dpsi_per_lsv_junction probability_changing probability_non_changing ref_mean_psi alt_mean_psi lsv_type num_junctions num_exons de_novo_junctions chr strand junctions_coords exons_coords ir_coords ucsc_lsv_link"
-  read_tsv(
+  tmp <- read_tsv(
     x,
     col_names = strsplit(col_names, ' ')[[1]],
     comment = '#',
-    skip = 1,
     cols(
       .default = col_character()
     )
   )
+  tmp[-1,] # the skip parameter is not been registed in read_tsv 
 }
 
 res <- lapply(files, read_majiq_out)
