@@ -80,32 +80,28 @@ rule parse_junctionseq:
 rule annotate:
     input:
         expand("{method}/{method}_junctions.csv", method=['majiq', 'leafcutter', 'junctionseq']),
-        "stringtie/merged/merged.combined.gtf"
+        ref="stringtie/merged/merged.combined.gtf"
     envmodules:
         "R/3.6.0"
     output:
         "results/SJ_annotated.csv"
-    params:
-        ref=config['ref']
     shell:
         """
         path=$(which annotate_SJ.R)
-        $path --annotation {params.ref}         
+        $path
         """
 
 
 rule assign_AS_type:
     input:
         "results/SJ_annotated.csv",
-        "stringtie/merged/merged.combined.gtf"
+        ref="stringtie/merged/merged.combined.gtf"
     envmodules:
         "R/3.6.0"
     output:
         "results/SJ_annotated_assigned.csv"
-    params:
-        ref=config['ref']
     shell:
         """
         path=$(which assign_AS_type.R)
-        $path --annotation {params.ref}
+        $path
         """
