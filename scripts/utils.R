@@ -108,7 +108,7 @@ annotate_gene <- function(gtf, df) {
 #' @export
 
 aggregate_metadata <- function(gr){
-    stopifnot(is(gtf, "GRanges"))
+    stopifnot(is(gr, "GRanges"))
 
     equal_hits <- findOverlaps(gr, type='equal')
     metadata <- mcols(gr)[to(equal_hits), ]
