@@ -11,7 +11,7 @@ option_list <- list(
   make_option(
     c("-i", "--input"),
     type = "character",
-    default = "majiq/voila/*voila.tsv",
+    default = "majiq/voila/*_voila.tsv",
     help = "Path with glob character to Majiq result files. [default %default]",
     metavar = "character"
   ),
