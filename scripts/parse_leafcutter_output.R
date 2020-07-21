@@ -38,22 +38,16 @@ if (exists('snakemake')) {
       cutoff = snakemake@params[['cutoff']]
       )
     files <- opt$input
-    file_names <- gsub(
-     x = opt$input,
-     pattern = 'leafcutter/(.+)_cluster_significance.txt',
-     replacement = '\\1')
 
   } else {
 
     opt <- parse_args(OptionParser(option_list = option_list))
     files <- Sys.glob(opt$input)
-    file_names <- gsub(
-      x = files,
-      replacement = '\\1',
-      pattern = sub(x=opt$input, pattern='\\*', replacement = '(.*)')
-      )
   }
 
+file_names = str_split(files, '/', simplify = T)
+file_names = file_names[, ncol(file_names) - 1  ] 
+message('Comparison names: ', paste0(file_names, collapse='\t') )
 
 message("Loading the cluster significance files")
 cluster_sig_file <- files # Sys.glob(file.path(out.path, '/*/*_cluster_significance.txt'))
@@ -77,7 +71,6 @@ cluster_sig <- bind_rows(cluster_sig, .id = 'comparison')
 
 message("Loading the effect sizes files")
 effec_size_files <- gsub(x = files, pattern = 'cluster_significance', replacement = 'effect_sizes')#  Sys.glob(file.path(out.path, '/*/*effect_sizes.txt'))
-message(files)
 es <- lapply(
   effec_size_files,
   read_tsv,

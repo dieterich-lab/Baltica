@@ -97,7 +97,7 @@ names(introns) <- NULL
 introns <- aggregate_metadata(introns)
 hits <- filter_hits_by_diff(gr, introns, max_start = 2, max_end = 2)
 
-gr_metadata <- data[queryHits(hits), c('comparison', 'method')]
+gr_metadata <- mcols(gr)[queryHits(hits), c('comparison', 'method')]
 gr_metadata$idx <- subjectHits(hits)
 gr_metadata_agg <- aggregate(. ~ idx, gr_metadata, paste, collapse = ';')
 
