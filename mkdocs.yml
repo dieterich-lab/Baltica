@@ -36,8 +36,8 @@ markdown_extensions:
   - codehilite
   - footnotes
   - attr_list
-  # - toc:
-  #   permalink: "#"
+  - toc:
+      permalink: "#"
 
 plugins:
   - search
