@@ -4,39 +4,57 @@ This document details on the implementation and usage for each workflow in Balti
 
 Baltica comprises a collection of Snakemake workflows (snakemake files with extension .smk). Each file determines a series of sub-tasks (rules). Generally, the sub-tasks run in a specific order and only successful if their output exits once the execution finishes. 
 
-1. Quality control (rules/qc.smk)
-1. Differential Junction Usage (DJU)
-1. Analysis 
+1. Quality control   
+1. Differential Junction Usage (DJU)   
+1. _de novo_ transcriptomics with Stringtie   
+1. Analysis  
 
-Baltica requires RNA-Seq read alignments as input. We suggest [STAR](https://github.com/alexdobin/STAR) for reads alignment. The transcriptome annotation is also an important parameter, and we tested the workflows with the Ensembl annotation.
+Which are achieved by successively calling: 
+
+```{bash}
+baltica qc config.yml  
+baltica junctionseq config.yml  
+baltica majiq config.yml  
+baltica leafcutter config.yml  
+baltica stringtie config.yml  
+baltica analysis config.yml  
+```
+
+Please the [Tutorial](tutorial.md) for a step-by-step guide on who to runs these analysis on sample data. 
+
+Baltica requires RNA-Seq read alignments as input. At this time, the impact of the read aligment in DJU methods results is unknown, but we suggest [STAR](https://github.com/alexdobin/STAR) for reads alignment. 
 
 !!! important
-    Make sure to use the same transcriptome annotation from read mappings to .
+    The transcriptome annotation is also important, so make sure you use the same annotation for read aligment and in baltica parameter.
    
 
-## Configuration file: common parameters
+## Baltica configuration
 
 Baltica configuration files are JSON file used by Snakemake [configuration file](https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html) 
-in the `json` or `yaml` formats. The following parameters are mandatory:
+in the `json` or `yaml` formats. Please see a minimal working example [here](https://github.com/dieterich-lab/Baltica/blob/master/baltica/config.yml). The following parameters are mandatory:
 
-- `sample_path`: absolute path to the parent directory to the alignment files
- 
-- `workdir`: absolute path to the result directory
- 
-- `samples`: associating between the alignment files (.bam format) a condition name `sample_name: sample_path`
-We use the following convention for the sample name: `{condition}_{replicate}`, where condition is condition name, 
-without space or special characters, and replicate is a positive integer 
+Parameter name | Description | Note     
+-------------- | ----------- | ---- 
+`path` |  absolute path to the logs and results  |  
+`sample_path` | path to the parent directory to the alignment files |  
+`samples` | sample name to alignment files (BAM format) a condition name | [^1]
+`comparison` |  pair of groups to be tested |
+`ref` |  full path to the reference transcriptome annotation in the (GTF format) | 
+`ref_fa` | full path to the reference genome sequence in the FASTA format | [^2]  
+`*_env` | Used if the required dependency is __not__ available in the path | [^3]
+`strandedness` | choice between `reverse`, `forward` or None | [^4] 
+`read_len` | positive integer representing the maximum read length | [^5]
 
-- `contrast`: pair of conditions as a comparison. Currently, JunctionSeq and Leafcutter support more complex designs, 
-then the pairwise comparison, but this is currently unsupported by Baltica
+[^1]: We use the following convention for the sample name: `{condition}_{replicate}`, where condition is the experimental group name without spaces or underline character, and replicate is a positive integer
+[^2]: Use by Majiq for for GC content correction
+[^3]: User should prefer `--use-conda` or `--use-envmodules`; however if it's not possible to load the requirements for, this hack may help 
+[^4]: Check RSeQC infer_experiment result 
+[^5]: Check FastQC Sequence Length Distribution report
 
-- `ref`: reference transcriptome annotation in the GTF format
+<!-- TODO detail on this usecase -->
 
-- `ref_fa`: reference genome sequence in the FASTA format. Used for the `de novo transcriptomics` rules
-. Also, use for differential splicing with Majiq (for GC content correction) 
-
-- `*_env`: (optional) variable to activate environments, such as modules, conda environments, or pyenvs. Only used if 
-the target software is __not__ in path (without --use-conda and --use-envmodules)
+!!! note
+    Junctionseq and Leafcutter support more complex designs but these are not currently implemented in Baltica
 
 ## Quality control workflow
 
@@ -68,6 +86,7 @@ For more details, please consult the documentation:
 ### Software dependencies
 
 The workflow wes tested with the following software version:  
+
 
 - RSeQC == 2.6.4
 - FastQC == 0.11.8 
@@ -240,3 +259,5 @@ For voila tsv:
 #### Software dependencies
 
 #### Parameters
+
+
