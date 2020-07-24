@@ -7,6 +7,7 @@ suppressPackageStartupMessages({
   library(optparse)
   library(GenomicRanges)
   library(rtracklayer)
+  library(readr)
 })
 
 # from https://stackoverflow.com/a/15373917/1694714
@@ -34,8 +35,9 @@ option_list <- list(
   make_option(
     c("-a", "--annotation"),
     type = "character",
-    help = "Path to annotation (GTF/GFF format",
-    metavar = "character"
+    help = "Path to annotation (GTF/GFF format)",
+    metavar = "character",
+    default = "stringtie/merged/merged.combined.gtf"
   ),
   make_option(
     c("-o", "--output"),
@@ -58,6 +60,28 @@ if(exists('snakemake')){
   source(file.path(dirname(thisFile()), "utils.R"))
 }
 files <- strsplit(opt$input, ',')[[1]]
+majiq_idx <- grep('majiq', files)
+leafcutter_idx <- grep('leafcutter', files)
+junctionseq_idx <- grep('junctionseq', files)
+
+suppress_read_csv <- function(x) { suppressMessages(read_csv(x)) }
+
+df  <-  list(
+    majiq = suppress_read_csv( files[[majiq_idx]] ),
+    leafcutter = suppress_read_csv( files[[leafcutter_idx]] ) ,
+    junctionseq = suppress_read_csv( files[[junctionseq_idx]]  )
+)
+
+gr  <- c(
+    GRanges(df$majiq),
+    GRanges(df$leafcutter),
+    GRanges(df$junctionseq)
+)
+
+mcols(gr) <- NULL
+mcols(gr)$method <- c(df$majiq$method, df$leafcutter$method, df$junctionseq$method)
+mcols(gr)$comparison <- c(df$majiq$comparison, df$leafcutter$comparison, df$junctionseq$comparison)
+mcols(gr)$score <- c(1 - df$majiq$probability_changing,  df$leafcutter$p.adjust, df$junctionseq$padjust)
 
 if (!all(as.logical(lapply(files, file.exists)))){
   stop("Input file not found.", call.=FALSE)
@@ -67,8 +91,6 @@ if (!all(as.logical(lapply(files, file.exists)))){
 
 message('Loading input')
 files <- strsplit(opt$input, ',')[[1]]
-suppressWarnings({data <- dplyr::bind_rows(lapply(files, read.csv)) })
-gr <- GRanges(data)
 gtf <- rtracklayer::import.gff2(opt$annotation)
 
 message('Processing annotation')
@@ -97,7 +119,7 @@ names(introns) <- NULL
 introns <- aggregate_metadata(introns)
 hits <- filter_hits_by_diff(gr, introns, max_start = 2, max_end = 2)
 
-gr_metadata <- mcols(gr)[queryHits(hits), c('comparison', 'method')]
+gr_metadata <- mcols(gr)[queryHits(hits), c('comparison', 'method', 'score')]
 gr_metadata$idx <- subjectHits(hits)
 gr_metadata_agg <- aggregate(. ~ idx, gr_metadata, paste, collapse = ';')
 
@@ -107,9 +129,10 @@ introns_with_match <- merge(
   as.data.frame(introns),
   gr_metadata_agg,
   by.x = "row.names",
-  by.y = "idx"
+  by.y = "idx",
+  no.dups = T
 )
 introns_with_match <- subset(introns_with_match, select = -Row.names)
-write.csv(introns_with_match, opt$output, row.names=FALSE)
+write_csv(introns_with_match, opt$output)
 #introns_wo_match <- data[setdiff(seq_along(data), unique(queryHits(hits))), ]
 #write.csv(introns_wo_match, sub('csv', opt$output, 'nomatch.csv'))

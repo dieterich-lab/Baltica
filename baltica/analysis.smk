@@ -27,8 +27,9 @@ rule all:
         "leafcutter/leafcutter_junctions.csv",
         "junctionseq/junctionseq_junctions.csv",
         "results/SJ_annotated.csv",
-        "results/SJ_annotated_assigned.csv"
-
+        "results/SJ_annotated_assigned.csv",
+        "results/SJ_annotated_assigned_simple.xlsx"
+        
 rule parse_majiq:
     input:
         expand("majiq/voila/{contrast}_voila.tsv", contrast=config["contrasts"].keys())
@@ -103,5 +104,17 @@ rule assign_AS_type:
     shell:
         """
         path=$(which assign_AS_type.R)
+        $path
+        """
+rule simplify:
+    input:
+        "results/SJ_annotated_assigned.csv",
+    envmodules:
+        "R/3.6.0"
+    output:
+        "results/SJ_annotated_assigned_simple.xlsx"
+    shell:
+        """
+        path=$(which simplify.R)
         $path
         """

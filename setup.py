@@ -73,7 +73,11 @@ setup(name=_program,
           "scripts/parse_leafcutter_output.R",
           "scripts/parse_majiq_output.R",
           "scripts/sam2bed.pl",
-          "scripts/utils.R"],
+          "scripts/utils.R",
+          "scripts/assign_AS_type.R",
+          "scripts/simplify.R"
+
+          ],
       keywords=['differential splicing', 'bioinformatics', 'rna-seq'],
       zip_safe=False,
       project_urls={

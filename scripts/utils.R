@@ -108,16 +108,15 @@ annotate_gene <- function(gtf, df) {
 #' @export
 
 aggregate_metadata <- function(gr){
-  stopifnot(is(gr, "GRanges"))
-
-  equal_hits <- findOverlaps(gr, type='equal', drop.self=T)
-  metadata <- data.frame(anno = mcols(gr)[to(equal_hits), ])
-  metadata$index <- from(equal_hits)
-  agg_metadata <- aggregate(. ~ index, metadata, paste, collapse=';')
-  mcols(gr) <- subset(agg_metadata, select = -c(index))
-  gr <- gr[unique(from(equal_hits)), ]
-  
-  gr
+    stopifnot(is(gr, "GRanges"))
+    
+    equal_hits <- findOverlaps(gr, type='equal')
+    meta <- data.frame(mcols(gr)[to(equal_hits), ])
+    meta$index <- from(equal_hits)
+    agg_metadata <- aggregate(. ~ index, meta, paste, collapse=';')
+    gr <- gr[unique(agg_metadata$index)]
+    mcols(gr) <- subset(agg_metadata, select = -c(index))
+    gr
 
 }
 

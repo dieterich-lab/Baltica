@@ -8,6 +8,9 @@ suppressPackageStartupMessages({
   library(GenomicRanges)
   library(rtracklayer)
   library(openxlsx)
+  library(readr)
+  library(dplyr)
+  library(stringr)
 })
 
 option_list <- list(
@@ -16,7 +19,7 @@ option_list <- list(
     type = "character",
     help = "Path to parsed DJU result",,
     metavar = "character",
-    default = "results/SJ_annotated_assigned.xlsx"
+    default = "results/SJ_annotated_assigned.csv"
   ),
     make_option(
     c("-o", "--output"),
@@ -38,12 +41,14 @@ simplify <- function(x, remove=c()){
     unlist()
 }
 
+
 x <- x %>% 
-    select(-c(X1, Row.names, X, width)) %>% 
-    mutate(range = as.character(str_glue('{seqnames}:{start}-{end}:{strand}'))) %>% 
+    select(-c(width)) %>% 
+    mutate(intron = as.character(str_glue('{seqnames}:{start}-{end}:{strand}'))) %>% 
     select(-c(seqnames, start, end, strand))
 
-for (col in c('gene_name', 'transcript_name', 'class_code', 'exon_number', 'comparison', 'method', 'as_type' )){
+
+for (col in c('gene_name', 'transcript_name', 'class_code', 'comparison', 'method', 'as_type' )){
     if (col == 'as_type'){
         x[[col]]  <- simplify(x[[col]], remove = c('JS', 'JE'))    
         next
@@ -53,7 +58,10 @@ for (col in c('gene_name', 'transcript_name', 'class_code', 'exon_number', 'comp
     
 }
 
-
+# TODO provide more expressive output for score and AS_Type
+# for example: {method}_{comparison}_{score}
+# {transcript_id}_{exon_id}_{AS_assign}
+# TODO add novel_intron column 
 openxlsx::write.xlsx(
   x,
   file = opt$output,
