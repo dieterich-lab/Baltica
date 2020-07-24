@@ -3,10 +3,10 @@ site_url: https://github.com/dieterich-lab/Baltica
 site_author: Thiago Britto-Borges
 repo_url: https://github.com/dieterich-lab/Baltica
 edit_uri: tree/master/docs/
-site_description: Integrated differential junction usage (DJU) and consequence analysis with an ensemble of methods
-copyright: |
-  <br><span class="md-footer-custom-text"> Baltica is distribuited with a MIT License </span>
-  <br><span class="md-footer-custom-text">  <a href="https://www.klinikum.uni-heidelberg.de/en/zentrum-fuer-innere-medizin-medizin-klinik/innere-medizin-iii-kardiologie-angiologie-und-pneumologie/forschung/forschung/klaus-tschira-institut-fuer-computational-cardiology/">Dieterich lab</a>  </span>
+site_description: Baltica - Integrated differential junction usage (DJU)
+copyright: Thiago Britto-Borges, Dieterichlab - MIT Licese
+#   <br><span class="md-footer-custom-text"> Baltica is distribuited with a MIT License </span>
+#   <br><span class="md-footer-custom-text">  <a href="https://www.klinikum.uni-heidelberg.de/en/zentrum-fuer-innere-medizin-medizin-klinik/innere-medizin-iii-kardiologie-angiologie-und-pneumologie/forschung/forschung/klaus-tschira-institut-fuer-computational-cardiology/">Dieterich lab</a>  </span>
 docs_dir: docs/
 theme:
   name: material
@@ -21,15 +21,32 @@ theme:
 
 nav:
   - Index: README.md
+  - Introduction: intro.md
   - Getting started: setup.md 
   - Methods: workflows.md 
+  - Tutorial: tutorial.md
   - Result analysis: analysis.md
   - Benchmark: benchmark.md  
-  - Tips: tips.md 
+  - Bibliography: bibliography.md
+  # - Release notes: release-notes.md 
   # - License: license.md
 
 markdown_extensions:
   - admonition
   - codehilite
   - footnotes
+  - attr_list
+  # - toc:
+  #   permalink: "#"
 
+plugins:
+  - search
+  - bibtex:
+      bib_file: "docs/bibliography.bib"
+      cite_style: "pandoc"
+      csl_file: "natbio"
+  - mkpdfs:
+      design: "mkpdfs-design-sample/report.css"
+      author: "Thiago Britto-Borges"
+      company: "Dieterichlab - Heidelberg University Hospital"
+      output_path: "pdf/baltica_docs.pdf"

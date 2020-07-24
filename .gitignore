@@ -68,3 +68,10 @@ gen
 *.DS_Store
 *.snakemake
 sirv_test/*site/
+site/
+.vscode/
+.src/*
+mkpdfs-design-sample/
+src
+src/
+src/*
