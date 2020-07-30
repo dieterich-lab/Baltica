@@ -255,7 +255,7 @@ Detailed information of Majiq's output can be found in the [Majiq's online docum
 
 ## JunctionSeq workflow
 
-JunctionSeq [@Hartley2016] tests for differential usage of exonic and intronic disjoint genomic bins. It takes as input read count matrix obtained with QoRTs [@Hartley_2015], for annotated SJ, novel SJ, and exons, so in fact, JunctionSeq fits both the DEU and DJU classifications. 
+JunctionSeq [@Hartley2016] tests statistical significance over difference usage among exonic and intronic disjoint genomic bins. It takes as input read count matrix obtained with QoRTs [@Hartley_2015], for annotated SJ, novel SJ, and exons, so in fact, JunctionSeq fits both the DEU and DJU classifications. 
 Bins selected as testable as modelled with generalized linear models, as described in DEXSeq [@Anders2012], but reporting a test statistic at the genomic feature (exon or junction) and gene level.
 Different from other DJU methods, JunctionSeq does not group the SJ in AS events, and so it does not compute PSI events.
 By default, SJ with p.adjust < 0.05 are called significant.
@@ -282,7 +282,7 @@ qc   | `is_single_end` | True |
 Detailed output information can be found on page 14 of the [JunctionSeq Package User Manual](https://github.com/hartleys/JunctionSeq/blob/13a323dda5fae2d7e74b82230824affb747d938d/JunctionSeq/vignettes/JunctionSeq.Rnw#L514)
 
 
-### Stringtie workflow
+## Stringtie workflow
 
 Baltica uses splice graph information to determine the reconcile the SJ coordinates and to and assign AS type. 
  
