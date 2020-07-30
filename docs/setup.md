@@ -1,6 +1,6 @@
 # Getting started
 
-Baltica comprise of a collection of workflows and analysis scripts. Workflows are powered by [Snakemake](https://snakemake.readthedocs.io/en/stable/) [^1]. Analysis are done with the Rlang. Bellow we document how to obtain install the methods on which Baltica depends.    
+Baltica is comprised of a collection of workflows and analysis scripts. Workflows are powered by [Snakemake](https://snakemake.readthedocs.io/en/stable/) [^1]. Analysis are done with the Rlang. Below we document how to obtain and install the methods on which Baltica depends.    
 
 ## Install miniconda
 
@@ -66,7 +66,7 @@ conda create --name leafcutter python=2.7 --yes
 conda activate leafcutter
 conda install -c bioconda samtools r-base=3.6 --yes
 
-Rscript -e "install.packages('devtools', repos='http://cran.us.r-project.org', dependencies=TRUE)"
+Rscript -e "install.packages('devtools', repos='http://cran.us.r-project.org',warning dependencies=TRUE)"
 Rscript -e "Sys.setenv(TAR = '/bin/tar'); devtools::install_github('stan-dev/rstantools')"
 Rscript -e "Sys.setenv(TAR = '/bin/tar'); devtools::install_github('davidaknowles/leafcutter/leafcutter')"
 ```
