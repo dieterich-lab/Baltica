@@ -5,39 +5,45 @@ repo_url: https://github.com/dieterich-lab/Baltica
 edit_uri: tree/master/docs/
 site_description: Baltica - Integrated differential junction usage (DJU)
 copyright: Thiago Britto-Borges, Dieterichlab - MIT Licese
+use_directory_urls: false
 #   <br><span class="md-footer-custom-text"> Baltica is distribuited with a MIT License </span>
 #   <br><span class="md-footer-custom-text">  <a href="https://www.klinikum.uni-heidelberg.de/en/zentrum-fuer-innere-medizin-medizin-klinik/innere-medizin-iii-kardiologie-angiologie-und-pneumologie/forschung/forschung/klaus-tschira-institut-fuer-computational-cardiology/">Dieterich lab</a>  </span>
 docs_dir: docs/
 theme:
   name: material
+  language: 'en' 
   features:
     - instant
   palette:
-    primary: blue
+    primary: grey
     accent: blue-grey
   font:
     text: Roboto
     code: Roboto Mono
 
+extra_css:
+    - extra.css
+
 nav:
-  - Index: README.md
-  - Introduction: intro.md
-  - Getting started: setup.md 
-  - Methods: workflows.md 
-  - Tutorial: tutorial.md
-  - Result analysis: analysis.md
-  - Benchmark: benchmark.md  
-  - Bibliography: bibliography.md
-  # - Release notes: release-notes.md 
+  - 1 - Index: README.md
+  - 2 - Introduction: intro.md
+  - 3 - Getting started: setup.md 
+  - 4 - Methods: workflows.md 
+  # - 5 - Tutorial: tutorial.md
+  - 5 - Benchmark with artificial transcripts: benchmark.md
+  - 6 - DJU methods result integration: integration.md 
+  # - Bibliography: bibliography.md
+  - Release notes: release-notes.md 
   # - License: license.md
 
 markdown_extensions:
   - admonition
-  - codehilite
+  - codehilite:
+      guess_lang: false
+  - toc:
+      permalink: true
   - footnotes
   - attr_list
-  - toc:
-      permalink: "#"
 
 plugins:
   - search
@@ -50,3 +56,6 @@ plugins:
       author: "Thiago Britto-Borges"
       company: "Dieterichlab - Heidelberg University Hospital"
       output_path: "pdf/baltica_docs.pdf"
+      toc_title: Table of Content
+
+
