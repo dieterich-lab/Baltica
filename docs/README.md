@@ -6,15 +6,14 @@ Baltica provides workflows for quality control and supports three DJU methods, J
 
 
 !!! info
-    To get started, use the menu on the left-hand side (or table of content in the PDF version) or search function to navigate over this documentation. 
-
+    To get started, use the menu on the left-hand side or search function to navigate over this documentation. 
 
 
   
 ## Citation
 TODO
 
-Baltica is based on the work of many scientists and developers. Thus, if you use the results of any of these tools in your research, please citing them. TODO citation page
+Baltica is based on the work of many scientists and developers. Thus, if you use the results of their tools in your analysis, consider citing their work.
 
 ## License
 Baltica is a free, open-source software released under an [MIT License](https://github.com/dieterich-lab/Baltica/blob/master/LICENSE).
