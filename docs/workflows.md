@@ -1,36 +1,50 @@
-# Workflows
-
 This document details on the implementation and usage for each workflow in Baltica.
 
-Baltica comprises a collection of Snakemake workflows (snakemake files with extension .smk). Each file determines a series of sub-tasks (rules). Generally, the sub-tasks run in a specific order and only successful if their output exits once the execution finishes.  Workflows were implemented following instructions and parameters suggested by the methods authors unless otherwise noted.
+Baltica comprises a collection of Snakemake workflows (in the SMK format). Each file determines a series of sub-tasks (rules). The sub-tasks run in a specific order; once the output of every rule is complete found, the workflow is considered successful. The following workflows were implemented following instructions and parameters suggested by the methods authors unless otherwise noted.
 
-1. Quality control   
-1. Differential Junction Usage (DJU)   
-1. _de novo_ transcriptomics with Stringtie   
-1. Analysis  
+![](img/Baltica_overview.png){ .center }
+__Fig. 4.1 - Baltica overview__: As input (1), Baltica takes the alignment (BAM format) files, and transcriptome annotation and a configuration file that matches the sample names to the alignment file. The file also holds any workflow parameters. In the first optional step (2), Baltica produces a quality control report with MultiQC, which summarizes the results from FastQC and RSeQC. Next (3), Baltica computes the DJU methods and produces a _de novo_ transcriptome with Stringtie. The novel exons and transcripts are indispensable for the integration step (4). Finally, the output of the DJU methods is parsed
 
 Which are achieved by successively calling: 
 
-```{bash}
-baltica qc config.yml  
-baltica junctionseq config.yml  
-baltica majiq config.yml  
-baltica leafcutter config.yml  
-baltica stringtie config.yml  
-baltica analysis config.yml  
-```
-
-Please the [Tutorial](tutorial.md) for a step-by-step guide on who to runs these analysis on sample data. 
-
-Baltica requires RNA-Seq read alignments as input. At this time, the impact of the read aligment in DJU methods results is unknown, but we suggest [STAR](https://github.com/alexdobin/STAR) for reads alignment. 
+1. Input
+1. Quality control:   
+`baltica qc config.yml`
+1. Differential Junction Usage (DJU) and _de novo_ transcriptomics:   
+`baltica junctionseq config.yml`  
+`baltica majiq config.yml`  
+`baltica leafcutter config.yml`  
+`baltica stringtie config.yml`  
+1. Integration:   
+`baltica analysis config.yml`
 
 !!! important
-    The transcriptome annotation is also important, so make sure you use the same annotation for read aligment and in baltica parameter.
+    The transcriptome annotation is also important, so make sure you use the same annotation for read alignment and in Baltica parameter.
+
+!!! note
+    The impact on read alignment on DJU methods results were not fully explored. Expect different results from DJU methods, when comparing alignment files produced by different transcriptome aligners. We recommend STAR. 
    
+
+## Method inclusion criteria
+
+There are a plethora of DJU methods, defined as methods that model SJ to identify differential splicing. Bellow is the inclusion criteria we used for Baltica. Methods are required to
+
+- use as input RNA-Seq read alignment in the BAM format
+- to detect AS splicing as changes on SJs level, not at the transcript level
+- provide test statistic that compares a control group to a case group
+- output effect size estimates, such as the deltaPSI
+- detect unannotated SJ
+
+
+We are aware of other methods, such as Suppa [@Trincado2018] and rMATs [@Shen_2014], also fit these criteria and aim to expand the catalogue of supported methods in the future.
+
 ## Baltica configuration
 
-The configuration file contains the parameters for workflows and file paths for input requirements and output destination. Baltica configuration files are JSON file used by Snakemake [configuration file](https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html) 
-in the `json` or `yaml` formats. Please see a minimal working example [here](https://github.com/dieterich-lab/Baltica/blob/master/baltica/config.yml). The following parameters are mandatory:
+The configuration file contains the parameters for workflows and file paths for input requirements and output destination.
+ We use the JSON file format as a[configuration file](https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html). 
+Please see a minimal working example [here](https://github.com/dieterich-lab/Baltica/blob/master/baltica/config.yml). 
+
+The following parameters are mandatory:
 
 Parameter name | Description | Note     
 -------------- | ----------- | ---- 
@@ -44,8 +58,8 @@ Parameter name | Description | Note
 `strandedness` | choice between `reverse`, `forward` or None | [^4] 
 `read_len` | positive integer representing the maximum read length | [^5]
 
-[^1]: We use the following convention for the sample name: `{condition}_{replicate}`, where condition is the experimental group name without spaces or underline character, and replicate is a positive integer
-[^2]: Used by Majiq for for GC content correction
+[^1]: We use the following convention for the sample name: `{condition}_{replicate}`, where the condition is the experimental group name without spaces or underline character, and replicate a positive integer
+[^2]: Used by Majiq for GC content correction
 [^3]: User should prefer `--use-conda` or `--use-envmodules`; however if it's not possible to load the requirements for, this hack may help 
 [^4]: Check RSeQC infer_experiment result 
 [^5]: Check FastQC Sequence Length Distribution report
@@ -53,7 +67,7 @@ Parameter name | Description | Note
 <!-- TODO detail on this usecase -->
 
 !!! note
-    Junctionseq and Leafcutter support more complex designs but these are not currently implemented in Baltica
+    Junctionseq and Leafcutter support more complex designs, but these are not currently implemented in Baltica.
 
 ## Quality control workflow
 
@@ -62,14 +76,9 @@ This step aims to determine the success of sequencing and alignment.
 Baltica includes workflows for RSeQC [@Wang2012] and FastQ. MultiQC [@Ewels_2016] summarizes the output from both tools.
 In addition to the quality control, the tests may suggest biological differences among conditions.
 For example, RSeQC provides the proportion of reads per feature in the input annotation, which may show an increase users may identify enrichment of reads mapping to intronic regions, indicating either intron retention or accumulation of unspliced mRNA.
-RSeQC also implements an SJ saturation diagnostic, which quantifies the abundance of known and novel SJ. 
-In conclusion, the quality control step serves to identify potential problems with the RNA-Seq library alignment and give more direction to the downstream analysis.
- <!-- TODO section bellow seems more as tip than workflow relates  -->
-For RNA-Sequencing experiments aiming to detect genes and transcripts with relatively low expression, a higher sequencing depth (40-60 million reads) is required, in contrast, to experiment that only aim finding the most abundant genes, and so only demand around 10 million reads [see](https://support.illumina.com/bulletins/2017/04/considerations-for-rna-seq-read-length-and-coverage-.html). This parameter is particularly relevant for samples with novel splice junctions (SJ). Read length and paired-end are also critical for splice junction identification, and longer reads offer more coverage of the exons boundaries (see [@Chhangawala]). The target nominal read length should be between 75-100 nucleotide, maximize the read overhang size, and, consequently, maximize the quality of the alignments.
-
-Also, databases such as the CHESS [2](http://ccb.jhu.edu/chess/) can provide additional evidence for splice sites absent in the annotation. The sequencing depth is related to the splice junction saturation metric. This metric is defined by the RSeQC tool, which implements a sampling procedure to identify the percentage of annotated and novel introns are observed in sub-samples of the data.
- 
-For more details, please consult the documentation:
+RSeQC also implements an SJ saturation diagnostic, which quantifies the abundance of known and novel SJ.
+This metric relates to the sequencing depth. This diagnostic is done by sampling subsets of the dataset to identify which proportion of annotated and novel introns are observed in the sub-samples. 
+In conclusion, the quality control step serves to identify potential problems with the RNA-Seq library alignment and, potentially, direct on further troubleshooting and downstream analysis.
 
 ### Software dependencies
 
@@ -88,13 +97,13 @@ MultiQC | 0.8
 In term of implementation, the DJU tools use the following steps:
 1. Extracting split reads from the alignment file  
 1. Defining which SJ or events should be tested  
-1. Modeling the SJ/events abundance 
+1. Modelling the SJ/events abundance 
 
-Unfortunately, there are differences the differences in implementation among the tools lead to results that are hard to compare. This is approach in the analysis workflow. 
+Unfortunately, there are differences the differences in implementation among the tools that lead to results that are not trivial to compare. 
 
 ### Leafcutter workflow
 
-Leafcutter uses a series of scrips to extract the split reads from the BAM files. Recently, this step was changed to use (regtools)[https://github.com/griffithlab/regtools] to speed up the process, but our tests show this change affects the workflow results, instead only speeding up the process.
+Leafcutter uses a series of scrips to extract the split reads from the BAM files. Recently, this step was changed to use [regtools](https://github.com/griffithlab/regtools) to speed up the process. Our test show that this new step affects the workflow results, and so we have not implemented the change in Baltica.
 
 1. Extracting intron from the alignments files: reads with M and N cigar are extracted from the alignments, giving a
 minimum read overhang
@@ -141,66 +150,62 @@ The relevant output from Leafcutter is `_cluster_significance.txt` and
 
 Column description:
 
-- `*_cluster_significance.txt`:
-1. `cluster`: TODO check identifier on the format `{chromosome}:{intron_start}:{intron_end}`
+`*_cluster_significance.txt`:
+1. `cluster`: `{chromosome}:{intron_start}:{intron_end}`
 1. `Status`: is this cluster testable?
 1. `loglr`: the log-likelihood ratio between the null model and alternative 
 1. `df`: degrees of freedom, equal to the number of introns in the cluster minus one (assuming two groups)
 1. `p` unadjusted p-value dor the under the asymptotic Chi-squared distribution
 
-- `*_effect_sizes.txt`:
+`*_effect_sizes.txt`:
 1. `intron`: intron identifier on the format `chromosome:intron_start:intron_end:cluster_id`
 1. `es`: TODO check fitted log effect size
 1. `{cond_1}`: fitted junction usage in condition `cond_1`
 1. `{cond_2}`: fitted junction usage in condition `cond_2`
-1. `DeltapPSI`: difference between usage in the two conditions  
+1. `deltapsi`: difference between usage in the two conditions  
 
 ## Majiq workflow
 
-1. MAJIQ Builder - creates the Splice Graph database with exons and SJ from the RNA-Seq experiment
-1. PSI analysis - compute PSI and deltaPSI
+Majiq workflow is implemented as follows:
 
-Majiq also provides a visualization with the `voila view`. 
+1. Create a configuration file (`majiq/build.ini`)
+1. __Majiq build__ generates the Splice Graph database with exons and SJ from the RNA-Seq experiment and the reference annotation
+1. __Majiq deltapsi__: - computes PSI and deltaPSI and tests the if the deltaPSI changes between comparisons are significant 
+1. __Voila tsv__: filter and process the Majiq output
+
+Majiq also provides a visualization with the `voila view` that we find helpful. 
 
 ### Software dependencies
 
 Name | Version    
 -----|---------
- python | 3.6 
- htslib | 1.9 
-
-Among other python dependencies that are automatically installed.
+python | 3.6 
+htslib | 1.9 
 
 ### Parameters
 
+Rule | Name | Default | Note
+-----|------|---------|------
+create_ini | `assembly` | | name of the assembly on the UCSC genome browser
+create_ini | `strandness` | reverse | RNA-Sequencing library type 
+create_ini | `read_len` |  100 | maximum read lenght
+voila tsv | `--majiq_threshold` | 0.2 | DeltaPSI cutoff for probability calculation
 
-<!-- Rule | Name | Default | Note
------|-----|---------|------
- -->
-- Used in Majiq INI file:
-   `assembly:`
-    - Description: name of the assembly on the UCSC genome browser
-    
-    `strandness:`
-    - Description: RNA-Sequencing library type 
-    - default: reverse 
-    
-    `read_len:`
-    - Description: maximum read lenght to be considered
-    - Default: 100
+## Output
 
-- For Majiq build:  
+Detailed information of Majiq's output can be found in the [Majiq's online documentation](https://biociphers.bitbucket.io/majiq/VOILA_tsv.html)
 
-   `--min-experiments`
+<!-- build |   |  -->
+<!--  `--min-experiments`
     - Description:Iinteger or proportion of the minimum number of experiments a LSV event is observed to be considered
   - Default: 0.5
    
    `--min-intronic-cov`
-  - Description: Minimum number of coverage a intron needs to be tested for intron retention events
+  - Description: Minimum number of coverage an intron needs to be tested for intron retention events
   - Default: 0.01
   
    `--min-denovo`
-  - Description: Minimum number of reads at all positions in a LSV to consider a de novo junction 
+  - Description: Minimum number of reads at all positions in an LSV to consider a de novo junction 
   - Default: 2
   
     `--minreads`
@@ -208,7 +213,7 @@ Among other python dependencies that are automatically installed.
   - Default: 3
   
   `--minpos`
-  - Description: Minimum number of start positions with at least 1 read in a LSV to consider that the LSV "exist in the data".
+  - Description: Minimum number of start positions with at least one read in an LSV to consider that the LSV "exist in the data".
   - Default: 2
 
     `--markstacks`
@@ -222,9 +227,9 @@ Among other python dependencies that are automatically installed.
     `--m`
   - Description: Number of sampling steps using on bootstrap
   - Default: 30
-  - baltica:
+  - baltica: -->
 
-- For Majiq deltapsi:  
+<!-- - For Majiq deltapsi:  
   
     `--binsize`
   - Description: Number of bins for the PSI value distribution 
@@ -237,53 +242,64 @@ Among other python dependencies that are automatically installed.
     `--prior-minnonzero`
   - Minimum number of positions for the best set.
   - Default: 10
-
-For voila tsv:  
-
-   `--threshold`  
-    - Description: Discard LSVs if the probability is lower then this value
-    - Default: 0.2
-
-   `--non-changing-threshold`
+ -->
+<!--    `--non-changing-threshold`
     - Description: None 
   - Default: 0.05
 
    `--probability-threshold` 
   - Description: None
   - default: off
-
+ -->
 
 
 ## JunctionSeq workflow
 
+JunctionSeq [@Hartley2016] tests for differential usage of exonic and intronic disjoint genomic bins. It takes as input read count matrix obtained with QoRTs [@Hartley_2015], for annotated SJ, novel SJ, and exons, so in fact, JunctionSeq fits both the DEU and DJU classifications. 
+Bins selected as testable as modelled with generalized linear models, as described in DEXSeq [@Anders2012], but reporting a test statistic at the genomic feature (exon or junction) and gene level.
+Different from other DJU methods, JunctionSeq does not group the SJ in AS events, and so it does not compute PSI events.
+By default, SJ with p.adjust < 0.05 are called significant.
+
 ### Software dependencies
+
+Name | Version    
+-----|---------
+R    | 3.6 
+qorts | 1.1.8
+
+Qorts depends on Java. We currently use it with Java 11.0.6. JunctionSeq itself relies on a series of BioConductor packages.
 
 ### Parameters
 
+Rule | Name | Default | Note
+-----|------|---------|------
+qc   | `strandness` | reverse | 
+qc   | `read_len`   | 100 |
+qc   | `is_single_end` | True | 
 
-## Integration workflow
+### Output
 
-The resulting text output from the DJU methods is parsed and loaded as R data frames.
-Next, the data frames are pivoted in a longer format to have one junction per row. 
-Finally, the junctions called significant are selected.
-The default significant cut-off is an adjusted p-value \textless 0.05 for JunctionSeq and Leafcutter or probability of chaging \textgreater 0.95, for Majiq.
-Additionally, to discard junction with small effects, we suggest to filter junction with absolute deltaPSI \textless 0.1, for Majiq and Leafcutter, or scaled $log_2$ fold change \textless 0.1 for JunctionSeq.  
+Detailed output information can be found on page 14 of the [JunctionSeq Package User Manual](https://github.com/hartleys/JunctionSeq/blob/13a323dda5fae2d7e74b82230824affb747d938d/JunctionSeq/vignettes/JunctionSeq.Rnw#L514)
 
-One challenge for the integration of DJU methods' results is the different genomic coordinates system.
-We use \texttt{membership\_identifier}, described in Algorithm \ref{alg1}, to group SJ that represent the same exon-exon junction but are in different genomic coordinate systems. 
-The differences in the coordinates system are due to the method implementation design.
-Methods can use files that are 0-indexed (BED format) or 1-indexed (GTF format). 
-Besides, the method may use the exonic, intronic coordinates to represent the SJ genomic position.   
 
-### StringTie workflow
+### Stringtie workflow
 
-Baltica uses splice graph information to determine the AS type and assign the canonical and alternative transcript isoforms. 
-We define the canonical isoform as the most abundant transcript in the reference group.
+Baltica uses splice graph information to determine the reconcile the SJ coordinates and to and assign AS type. 
  
-De novo transcriptomic workflow is procced with StringTie \citep{Kovaka_2019}. First, we merge the aligment files from biological replicates. Next, we compute \textit{de novo} annotation with StringTie (v1.3.5) with  \texttt{--min\_junct\_coverage 3} and \texttt{--min\_isoform\_proportion 0.01}. Finally, the we merge the multiple annotation with \texttt{gffcompare -r reference\_annotation.gtf -R -V}. By default, StringTie intron coordinates are output after 
+De novo transcriptomic workflow is procced with Stringtie [@pertea_2015]. First, we merge the alignment files from biological replicates. Next, we compute _de novo_ annotation with Stringtie (v1.3.5) with  `--min_junct_coverage 3` and `--min_isoform_proportion 0.01`. Finally, the we merge the multiple annotation with `gffcompare -r {reference_annotation.gtf} -R -V`. The parameter selection is further detailed on the [Integration chapter](integration.md). 
 
-#### Software dependencies
+### Software dependencies
 
-#### Parameters
+Name | Version    
+-----|---------
+Stringtie | 1.3.5 
 
 
+### Parameters
+
+Rule | Name | Default | Note
+-----|------|---------|------
+create_ini | `assembly` | | name of the assembly on the UCSC genome browser
+
+
+\bibliography
