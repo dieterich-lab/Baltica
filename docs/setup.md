@@ -1,6 +1,9 @@
-# Getting started
+## Getting started
 
-Baltica comprise of a collection of workflows and analysis scripts. Workflows are powered by [Snakemake](https://snakemake.readthedocs.io/en/stable/) [^1]. Analysis are done with the Rlang. Bellow we document how to obtain install the methods on which Baltica depends.    
+Baltica comprise of a collection of workflows and analysis scripts. Workflows are powered by [Snakemake](https://snakemake.readthedocs.io/en/stable/) [^1]. Analysis is done with the R using Bioconductor packages. 
+We developed and tested the workflows with the Debian Linux distribution (v8.11 Jesse). 
+We use the module system to test the workflows, but conda usage is similar. 
+Bellow, we document how to install the Baltica dependencies. 
 
 ## Install miniconda
 
@@ -9,13 +12,12 @@ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh
 ```  
 
-Or get miniconda [here](https://docs.conda.io/en/latest/miniconda.html) 
+Or get miniconda [here](https://docs.conda.io/en/latest/miniconda.html). 
 
-Follow the instructions to finish your installation, which by default is at `$HOME/miniconda3`
+Follow the instructions to finish then installation, which by default is at `$HOME/miniconda3`.
 
-Make sure you initialize conda with `conda init`
-You can test whether your installation was successful or not by running `conda --version` and you may need to restart 
-your shell instance. 
+Make sure you initialize conda with `conda init`.
+You can test whether your installation was successful or not by running `conda --version` and you may need to restart your shell instance. 
 
 ## Clone Baltica
 
@@ -23,7 +25,6 @@ your shell instance.
 git clone git@github.com:dieterich-lab/baltica.git
 ```
 
-Baltica can be used with the [modules system](https://modules.readthedocs.io/en/latest/index.html) or conda environments. Here we describe the installation with conda. 
 
 ## Install Snakemake 
 ```bash
@@ -31,19 +32,17 @@ conda install -c bioconda snakemake==5.2 --yes
 ```
 
 Some of dependencies can be directly created with conda, go to `baltica/envs` directory and install with:  
-    - `conda env create -f stringtie.yml --yes`  
-    - `conda env create -f qc.yml --yes`  
+    - `conda env create -f stringtie.yml`  
+    - `conda env create -f qc.yml`  
 
 In general, R packages do not play nicely with conda, but we still use it because it's flexibility and the ability to 
 create isolated software environments.
 Cite Stringtie[^5].
-<!-- TODO cite rseqc fastqc and multiqcgit clone https://github.com/comwes/mkpdfs-design-sample -->
-
 
 ## Install Majiq 
 
 !!! warning
-    Majiq requires a Academic or Commercial license for use. Users are required to obtain their license. [Academic download](https://majiq.biociphers.org/app_download/).
+    Majiq requires an Academic or Commercial license for use. Users are required to obtain their license. [Academic download](https://majiq.biociphers.org/app_download/).
 
 Majiq[^2] can installation can be problematic, but the recipe bellow works for us:
 
@@ -77,11 +76,11 @@ Rscript -e "Sys.setenv(TAR = '/bin/tar'); devtools::install_github('davidaknowle
 
 
 !!! Important
-    If you are experiencing the following the `ERROR: failed to create lock directory` error when trying to install R packages add the following option to install.package `INSTALL_opts = c('--no-lock')`
+    If you are experiencing the following the `ERROR: failed to create lock directory` error when trying to install R packages, add the following option to install.package `INSTALL_opts = c('--no-lock')`
 
 ## Install Junctionseq
 
-JunctionSeq[^4] should be installed directly from BioConductor
+JunctionSeq[^4] should be installed directly from BioConductor:
 
 ```bash
 conda env create -f junctionseq-env.yml --yes
@@ -90,14 +89,26 @@ Rscript -e "BiocManager::install('JunctionSeq')"
 ```
 
 ## Clone or installing Baltica?
-Baltica can either installed as python package or cloned from Github for each project.
-Users who intend to modify the workflows should clone the framework and keep the change under version.
-
+Baltica can either installed as a python package or cloned from Github for each project.
+The installed version of Baltica is more convenient to be used with:  
+`baltica qc config.yml`
+(as long the snakemake profile is set).
+Users who intend to modify the workflows should clone the framework and keep the change under version. 
 See (workflows)[workflows.md] for details on the configuration and parameters for each available workflow.
 
+## Executing a Baltica workflow
+
+* with the [modules system](https://modules.readthedocs.io/en/latest/index.html):
+    `baltica qc config.yml --use-envmodule`
+* with conda enviroments:
+    `baltica qc config.yml --use-conda`
+<!-- TODO: 'external conda enviroment' -->
 
 [^1]: If you use Baltica, please also [cite Snakemake](https://bioinformatics.oxfordjournals.org/content/28/19/2520)
 [^2]: If you use Majiq results, please [cite it]( https://elifesciences.org/articles/11752)
 [^3]: If you use Leafcutter results, please [cite it](https://www.nature.com/articles/s41588-017-0004-9)
 [^4]: If you use Junctionseq results, please [cite it](http://nar.oxfordjournals.org/content/early/2016/06/07/nar.gkw501.full)
 [^5]: If you use the Baltica's analysis module, please also [cite Stringtie](http://www.nature.com/nbt/journal/vaop/ncurrent/full/nbt.3122.html)
+
+\bibliography
+
