@@ -78,7 +78,7 @@ Despite the punctual similarities, the implementation of these three state-of-ar
 - statistical modelling
 Explain the small intersections in __ Fig. 5.2 __.
 
-JunctionSeq has a clear advantage in this comparison because it relies heavily on the information of the annotation and the input annotation, in this case, was perfectly represented the structure of the transcripts.
+JunctionSeq has a clear advantage in this comparison because it relies heavily on the information of the annotation and the input annotation, in this case,  perfectly represents the structure of the transcripts.
 
 Baltica aims to study these implementations differences and potentially suggestion advice to minimize the effect of the limitations mentioned above.
 
