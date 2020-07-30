@@ -1,9 +1,9 @@
 ## Getting started
 
-Baltica comprise of a collection of workflows and analysis scripts. Workflows are powered by [Snakemake](https://snakemake.readthedocs.io/en/stable/) [^1]. Analysis is done with the R using Bioconductor packages. 
+Baltica contains a collection of workflows and analysis scripts. Workflows are powered by [Snakemake](https://snakemake.readthedocs.io/en/stable/) [^1]. Analysis is done with the R using Bioconductor packages. 
 We developed and tested the workflows with the Debian Linux distribution (v8.11 Jesse). 
 We use the module system to test the workflows, but conda usage is similar. 
-Bellow, we document how to install the Baltica dependencies. 
+Below, we document how to install the Baltica dependencies. 
 
 ## Install miniconda
 
@@ -19,17 +19,26 @@ Follow the instructions to finish then installation, which by default is at `$HO
 Make sure you initialize conda with `conda init`.
 You can test whether your installation was successful or not by running `conda --version` and you may need to restart your shell instance. 
 
-## Clone Baltica
+## Clone and install Baltica
 
 ```bash
 git clone git@github.com:dieterich-lab/baltica.git
+cd baltica
+python setup.py install
 ```
+
+
+!!! danger
+    Snakemake requires python versions between > 3.4 and < 3.6.
 
 
 ## Install Snakemake 
 ```bash
-conda install -c bioconda snakemake==5.2 --yes
+conda install -c bioconda snakemake">=5.2" --yes
 ```
+
+!!! danger
+    Snakemake requires python versions between > 3.4 and < 3.6.
 
 Some of dependencies can be directly created with conda, go to `baltica/envs` directory and install with:  
     - `conda env create -f stringtie.yml`  
@@ -61,29 +70,29 @@ python3 -m pip install git+https://bitbucket.org/biociphers/majiq_stable.git#egg
 Users can install Leafcutter[^3] with conda using the following recipe: 
 
 ```bash
-conda create --name leafcutter python=2.7 --yes
+conda create --name leafcutter python=2.7
 conda activate leafcutter
-conda install -c bioconda samtools r-base=3.6 --yes
+conda install -c bioconda samtools r-base=3.6
 
-Rscript -e "install.packages('devtools', repos='http://cran.us.r-project.org', dependencies=TRUE)"
-Rscript -e "Sys.setenv(TAR = '/bin/tar'); devtools::install_github('stan-dev/rstantools')"
-Rscript -e "Sys.setenv(TAR = '/bin/tar'); devtools::install_github('davidaknowles/leafcutter/leafcutter')"
+TAR='/bin/tar'
+Rscript -e "install.packages('devtools', repos='http://cran.us.r-project.org')"
+Rscript -e "devtools::install_github('stan-dev/rstantools')"
 ```
 <!-- R CMD INSTALL --no-lock <pkg> -->
 
-!!! Important
-    Only use `Sys.setenv(TAR = '/bin/tar')` if you have problems with devtools selecting `gtar` instead of `tar`
+!!! warning
+    Only use `TAR='/bin/tar'` or `set TAR '/bin/tar'` (fishshell) if you have problems with devtools selecting `gtar` instead of `tar`.
 
 
-!!! Important
-    If you are experiencing the following the `ERROR: failed to create lock directory` error when trying to install R packages, add the following option to install.package `INSTALL_opts = c('--no-lock')`
+!!! warning
+    If you are experiencing the following the `ERROR: failed to create lock directory` error when trying to install R packages, add the following option to install.package `INSTALL_opts = c('--no-lock')`.
 
 ## Install Junctionseq
 
 JunctionSeq[^4] should be installed directly from BioConductor:
 
 ```bash
-conda env create -f junctionseq-env.yml --yes
+conda env create -f envs/junctionseq.ym
 conda activate leafcutter
 Rscript -e "BiocManager::install('JunctionSeq')"
 ```

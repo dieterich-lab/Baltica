@@ -286,7 +286,7 @@ Detailed output information can be found on page 14 of the [JunctionSeq Package 
 
 Baltica uses splice graph information to determine the reconcile the SJ coordinates and to and assign AS type. 
  
-De novo transcriptomic workflow is procced with Stringtie [@pertea_2015]. First, we merge the alignment files from biological replicates. Next, we compute _de novo_ annotation with Stringtie (v1.3.5) with  `--min_junct_coverage 3` and `--min_isoform_proportion 0.01`. Finally, the we merge the multiple annotation with `gffcompare -r {reference_annotation.gtf} -R -V`. The parameter selection is further detailed on the [Integration chapter](integration.md). 
+De novo transcriptomic workflow is procced with Stringtie [@pertea_2015]. First, we merge the alignment files from biological replicates. Next, we compute _de novo_ annotation with Stringtie (v1.3.5) with  `-c 3`, `-j 3` and `-f 0.01`. Finally, the we merge the multiple annotation with `gffcompare -r {reference_annotation.gtf} -R -V`. The parameter selection is further detailed on the [Integration chapter](integration.md). 
 
 ### Software dependencies
 

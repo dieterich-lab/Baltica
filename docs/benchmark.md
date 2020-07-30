@@ -1,7 +1,6 @@
 We implemented a benchmark method for DJU methods using the Spike-In RNA Variants (SIRVs Set-1, cat 025.03[^2]) as ground-truth for alternative splicing identification.
-Differential splicing methods often use simulated data for benchmark, which does not fully appreciate the complexity of RNA-Sequencing experiment. We use a complementary approach that aims to overcome this limitation. The SIRVs spike-in comprise seven genes, 69 transcript isoforms, 357 exons and 113 intron. 216 events of intron changing 
-<!-- \todo{XXX} introns are differently used in the three mixes. -->
-According to our experimental design, differences in transcript abundance lead to differential splicing events in SIRV chromosomes but not in the human contigs, that in this case represent false-positive calls when called significant. 
+Differential splicing methods often use simulated data for benchmark, which does not fully appreciate the complexity of RNA-Sequencing experiment. We use a complementary approach that aims to overcome this limitation. The SIRVs spike-in comprise seven genes, 69 transcript isoforms, 357 exons and 113 intron
+According to our experimental design, differences in transcript abundance lead to differential splicing events in SIRV chromosomes but not in the human contigs, which would represent false-positive calls. 
 
 !!!important
     The test data currently shipping with Baltica has only a subset of 10% of the reads per group in Gerbracht et al. 2020 ([E-MTAB-8461](https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-8461/)).
