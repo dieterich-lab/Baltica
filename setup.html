@@ -184,6 +184,11 @@
   </a>
 </li>
 <li class="md-nav__item">
+<a class="md-nav__link" href="#baltica-command-line-arguments">
+    Baltica command-line arguments
+  </a>
+</li>
+<li class="md-nav__item">
 <a class="md-nav__link" href="#executing-a-baltica-workflow">
     Executing a Baltica workflow
   </a>
@@ -268,6 +273,11 @@
   </a>
 </li>
 <li class="md-nav__item">
+<a class="md-nav__link" href="#baltica-command-line-arguments">
+    Baltica command-line arguments
+  </a>
+</li>
+<li class="md-nav__item">
 <a class="md-nav__link" href="#executing-a-baltica-workflow">
     Executing a Baltica workflow
   </a>
@@ -285,7 +295,7 @@
 <h1>3 - Getting started</h1>
 <h2 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">¶</a></h2>
 <p>Baltica contains a collection of workflows and analysis scripts. Workflows are powered by <a href="https://snakemake.readthedocs.io/en/stable/">Snakemake</a> <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. Analysis is done with the R using Bioconductor packages. 
-We developed and tested the workflows with the Debian Linux distribution (v8.11 Jesse). 
+We developed and tested the workflows with the Debian Linux distribution (v8.11 Jesse) and conda (4.8.3).
 We use the module system to test the workflows, but conda usage is similar. 
 Below, we document how to install the Baltica dependencies. </p>
 <h2 id="install-miniconda">Install miniconda<a class="headerlink" href="#install-miniconda" title="Permanent link">¶</a></h2>
@@ -297,14 +307,10 @@ bash Miniconda3-latest-Linux-x86_64.sh
 <p>Make sure you initialize conda with <code>conda init</code>.
 You can test whether your installation was successful or not by running <code>conda --version</code> and you may need to restart your shell instance. </p>
 <h2 id="clone-and-install-baltica">Clone and install Baltica<a class="headerlink" href="#clone-and-install-baltica" title="Permanent link">¶</a></h2>
-<div class="codehilite"><pre><span></span><code>git clone git@github.com:dieterich-lab/baltica.git
+<div class="codehilite"><pre><span></span><code>git clone https://github.com/dieterich-lab/baltica
 <span class="nb">cd</span> baltica
 python setup.py install
 </code></pre></div>
-<div class="admonition danger">
-<p class="admonition-title">Danger</p>
-<p>Snakemake requires python versions between &gt; 3.4 and &lt; 3.6.</p>
-</div>
 <h2 id="install-snakemake">Install Snakemake<a class="headerlink" href="#install-snakemake" title="Permanent link">¶</a></h2>
 <div class="codehilite"><pre><span></span><code>conda install -c bioconda snakemake<span class="s2">"&gt;=5.2"</span> --yes
 </code></pre></div>
@@ -312,26 +318,34 @@ python setup.py install
 <p class="admonition-title">Danger</p>
 <p>Snakemake requires python versions between &gt; 3.4 and &lt; 3.6.</p>
 </div>
-<p>Some of dependencies can be directly created with conda, go to <code>baltica/envs</code> directory and install with:<br/>
-    - <code>conda env create -f stringtie.yml</code><br/>
-    - <code>conda env create -f qc.yml</code> </p>
+<p>Some of dependencies can be directly created with conda, go to <code>baltica/envs</code> directory and install with:  </p>
+<div class="codehilite"><pre><span></span><code>conda env create -f stringtie.yml
+</code></pre></div>
+<p>and</p>
+<div class="codehilite"><pre><span></span><code>conda env create -f qc.yml
+</code></pre></div>
 <p>In general, R packages do not play nicely with conda, but we still use it because it's flexibility and the ability to 
-create isolated software environments.
-Cite Stringtie<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup>.</p>
+create isolated software environments.</p>
+<p>Stringtie citation <sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup>.</p>
 <h2 id="install-majiq">Install Majiq<a class="headerlink" href="#install-majiq" title="Permanent link">¶</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Majiq requires an Academic or Commercial license for use. Users are required to obtain their license. <a href="https://majiq.biociphers.org/app_download/">Academic download</a>.</p>
 </div>
-<p>Majiq<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> can installation can be problematic, but the recipe bellow works for us:</p>
-<div class="codehilite"><pre><span></span><code>conda create --name majiq_env <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.6 pysam numpy cython --yes -c bioconda
+<p>Majiq<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> can installation can be problematic, but the recipe below works for us:</p>
+<div class="codehilite"><pre><span></span><code>conda create --name majiq_env <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.6 htslib <span class="s2">"Cython==0.29.14"</span> git pip --yes -c bioconda
 conda activate majiq_env
-conda install --yes <span class="nv">waitress</span><span class="o">==</span><span class="m">1</span>.1.0 h5py&gt;<span class="o">=</span><span class="m">2</span>.8.0 <span class="nv">Flask</span><span class="o">==</span><span class="m">1</span>.0.2 Flask-WTF<span class="o">==</span><span class="m">0</span>.14.2 GitPython&gt;<span class="o">=</span><span class="m">2</span>.1.11 <span class="nv">gunicorn</span><span class="o">==</span><span class="m">19</span>.9.0 psutil&gt;<span class="o">=</span><span class="m">5</span>.4.8 h5py&gt;<span class="o">=</span><span class="m">2</span>.8.0 scipy&gt;<span class="o">=</span><span class="m">1</span>.1.0
-conda install --yes -c bioconda htslib 
 
-python3 -m pip install --upgrade pip
-python3 -m pip install git+https://bitbucket.org/biociphers/majiq_stable.git#egg<span class="o">=</span>majiq
+<span class="nv">ENV_PATH</span><span class="o">=</span><span class="nv">$HOME</span>/miniconda3/envs/majiq_env
+<span class="nb">export</span> <span class="nv">HTSLIB_LIBRARY_DIR</span><span class="o">=</span><span class="nv">$ENV_PATH</span>/lib
+<span class="nb">export</span> <span class="nv">HTSLIB_INCLUDE_DIR</span><span class="o">=</span><span class="nv">$ENV_PATH</span>/include
+pip install git+https://bitbucket.org/biociphers/majiq_academic.git#egg<span class="o">=</span>majiq 
 </code></pre></div>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>Confirm that <code>pip</code> used is the one from the <code>majiq_env</code> with <code>which pip</code> </p>
+</div>
+<p>Please inform us if you have issues with this recipe.</p>
 <h2 id="installation-leafcutter">Installation Leafcutter<a class="headerlink" href="#installation-leafcutter" title="Permanent link">¶</a></h2>
 <p>Users can install Leafcutter<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup> with conda using the following recipe: </p>
 <div class="codehilite"><pre><span></span><code>conda create --name leafcutter <span class="nv">python</span><span class="o">=</span><span class="m">2</span>.7
@@ -342,7 +356,6 @@ conda install -c bioconda samtools r-base<span class="o">=</span><span class="m"
 Rscript -e <span class="s2">"install.packages('devtools', repos='http://cran.us.r-project.org')"</span>
 Rscript -e <span class="s2">"devtools::install_github('stan-dev/rstantools')"</span>
 </code></pre></div>
-<!-- R CMD INSTALL --no-lock <pkg> -->
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Only use <code>TAR='/bin/tar'</code> or <code>set TAR '/bin/tar'</code> (fishshell) if you have problems with devtools selecting <code>gtar</code> instead of <code>tar</code>.</p>
@@ -360,17 +373,23 @@ Rscript -e <span class="s2">"BiocManager::install('JunctionSeq')"</span>
 <h2 id="clone-or-installing-baltica">Clone or installing Baltica?<a class="headerlink" href="#clone-or-installing-baltica" title="Permanent link">¶</a></h2>
 <p>Baltica can either installed as a python package or cloned from Github for each project.
 The installed version of Baltica is more convenient to be used with:<br/>
-<code>baltica qc config.yml</code>
-(as long the snakemake profile is set).
+<code>baltica qc config.yml</code> (as long the dependencies are available).
 Users who intend to modify the workflows should clone the framework and keep the change under version. 
-See (workflows)[workflows.md] for details on the configuration and parameters for each available workflow.</p>
+See (workflows)[workflows.md] for details on each available workflow configuration and parameters.</p>
+<h2 id="baltica-command-line-arguments">Baltica command-line arguments<a class="headerlink" href="#baltica-command-line-arguments" title="Permanent link">¶</a></h2>
+<p>Use the command below to list the command line arguments and their options: </p>
+<div class="codehilite"><pre><span></span><code>baltica --help
+</code></pre></div>
 <h2 id="executing-a-baltica-workflow">Executing a Baltica workflow<a class="headerlink" href="#executing-a-baltica-workflow" title="Permanent link">¶</a></h2>
 <ul>
 <li>with the <a href="https://modules.readthedocs.io/en/latest/index.html">modules system</a>:
     <code>baltica qc config.yml --use-envmodule</code></li>
 <li>with conda enviroments:
     <code>baltica qc config.yml --use-conda</code></li>
+<li>using an external conda enviroment, like the one we used for Majiq installation:
+    set <code>majiq_env_prefix = conda activate majiq_env;</code> in the configuration file</li>
 </ul>
+<p>There are alternatives to provide the software dependencies to Snakemake workflows, so feel free to contact them if you need an option.</p>
 <div class="footnote">
 <hr/>
 <ol>
