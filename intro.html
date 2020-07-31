@@ -1,0 +1,468 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Baltica - Integrated differential junction usage (DJU)" name="description"/>
+<link href="https://github.com/dieterich-lab/Baltica/intro.html" rel="canonical"/>
+<meta content="Thiago Britto-Borges" name="author"/>
+<link href="assets/images/favicon.png" rel="shortcut icon"/>
+<meta content="mkdocs-1.1.2, mkdocs-material-5.4.0" name="generator"/>
+<title>2 - Introduction - Baltica Documentation</title>
+<link href="assets/stylesheets/main.fe0cca5b.min.css" rel="stylesheet"/>
+<link href="assets/stylesheets/palette.a46bcfb3.min.css" rel="stylesheet"/>
+<meta content="#757575" name="theme-color"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&amp;display=fallback" rel="stylesheet"/>
+<style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+<link href="extra.css" rel="stylesheet"/>
+</head>
+<body data-md-color-accent="blue-grey" data-md-color-primary="grey" data-md-color-scheme="" dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#the-life-of-rna-transcripts-is-complex">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header" data-md-component="header">
+<nav aria-label="Header" class="md-header-nav md-grid">
+<a aria-label="Baltica Documentation" class="md-header-nav__button md-logo" href="https://github.com/dieterich-lab/Baltica" title="Baltica Documentation">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"></path></svg>
+</a>
+<label class="md-header-nav__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"></path></svg>
+</label>
+<div class="md-header-nav__title" data-md-component="header-title">
+<div class="md-header-nav__ellipsis">
+<span class="md-header-nav__topic md-ellipsis">
+            Baltica Documentation
+          </span>
+<span class="md-header-nav__topic md-ellipsis">
+            
+              2 - Introduction
+            
+          </span>
+</div>
+</div>
+<label class="md-header-nav__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" data-md-state="active" name="query" placeholder="Search" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"></path></svg>
+</label>
+<button aria-label="Clear" class="md-search__icon md-icon" data-md-component="search-reset" tabindex="-1" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"></path></svg>
+</button>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="md-header-nav__source">
+<a class="md-source" href="https://github.com/dieterich-lab/Baltica/" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"></path></svg>
+</div>
+<div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="Baltica Documentation" class="md-nav__button md-logo" href="https://github.com/dieterich-lab/Baltica" title="Baltica Documentation">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"></path></svg>
+</a>
+    Baltica Documentation
+  </label>
+<div class="md-nav__source">
+<a class="md-source" href="https://github.com/dieterich-lab/Baltica/" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"></path></svg>
+</div>
+<div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+</div>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="index.html" title="1 - Index">
+      1 - Index
+    </a>
+</li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" data-md-toggle="toc" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+        2 - Introduction
+        <span class="md-nav__icon md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"></path></svg>
+</span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="intro.html" title="2 - Introduction">
+      2 - Introduction
+    </a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"></path></svg>
+</span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#the-life-of-rna-transcripts-is-complex">
+    The life of RNA transcripts is complex
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#elements-of-splicing-regulation">
+    Elements of splicing regulation
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#consequence-of-splicing-and-motivation">
+    Consequence of splicing and motivation
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#classes-of-computational-methods-for-as-identification">
+    Classes of computational methods for AS identification
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#dexseq-applied-to-differential-exon-usage">
+    DEXSeq applied to differential exon usage
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#dju-methods-and-their-advantages">
+    DJU methods and their advantages
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#current-challenges-of-dju-methods">
+    Current challenges of DJU methods
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#the-aim-of-this-project">
+    The aim of this project
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#tip-on-rna-seq-aiming-differential-splicing-detection">
+    Tip on RNA-Seq aiming differential splicing detection
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="setup.html" title="3 - Getting started">
+      3 - Getting started
+    </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="workflows.html" title="4 - Methods">
+      4 - Methods
+    </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="benchmark.html" title="5 - Benchmark with artificial transcripts">
+      5 - Benchmark with artificial transcripts
+    </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="integration.html" title="6 - DJU methods result integration">
+      6 - DJU methods result integration
+    </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="release-notes.html" title="Release notes">
+      Release notes
+    </a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"></path></svg>
+</span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#the-life-of-rna-transcripts-is-complex">
+    The life of RNA transcripts is complex
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#elements-of-splicing-regulation">
+    Elements of splicing regulation
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#consequence-of-splicing-and-motivation">
+    Consequence of splicing and motivation
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#classes-of-computational-methods-for-as-identification">
+    Classes of computational methods for AS identification
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#dexseq-applied-to-differential-exon-usage">
+    DEXSeq applied to differential exon usage
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#dju-methods-and-their-advantages">
+    DJU methods and their advantages
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#current-challenges-of-dju-methods">
+    Current challenges of DJU methods
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#the-aim-of-this-project">
+    The aim of this project
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#tip-on-rna-seq-aiming-differential-splicing-detection">
+    Tip on RNA-Seq aiming differential splicing detection
+  </a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content">
+<article class="md-content__inner md-typeset"><a class="md-content__icon pdf-download-btn" download href="pdf/baltica_docs.pdf" title="Download"><i class="fa fas fa-download"></i><small> PDF</small></a>
+<a class="md-content__button md-icon" href="https://github.com/dieterich-lab/Baltica/tree/master/docs/intro.md" title="Edit this page">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"></path></svg>
+</a>
+<h1>2 - Introduction</h1>
+<h2 id="the-life-of-rna-transcripts-is-complex">The life of RNA transcripts is complex<a class="headerlink" href="#the-life-of-rna-transcripts-is-complex" title="Permanent link">¶</a></h2>
+<p>Alternative promoter usage, Alternative splicing (AS), and alternative polyadenylation site (PAS) usage are processes that contribute to the transcriptome complexity by producing different RNA transcript isoforms.
+AS is defined by a series of enzymatic reactions by which ribonucleoprotein complexes (spliceosomes) sequentially excise introns from a premature mRNA (pre-mRNA) and ligate the donor exon, at the 5' end of the intron, to the acceptor exon, at the 3' end of the intron. 
+Once complete, the series of splicing events produces an mRNA isoform, which encodes the protein-coding sequence. 
+Alternative combinations of exons produce different mRNA isoforms; thus, AS enables one pre-mRNA to generated many transcripts and protein isoforms, consequently diversifying the gene function. 
+In addition, the combinatorial usage of exons augments the possibilities of differential regulation on the transcript level.</p>
+<h2 id="elements-of-splicing-regulation">Elements of splicing regulation<a class="headerlink" href="#elements-of-splicing-regulation" title="Permanent link">¶</a></h2>
+<p>Cis- and trans-acting elements regulate RNA Splicing by orchestrating processes such as the exon-intron boundaries definition.
+The cis-acting elements are local features, such as the primary and secondary mRNA structure.
+Trans-acting elements are RNA binding proteins (RBPs) that, once deposited on the mRNA, regulate many steps of splicing.
+AS and its regulation are essential for many physiological processes, such as development <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> and tissue remodeling <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>.
+Moreover, defective pre-mRNA splicing, or mis-splicing, has been extensively linked to human disease, as reviewed by <sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup>, and is often associated with genetic variation.
+A recent study has demonstrated that up to 10% of human genetic variants with causal links to neurodevelopmental disorders are predicted to cause mis-splicing <sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup>.</p>
+<h2 id="consequence-of-splicing-and-motivation">Consequence of splicing and motivation<a class="headerlink" href="#consequence-of-splicing-and-motivation" title="Permanent link">¶</a></h2>
+<p>Changes in pre-mRNA splicing can have drastic consequences for protein function.
+Spliced isoforms may lead to truncated or extended protein domains, with a significant impact on protein function.
+Also, AS changes have been implicated in changes to the subcellular trafficking of proteins <sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup>.
+The encoding of a premature stop codon due to AS activates the nonsense-mediated decay pathway, which leads to the degradation of this transcript and, thus, depletion of the encoded protein <sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup><sup>,</sup><sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup>.
+However, experimental evidence to support AS biological consequence is limited in the scientific literature because of the many challenges in detecting and prioritizing AS events.
+For example, VastDB, a database of experimentally validated splicing events, contains 1148 events (version 1.8). <sup id="fnref:8"><a class="footnote-ref" href="#fn:8">8</a></sup>.<br/>
+<!-- \todo{There are examples of software that touch the topic of protein function changes in AS, notably  IsoformSwitchAnalyser, apprisws and I need to mention those somewhere}  --></p>
+<h2 id="classes-of-computational-methods-for-as-identification">Classes of computational methods for AS identification<a class="headerlink" href="#classes-of-computational-methods-for-as-identification" title="Permanent link">¶</a></h2>
+<p>The number of reported AS events has increased enormously over the past ten years.
+This increase is primarily due to advances in the RNA-Sequencing (RNA-Seq) technology, notably the longer read-length, and the development of computational methods to detect AS from RNA-Seq.
+A read that aligns with two or more exons is the evidence that a intron was removed from the pre-mRNA.
+These reads are named exon-exon junctions or splice junctions (SJ) and represented by the gaps marked with the N cigar in the read alignment.
+The splice graph is a network representation in which nodes and edges represent exon and SJ, respectively, and the different network paths form the different transcripts.
+Methods to detect AS from RNA-Seq build a model based on the feature abundances and its difference between two or more experimental conditions to test for AS differences.
+These methods fit into three classes: (a) different transcript usage or expression (DTU) <sup id="fnref:9"><a class="footnote-ref" href="#fn:9">9</a></sup><sup>,</sup><sup id="fnref:10"><a class="footnote-ref" href="#fn:10">10</a></sup><sup>,</sup><sup id="fnref:11"><a class="footnote-ref" href="#fn:11">11</a></sup>; (b) different exon usage <sup id="fnref:12"><a class="footnote-ref" href="#fn:12">12</a></sup>; and (c) different junction usage (DJU) <sup id="fnref:13"><a class="footnote-ref" href="#fn:13">13</a></sup><sup>,</sup><sup id="fnref:14"><a class="footnote-ref" href="#fn:14">14</a></sup><sup>,</sup><sup id="fnref:15"><a class="footnote-ref" href="#fn:15">15</a></sup><sup>,</sup><sup id="fnref:16"><a class="footnote-ref" href="#fn:16">16</a></sup><sup>,</sup><sup id="fnref:17"><a class="footnote-ref" href="#fn:17">17</a></sup>.
+The genomic feature used for statistical modeling determines the class of each method.<br/>
+Most DTU methods depend on a known transcriptome as input, and the results they report rely heavily on the quality of this annotation <sup id="fnref:18"><a class="footnote-ref" href="#fn:18">18</a></sup>.</p>
+<h2 id="dexseq-applied-to-differential-exon-usage">DEXSeq applied to differential exon usage<a class="headerlink" href="#dexseq-applied-to-differential-exon-usage" title="Permanent link">¶</a></h2>
+<p>DEXSeq is a popular method for DEU that is currently maintained.<br/>
+To overcome the complexity of the splice graph representation, DEXSeq uses a flat transcript structure representation.
+It split exons in genomic bins, and partly overlapping exons with alternative a start or end coordinates are split in distinct bins. 
+The bin RNA-Seq read coverage is then modeled with a generalized linear model, which enables the comparison of experimental conditions in context to its covariates.
+This approach, however, also requires the exon coordinates as input. </p>
+<h2 id="dju-methods-and-their-advantages">DJU methods and their advantages<a class="headerlink" href="#dju-methods-and-their-advantages" title="Permanent link">¶</a></h2>
+<p>In contrast, DJU methods are less dependent on the annotation and are more robust to ambiguous sequencing that reads that map to many features. 
+The main advantage of DJU versus DTU methods is that PSI, the proportion of reads supporting a path in the splice graph, can be computed directly from the sequencing reads, opposing the transcript level quantification, which depends on the complexity of the splice graph.<br/>
+Thus, DJU methods enable the <em>de novo</em> identification and quantification of SJ from the RNA-Seq data independent of transcriptome assembly methods.
+This feature enables the identification of many more splicing events that otherwise would be missed.
+There are considerable differences in terms of implementation and assumption among DJU methods. Nevertheless, these methods share a set common set of steps that represent the core of a DJU workflow.
+First, the SJ are extracted from the alignment files; second, testable AS events are selected; third, SJ read counts for the selected AS events are modeled; finally, the test results are reported. Most of the methods also include a visualization of the results to facilitate interpretation.</p>
+<h2 id="current-challenges-of-dju-methods">Current challenges of DJU methods<a class="headerlink" href="#current-challenges-of-dju-methods" title="Permanent link">¶</a></h2>
+<p>However, these state-of-the-art DJU methods produce results with a low agreement with each other. 
+To demonstrate that, we included the Spike-in RNA Variant Control Mixes (SIRVs) in a recent dataset with knockdown and knockout of the CASC3 gene <sup id="fnref:19"><a class="footnote-ref" href="#fn:19">19</a></sup>. 
+By computing DJU with JunctionSeq, Majiq and, Leafcutter, we report little intersection of significant identified genes and SJ on the SIRV artificial transcriptome, for which the ground truth is known (see the <a href="benchmark.html">Benchmark</a>). 
+The lack of consensus among the different tools represents a barrier to users who want to compare the various methods to select alternatively spliced exon-exon junctions to be experimentally validated.</p>
+<h2 id="the-aim-of-this-project">The aim of this project<a class="headerlink" href="#the-aim-of-this-project" title="Permanent link">¶</a></h2>
+<p>Despite the increase in the number of known AS events, there are still many challenges to further our understanding of the molecular mechanism underlying tissue and disease-specific RNA splicing. 
+The lack of consensus among the tools leads to difficulties in selecting which junctions are biologically relevant. This issue challenges the detection and validation of AS events. 
+Here, we introduce Baltica, a framework that simplifies the execution and integration of results from DJU methods and summarizes AS's potential biological consequences from changes in the annotation.
+Besides presenting Baltica, we also provide a benchmark of the three DJU methods using the Spike-In RNA Variants (SIRVs) as ground-truth for alternative splicing detection.</p>
+<h2 id="tip-on-rna-seq-aiming-differential-splicing-detection">Tip on RNA-Seq aiming differential splicing detection<a class="headerlink" href="#tip-on-rna-seq-aiming-differential-splicing-detection" title="Permanent link">¶</a></h2>
+<p>For RNA-Sequencing experiments aiming to detect genes and transcripts with relatively low expression, a higher sequencing depth (40-60 million reads) is required, in contrast, to experiment that only aim finding the most abundant genes, and so only demand around 10 million reads <a href="https://support.illumina.com/bulletins/2017/04/considerations-for-rna-seq-read-length-and-coverage-.html">see</a>. This parameter is particularly relevant for samples with novel SJ. Read length and paired-end are also critical for splice junction identification, and longer reads offer more coverage of the exons boundaries (see [@Chhangawala]). The target nominal read length should be between 75-100 nucleotide, maximize the read overhang size, and, consequently, maximize the quality of the alignments.</p>
+<p>Also, databases such as the CHESS <a href="http://ccb.jhu.edu/chess/">2</a> can provide additional evidence for splice sites absent in the annotation.</p>
+<div class="footnote">
+<hr/>
+<ol>
+<li id="fn:1">
+<p>Justin J.-L. Wong, William Ritchie, Olivia A. Ebner, Matthias Selbach, Jason W.H. Wong, Yizhou Huang, Dadi Gao, Natalia Pinello, Maria Gonzalez, Kinsha Baidya, Annora Thoeng, Teh-Liane Khoo, Charles G. Bailey, Jeff Holst, and John E.J. Rasko. Orchestrated intron retention regulates normal granulocyte differentiation. <em>Cell</em>, 154(3):583–595, August 2013. URL: <a href="https://doi.org/10.1016/j.cell.2013.06.052">https://doi.org/10.1016/j.cell.2013.06.052</a>, <a href="https://doi.org/10.1016/j.cell.2013.06.052">doi:10.1016/j.cell.2013.06.052</a>. <a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:2">
+<p>Jing Liu, Xu Kong, Mengkai Zhang, Xiao Yang, and Xiuqin Xu. RNA binding protein 24 deletion disrupts global alternative splicing and causes dilated cardiomyopathy. <em>Protein &amp; Cell</em>, 10(6):405–416, September 2018. URL: <a href="https://doi.org/10.1007/s13238-018-0578-8">https://doi.org/10.1007/s13238-018-0578-8</a>, <a href="https://doi.org/10.1007/s13238-018-0578-8">doi:10.1007/s13238-018-0578-8</a>. <a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn:3">
+<p>Marina M. Scotti and Maurice S. Swanson. RNA mis-splicing in disease. <em>Nature Reviews Genetics</em>, 17(1):19–32, November 2015. URL: <a href="https://doi.org/10.1038/nrg.2015.3">https://doi.org/10.1038/nrg.2015.3</a>, <a href="https://doi.org/10.1038/nrg.2015.3">doi:10.1038/nrg.2015.3</a>. <a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+<li id="fn:4">
+<p>Kishore Jaganathan, Sofia Kyriazopoulou Panagiotopoulou, Jeremy F. McRae, Siavash Fazel Darbandi, David Knowles, Yang I. Li, Jack A. Kosmicki, Juan Arbelaez, Wenwu Cui, Grace B. Schwartz, Eric D. Chow, Efstathios Kanterakis, Hong Gao, Amirali Kia, Serafim Batzoglou, Stephan J. Sanders, and Kyle Kai-How Farh. Predicting splicing from primary sequence with deep learning. <em>Cell</em>, 176(3):535–548.e24, January 2019. URL: <a href="https://doi.org/10.1016/j.cell.2018.12.015">https://doi.org/10.1016/j.cell.2018.12.015</a>, <a href="https://doi.org/10.1016/j.cell.2018.12.015">doi:10.1016/j.cell.2018.12.015</a>. <a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">↩</a></p>
+</li>
+<li id="fn:5">
+<p>Steffen Link, Stefanie E. Grund, and Sven Diederichs. Alternative splicing affects the subcellular localization of drosha. <em>Nucleic Acids Research</em>, 44(11):5330–5343, May 2016. URL: <a href="http://dx.doi.org/10.1093/nar/gkw400">http://dx.doi.org/10.1093/nar/gkw400</a>, <a href="https://doi.org/10.1093/nar/gkw400">doi:10.1093/nar/gkw400</a>. <a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">↩</a></p>
+</li>
+<li id="fn:6">
+<p>B. P. Lewis, R. E. Green, and S. E. Brenner. Evidence for the widespread coupling of alternative splicing and nonsense-mediated mrna decay in humans. <em>Proceedings of the National Academy of Sciences</em>, 100(1):189–192, Dec 2002. URL: <a href="http://dx.doi.org/10.1073/pnas.0136770100">http://dx.doi.org/10.1073/pnas.0136770100</a>, <a href="https://doi.org/10.1073/pnas.0136770100">doi:10.1073/pnas.0136770100</a>. <a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">↩</a></p>
+</li>
+<li id="fn:7">
+<p>S. J. Baserga and E. J. Benz. Beta-globin nonsense mutation: deficient accumulation of mrna occurs despite normal cytoplasmic stability. <em>Proceedings of the National Academy of Sciences</em>, 89(7):2935–2939, Apr 1992. URL: <a href="http://dx.doi.org/10.1073/pnas.89.7.2935">http://dx.doi.org/10.1073/pnas.89.7.2935</a>, <a href="https://doi.org/10.1073/pnas.89.7.2935">doi:10.1073/pnas.89.7.2935</a>. <a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">↩</a></p>
+</li>
+<li id="fn:8">
+<p>Javier Tapial, Kevin C.H. Ha, Timothy Sterne-Weiler, André Gohr, Ulrich Braunschweig, Antonio Hermoso-Pulido, Mathieu Quesnel-Vallières, Jon Permanyer, Reza Sodaei, Yamile Marquez, and et al. An atlas of alternative splicing profiles and functional associations reveals new regulatory programs and genes that simultaneously express multiple major isoforms. <em>Genome Research</em>, 27(10):1759–1768, Aug 2017. URL: <a href="http://dx.doi.org/10.1101/gr.220962.117">http://dx.doi.org/10.1101/gr.220962.117</a>, <a href="https://doi.org/10.1101/gr.220962.117">doi:10.1101/gr.220962.117</a>. <a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 8 in the text">↩</a></p>
+</li>
+<li id="fn:9">
+<p>Cole Trapnell, Brian A Williams, Geo Pertea, Ali Mortazavi, Gordon Kwan, Marijke J van Baren, Steven L Salzberg, Barbara J Wold, and Lior Pachter. Transcript assembly and quantification by rna-seq reveals unannotated transcripts and isoform switching during cell differentiation. <em>Nature Biotechnology</em>, 28(5):511–515, May 2010. URL: <a href="http://dx.doi.org/10.1038/nbt.1621">http://dx.doi.org/10.1038/nbt.1621</a>, <a href="https://doi.org/10.1038/nbt.1621">doi:10.1038/nbt.1621</a>. <a class="footnote-backref" href="#fnref:9" title="Jump back to footnote 9 in the text">↩</a></p>
+</li>
+<li id="fn:10">
+<p>Malgorzata Nowicka and Mark D. Robinson. DRIMSeq: a dirichlet-multinomial framework for multivariate count outcomes in genomics. <em>F1000Research</em>, 5:1356, December 2016. URL: <a href="https://doi.org/10.12688/f1000research.8900.2">https://doi.org/10.12688/f1000research.8900.2</a>, <a href="https://doi.org/10.12688/f1000research.8900.2">doi:10.12688/f1000research.8900.2</a>. <a class="footnote-backref" href="#fnref:10" title="Jump back to footnote 10 in the text">↩</a></p>
+</li>
+<li id="fn:11">
+<p>Kimon Froussios, Kira Mourão, Gordon Simpson, Geoff Barton, and Nicholas Schurch. Relative abundance of transcripts (RATs): identifying differential isoform abundance from RNA-seq. <em>F1000Research</em>, 8:213, February 2019. URL: <a href="https://doi.org/10.12688/f1000research.17916.1">https://doi.org/10.12688/f1000research.17916.1</a>, <a href="https://doi.org/10.12688/f1000research.17916.1">doi:10.12688/f1000research.17916.1</a>. <a class="footnote-backref" href="#fnref:11" title="Jump back to footnote 11 in the text">↩</a></p>
+</li>
+<li id="fn:12">
+<p>S. Anders, A. Reyes, and W. Huber. Detecting differential usage of exons from RNA-seq data. <em>Genome Research</em>, 22(10):2008–2017, June 2012. URL: <a href="https://doi.org/10.1101/gr.133744.111">https://doi.org/10.1101/gr.133744.111</a>, <a href="https://doi.org/10.1101/gr.133744.111">doi:10.1101/gr.133744.111</a>. <a class="footnote-backref" href="#fnref:12" title="Jump back to footnote 12 in the text">↩</a></p>
+</li>
+<li id="fn:13">
+<p>Yang I. Li, David A. Knowles, Jack Humphrey, Alvaro N. Barbeira, Scott P. Dickinson, Hae Kyung Im, and Jonathan K. Pritchard. Annotation-free quantification of RNA splicing using LeafCutter. <em>Nature Genetics</em>, 50(1):151–158, December 2017. URL: <a href="https://doi.org/10.1038/s41588-017-0004-9">https://doi.org/10.1038/s41588-017-0004-9</a>, <a href="https://doi.org/10.1038/s41588-017-0004-9">doi:10.1038/s41588-017-0004-9</a>. <a class="footnote-backref" href="#fnref:13" title="Jump back to footnote 13 in the text">↩</a></p>
+</li>
+<li id="fn:14">
+<p>Stephen W. Hartley and James C. Mullikin. Detection and visualization of differential splicing in RNA-seq data with JunctionSeq. <em>Nucleic Acids Research</em>, pages gkw501, June 2016. URL: <a href="https://doi.org/10.1093/nar/gkw501">https://doi.org/10.1093/nar/gkw501</a>, <a href="https://doi.org/10.1093/nar/gkw501">doi:10.1093/nar/gkw501</a>. <a class="footnote-backref" href="#fnref:14" title="Jump back to footnote 14 in the text">↩</a></p>
+</li>
+<li id="fn:15">
+<p>Jorge Vaquero-Garcia, Alejandro Barrera, Matthew R Gazzara, Juan Gonzalez-Vallinas, Nicholas F Lahens, John B Hogenesch, Kristen W Lynch, and Yoseph Barash. A new view of transcriptome complexity and regulation through the lens of local splicing variations. <em>eLife</em>, February 2016. URL: <a href="https://doi.org/10.7554/elife.11752">https://doi.org/10.7554/elife.11752</a>, <a href="https://doi.org/10.7554/elife.11752">doi:10.7554/elife.11752</a>. <a class="footnote-backref" href="#fnref:15" title="Jump back to footnote 15 in the text">↩</a></p>
+</li>
+<li id="fn:16">
+<p>Juan L. Trincado, Juan C. Entizne, Gerald Hysenaj, Babita Singh, Miha Skalic, David J. Elliott, and Eduardo Eyras. SUPPA2: fast, accurate, and uncertainty-aware differential splicing analysis across multiple conditions. <em>Genome Biology</em>, March 2018. URL: <a href="https://doi.org/10.1186/s13059-018-1417-1">https://doi.org/10.1186/s13059-018-1417-1</a>, <a href="https://doi.org/10.1186/s13059-018-1417-1">doi:10.1186/s13059-018-1417-1</a>. <a class="footnote-backref" href="#fnref:16" title="Jump back to footnote 16 in the text">↩</a></p>
+</li>
+<li id="fn:17">
+<p>Timothy Sterne-Weiler, Robert J. Weatheritt, Andrew J. Best, Kevin C.H. Ha, and Benjamin J. Blencowe. Efficient and accurate quantitative profiling of alternative splicing patterns of any complexity on a laptop. <em>Molecular Cell</em>, 72(1):187–200.e6, October 2018. URL: <a href="https://doi.org/10.1016/j.molcel.2018.08.018">https://doi.org/10.1016/j.molcel.2018.08.018</a>, <a href="https://doi.org/10.1016/j.molcel.2018.08.018">doi:10.1016/j.molcel.2018.08.018</a>. <a class="footnote-backref" href="#fnref:17" title="Jump back to footnote 17 in the text">↩</a></p>
+</li>
+<li id="fn:18">
+<p>Charlotte Soneson, Katarina L. Matthes, Malgorzata Nowicka, Charity W. Law, and Mark D. Robinson. Isoform prefiltering improves performance of count-based methods for analysis of differential transcript usage. <em>Genome Biology</em>, Jan 2016. URL: <a href="http://dx.doi.org/10.1186/s13059-015-0862-3">http://dx.doi.org/10.1186/s13059-015-0862-3</a>, <a href="https://doi.org/10.1186/s13059-015-0862-3">doi:10.1186/s13059-015-0862-3</a>. <a class="footnote-backref" href="#fnref:18" title="Jump back to footnote 18 in the text">↩</a></p>
+</li>
+<li id="fn:19">
+<p>Jennifer V Gerbracht, Volker Boehm, Thiago Britto-Borges, Sebastian Kallabis, Janica L Wiederstein, Simona Ciriello, Dominik U Aschemeier, Marcus Krüger, Christian K Frese, Janine Altmüller, and et al. Casc3 promotes transcriptome-wide activation of nonsense-mediated decay by the exon junction complex. <em>Nucleic Acids Research</em>, Jul 2020. URL: <a href="http://dx.doi.org/10.1093/nar/gkaa564">http://dx.doi.org/10.1093/nar/gkaa564</a>, <a href="https://doi.org/10.1093/nar/gkaa564">doi:10.1093/nar/gkaa564</a>. <a class="footnote-backref" href="#fnref:19" title="Jump back to footnote 19 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer class="md-footer">
+<div class="md-footer-nav">
+<nav aria-label="Footer" class="md-footer-nav__inner md-grid">
+<a class="md-footer-nav__link md-footer-nav__link--prev" href="index.html" rel="prev" title="1 - Index">
+<div class="md-footer-nav__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"></path></svg>
+</div>
+<div class="md-footer-nav__title">
+<div class="md-ellipsis">
+<span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                1 - Index
+              </div>
+</div>
+</a>
+<a class="md-footer-nav__link md-footer-nav__link--next" href="setup.html" rel="next" title="3 - Getting started">
+<div class="md-footer-nav__title">
+<div class="md-ellipsis">
+<span class="md-footer-nav__direction">
+                  Next
+                </span>
+                3 - Getting started
+              </div>
+</div>
+<div class="md-footer-nav__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"></path></svg>
+</div>
+</a>
+</nav>
+</div>
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-footer-copyright">
+<div class="md-footer-copyright__highlight">
+            Thiago Britto-Borges, Dieterichlab - MIT Licese
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+          Material for MkDocs
+        </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<script src="assets/javascripts/vendor.d710d30a.min.js"></script>
+<script src="assets/javascripts/bundle.b39636ac.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+<script>
+        app = initialize({
+          base: ".",
+          features: ["instant"],
+          search: Object.assign({
+            worker: "assets/javascripts/worker/search.a68abb33.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+</body>
+</html>

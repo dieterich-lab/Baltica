@@ -1,0 +1,15 @@
+.left {
+    /* left align with text float on the right */
+    float: left;
+    padding-right: 20px;
+}
+.right {
+    /* right align with text float on the left */
+    float: right;
+    padding-left: 20px;
+}
+
+.center {
+    display: block;
+    margin: 0 auto;
+}

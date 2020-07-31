@@ -1,0 +1,417 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Baltica - Integrated differential junction usage (DJU)" name="description"/>
+<link href="https://github.com/dieterich-lab/Baltica/benchmark.html" rel="canonical"/>
+<meta content="Thiago Britto-Borges" name="author"/>
+<link href="assets/images/favicon.png" rel="shortcut icon"/>
+<meta content="mkdocs-1.1.2, mkdocs-material-5.4.0" name="generator"/>
+<title>5 - Benchmark with artificial transcripts - Baltica Documentation</title>
+<link href="assets/stylesheets/main.fe0cca5b.min.css" rel="stylesheet"/>
+<link href="assets/stylesheets/palette.a46bcfb3.min.css" rel="stylesheet"/>
+<meta content="#757575" name="theme-color"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&amp;display=fallback" rel="stylesheet"/>
+<style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+<link href="extra.css" rel="stylesheet"/>
+</head>
+<body data-md-color-accent="blue-grey" data-md-color-primary="grey" data-md-color-scheme="" dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#rna-seq-processing-and-mapping">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header" data-md-component="header">
+<nav aria-label="Header" class="md-header-nav md-grid">
+<a aria-label="Baltica Documentation" class="md-header-nav__button md-logo" href="https://github.com/dieterich-lab/Baltica" title="Baltica Documentation">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"></path></svg>
+</a>
+<label class="md-header-nav__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"></path></svg>
+</label>
+<div class="md-header-nav__title" data-md-component="header-title">
+<div class="md-header-nav__ellipsis">
+<span class="md-header-nav__topic md-ellipsis">
+            Baltica Documentation
+          </span>
+<span class="md-header-nav__topic md-ellipsis">
+            
+              5 - Benchmark with artificial transcripts
+            
+          </span>
+</div>
+</div>
+<label class="md-header-nav__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" data-md-state="active" name="query" placeholder="Search" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"></path></svg>
+</label>
+<button aria-label="Clear" class="md-search__icon md-icon" data-md-component="search-reset" tabindex="-1" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"></path></svg>
+</button>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="md-header-nav__source">
+<a class="md-source" href="https://github.com/dieterich-lab/Baltica/" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"></path></svg>
+</div>
+<div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="Baltica Documentation" class="md-nav__button md-logo" href="https://github.com/dieterich-lab/Baltica" title="Baltica Documentation">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"></path></svg>
+</a>
+    Baltica Documentation
+  </label>
+<div class="md-nav__source">
+<a class="md-source" href="https://github.com/dieterich-lab/Baltica/" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"></path></svg>
+</div>
+<div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+</div>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="index.html" title="1 - Index">
+      1 - Index
+    </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="intro.html" title="2 - Introduction">
+      2 - Introduction
+    </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="setup.html" title="3 - Getting started">
+      3 - Getting started
+    </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="workflows.html" title="4 - Methods">
+      4 - Methods
+    </a>
+</li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" data-md-toggle="toc" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+        5 - Benchmark with artificial transcripts
+        <span class="md-nav__icon md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"></path></svg>
+</span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="benchmark.html" title="5 - Benchmark with artificial transcripts">
+      5 - Benchmark with artificial transcripts
+    </a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"></path></svg>
+</span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#rna-seq-processing-and-mapping">
+    RNA-Seq processing and mapping
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#dju-method-produces-results-with-little-agreement">
+    DJU method produces results with little agreement
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#benchmark">
+    Benchmark
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#results-from-the-methods-benchmark">
+    Results from the methods benchmark
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="integration.html" title="6 - DJU methods result integration">
+      6 - DJU methods result integration
+    </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="release-notes.html" title="Release notes">
+      Release notes
+    </a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"></path></svg>
+</span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#rna-seq-processing-and-mapping">
+    RNA-Seq processing and mapping
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#dju-method-produces-results-with-little-agreement">
+    DJU method produces results with little agreement
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#benchmark">
+    Benchmark
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#results-from-the-methods-benchmark">
+    Results from the methods benchmark
+  </a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content">
+<article class="md-content__inner md-typeset"><a class="md-content__icon pdf-download-btn" download href="pdf/baltica_docs.pdf" title="Download"><i class="fa fas fa-download"></i><small> PDF</small></a>
+<a class="md-content__button md-icon" href="https://github.com/dieterich-lab/Baltica/tree/master/docs/benchmark.md" title="Edit this page">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"></path></svg>
+</a>
+<h1>5 - Benchmark with artificial transcripts</h1>
+<p>We implemented a benchmark method for DJU methods using the Spike-In RNA Variants (SIRVs Set-1, cat 025.03<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">1</a></sup>) as ground-truth for alternative splicing identification.
+Differential splicing methods often use simulated data for benchmark, which does not fully appreciate the complexity of RNA-Sequencing experiment. We use a complementary approach that aims to overcome this limitation. The SIRVs spike-in comprise seven genes, 69 transcript isoforms, 357 exons and 113 intron
+According to our experimental design, differences in transcript abundance lead to differential splicing events in SIRV chromosomes but not in the human contigs, which would represent false-positive calls. </p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The test data currently shipping with Baltica has only a subset of 10% of the reads per group in Gerbracht et al. 2020 (<a href="https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-8461/">E-MTAB-8461</a>).</p>
+</div>
+<p><img alt="" class="center" src="img/experiment_design.png"/> <strong>Fig. 5.1: Experimental design</strong>: The first column represents the experimental groups in the format. See <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">2</a></sup> for detail on the biological differences among groups. The second column represents the SIRV mixes add to each group. The third column is the sample id add by the sequencing facility. </p>
+<h2 id="rna-seq-processing-and-mapping">RNA-Seq processing and mapping<a class="headerlink" href="#rna-seq-processing-and-mapping" title="Permanent link">¶</a></h2>
+<p>Cell lines, RNA extraction, and RNA-Seq were described by <sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">2</a></sup>. In short, we obtained 15 libraries from Flp-In T-REx 293 cells, extracted the RNA fraction, with TrueSeq Stranded Total RNA kit (Illumina), followed by ribosomal RNA depletion, with RiboGold Plus kit. Reads were sequenced with an Illumina HiSeq4000 sequencer using PE 100bp protocol and yield around 50 million reads per sample. Data is deposited in ArrayExpress (E-MTAB-8461).
+Sequenced reads' adapters and low-quality bases were trimmed, and reads mapping to human precursor ribosomal RNA were discarded.
+The remaining reads were aligned to the human transcriptome (version 38, EnsEMBL 90) extended with the SIRV annotation.
+Regarding the DJU method benchmarking, we are not interested in the biological condition, but the SIRVs AS event, and so this experiment was designed, so the SIRVs mixes were not confounded to the biological factors.</p>
+<h2 id="dju-method-produces-results-with-little-agreement">DJU method produces results with little agreement<a class="headerlink" href="#dju-method-produces-results-with-little-agreement" title="Permanent link">¶</a></h2>
+<p>To demonstrated the previously observed lack of consensus among DJU methods, we computed DJU with JunctionSeq, Majiq, and Leafcutter with an artificial transcripts, the SIRVs, for three mixes containing a variable abundance of each transcript. The difference abundances are equivalent to differences in junction usage. The mixes were incorporated into the RNA-Seq experiment in non-confounded design with the biological co-variates, so the SJ observed in the natural contigs (human chromosome) could be used as false-positive calls. <strong>Table 5.1</strong> shows the number of SJ identified and called significant at the threshold defined at the <a href="worflow.md">workflow</a>. Majiq and JunctionSeq call around 310 significant SJ, while Leafcutter calls 201. Overall, the methods produce a comparable number of SJ called significant.</p>
+<table>
+<thead>
+<tr>
+<th>-</th>
+<th align="right">Junctionseq</th>
+<th align="right">Majiq</th>
+<th align="right">Leafcutter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Total</td>
+<td align="right">608</td>
+<td align="right">2850</td>
+<td align="right">131676</td>
+</tr>
+<tr>
+<td>Significant</td>
+<td align="right">311</td>
+<td align="right">309</td>
+<td align="right">201</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 5.1</strong>: Number of SJ considered (Total) and called significant (Significant) for each method.</p>
+<p>However, when comparing the resulting gene and SJ sets, we observe a limited intersection among the results from the three methods <strong>Fig. 5.2</strong>. To further understand this issue, we reviewed the step-by-step process implemented by the methods. Overall, the three DJU methods share three steps:
+Reads are extracted and filtered from the read alignments.
+Testable SJ or splicing events are identified, for example, by clustering.
+The SJ or splicing events counts are modelled.</p>
+<p><img alt="" src="img/results_with_little_aggrement.png"/></p>
+<p><strong> Fig. 5.2: Overlap between genes and SJ called significant by three DJU methods.</strong> JunctionSeq, Majiq and, Leafcutter deliver results that show a limited agreement among each other. We computed differential junction usage using Junctionseq, Majiq and, Leafcutter on 15 RNA-Seq libraries with 3 groups, the three mixes of spike-ins. The resulting intersection shows that only small overlap genes (<strong>A</strong>) and SJ (<strong>B</strong>) called significant by the tools 9% (6 out of 66) and 16% (34 out of 212), respectively.</p>
+<h2 id="benchmark">Benchmark<a class="headerlink" href="#benchmark" title="Permanent link">¶</a></h2>
+<p>To benchmark the dataset, we use Baltica to run the three tools comparing three groups:<br/>
+- mix 2 versus mix 1<br/>
+- mix 3 versus mix 2<br/>
+- mix 3 versus mix 1  </p>
+<p>We extracted all introns from the SIRV transcripts and classified between diff (changing between mixes) and no diff. Given the binary outcome from each tool, we analysed the following cases:</p>
+<ul>
+<li>True positive: diff intron called significant </li>
+<li>False-positive: no diff intron or intron in human contig called significant  </li>
+<li>True negative: no diff not called significant  </li>
+<li>False-negative: diff intron not called significant  </li>
+</ul>
+<h2 id="results-from-the-methods-benchmark">Results from the methods benchmark<a class="headerlink" href="#results-from-the-methods-benchmark" title="Permanent link">¶</a></h2>
+<p>The number of tested SJ among the three methods differ in 1 or 2 order of magnitude. Junctionseq achieves the highest number of TP calls and Junctionseq and Leafcutter the lowest number of FP calls. Based on that procedure, we proceeded with a two-class validation and computed the Receiver Operating Characteristic (ROC) curve and the precision-recall curve. </p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th align="right">TN</th>
+<th align="right">FP</th>
+<th align="right">FN</th>
+<th align="right">TP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Majiq</td>
+<td align="right">2492</td>
+<td align="right">126</td>
+<td align="right">90</td>
+<td align="right">82</td>
+</tr>
+<tr>
+<td>JunctionSeq</td>
+<td align="right">273</td>
+<td align="right">43</td>
+<td align="right">24</td>
+<td align="right">268</td>
+</tr>
+<tr>
+<td>Leafcutter</td>
+<td align="right">131474</td>
+<td align="right">43</td>
+<td align="right">1</td>
+<td align="right">158</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 5.2: Methods and number of SJ in each classification case </strong></p>
+<p><img alt="" src="img/roc_curve.png"/>
+<img alt="" src="img/pr_curve.png"/> </p>
+<p><strong>Fig 5.3 ROC and Precision-recall curve</strong>: we observe the in this benchmark JunctionSeq outperforms Majiq and Leafcutter. In this case, Leafcutter suffers from a recall ceiling issue, because it can't identify the certain introns from the artificial transcripts. We detail this issue in the <a href="integration.html">integration chapter</a> </p>
+<p>Despite the punctual similarities, the implementation of these three state-of-art methods vary. Here we present a direct comparison on a set of artificial transcripts. The cumulative differences in:
+- defining which SJ are extracted
+- how much the method relies on the annotation
+- splicing event or SJ selection for testing 
+- statistical modelling
+Explain the small intersections in <strong> Fig. 5.2 </strong>.</p>
+<p>JunctionSeq has a clear advantage in this comparison because it relies heavily on the information of the annotation and the input annotation, in this case,  perfectly represents the structure of the transcripts.</p>
+<p>Baltica aims to study these implementations differences and potentially suggestion advice to minimize the effect of the limitations mentioned above.</p>
+<!-- This benchmark uses the SIRV complete annotation. Junctionseq would not perform as well in incomplete annotation or over-annotated cases  -->
+<div class="footnote">
+<hr/>
+<ol>
+<li id="fn:2">
+<p>https://www.lexogen.com/sirvs/#sirvsdownload - Lexogen took no part in the experimental design for the experiment, and we have no relationship with the company. <a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:1">
+<p>Jennifer V Gerbracht, Volker Boehm, Thiago Britto-Borges, Sebastian Kallabis, Janica L Wiederstein, Simona Ciriello, Dominik U Aschemeier, Marcus Krüger, Christian K Frese, Janine Altmüller, and et al. Casc3 promotes transcriptome-wide activation of nonsense-mediated decay by the exon junction complex. <em>Nucleic Acids Research</em>, Jul 2020. URL: <a href="http://dx.doi.org/10.1093/nar/gkaa564">http://dx.doi.org/10.1093/nar/gkaa564</a>, <a href="https://doi.org/10.1093/nar/gkaa564">doi:10.1093/nar/gkaa564</a>. <a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 2 in the text">↩</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer class="md-footer">
+<div class="md-footer-nav">
+<nav aria-label="Footer" class="md-footer-nav__inner md-grid">
+<a class="md-footer-nav__link md-footer-nav__link--prev" href="workflows.html" rel="prev" title="4 - Methods">
+<div class="md-footer-nav__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"></path></svg>
+</div>
+<div class="md-footer-nav__title">
+<div class="md-ellipsis">
+<span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                4 - Methods
+              </div>
+</div>
+</a>
+<a class="md-footer-nav__link md-footer-nav__link--next" href="integration.html" rel="next" title="6 - DJU methods result integration">
+<div class="md-footer-nav__title">
+<div class="md-ellipsis">
+<span class="md-footer-nav__direction">
+                  Next
+                </span>
+                6 - DJU methods result integration
+              </div>
+</div>
+<div class="md-footer-nav__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"></path></svg>
+</div>
+</a>
+</nav>
+</div>
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-footer-copyright">
+<div class="md-footer-copyright__highlight">
+            Thiago Britto-Borges, Dieterichlab - MIT Licese
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+          Material for MkDocs
+        </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<script src="assets/javascripts/vendor.d710d30a.min.js"></script>
+<script src="assets/javascripts/bundle.b39636ac.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+<script>
+        app = initialize({
+          base: ".",
+          features: ["instant"],
+          search: Object.assign({
+            worker: "assets/javascripts/worker/search.a68abb33.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+</body>
+</html>

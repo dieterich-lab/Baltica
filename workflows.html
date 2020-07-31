@@ -1,0 +1,1013 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Baltica - Integrated differential junction usage (DJU)" name="description"/>
+<link href="https://github.com/dieterich-lab/Baltica/workflows.html" rel="canonical"/>
+<meta content="Thiago Britto-Borges" name="author"/>
+<link href="assets/images/favicon.png" rel="shortcut icon"/>
+<meta content="mkdocs-1.1.2, mkdocs-material-5.4.0" name="generator"/>
+<title>4 - Methods - Baltica Documentation</title>
+<link href="assets/stylesheets/main.fe0cca5b.min.css" rel="stylesheet"/>
+<link href="assets/stylesheets/palette.a46bcfb3.min.css" rel="stylesheet"/>
+<meta content="#757575" name="theme-color"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&amp;display=fallback" rel="stylesheet"/>
+<style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+<link href="extra.css" rel="stylesheet"/>
+</head>
+<body data-md-color-accent="blue-grey" data-md-color-primary="grey" data-md-color-scheme="" dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#method-inclusion-criteria">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header" data-md-component="header">
+<nav aria-label="Header" class="md-header-nav md-grid">
+<a aria-label="Baltica Documentation" class="md-header-nav__button md-logo" href="https://github.com/dieterich-lab/Baltica" title="Baltica Documentation">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"></path></svg>
+</a>
+<label class="md-header-nav__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"></path></svg>
+</label>
+<div class="md-header-nav__title" data-md-component="header-title">
+<div class="md-header-nav__ellipsis">
+<span class="md-header-nav__topic md-ellipsis">
+            Baltica Documentation
+          </span>
+<span class="md-header-nav__topic md-ellipsis">
+            
+              4 - Methods
+            
+          </span>
+</div>
+</div>
+<label class="md-header-nav__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" data-md-state="active" name="query" placeholder="Search" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"></path></svg>
+</label>
+<button aria-label="Clear" class="md-search__icon md-icon" data-md-component="search-reset" tabindex="-1" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"></path></svg>
+</button>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="md-header-nav__source">
+<a class="md-source" href="https://github.com/dieterich-lab/Baltica/" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"></path></svg>
+</div>
+<div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="Baltica Documentation" class="md-nav__button md-logo" href="https://github.com/dieterich-lab/Baltica" title="Baltica Documentation">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"></path></svg>
+</a>
+    Baltica Documentation
+  </label>
+<div class="md-nav__source">
+<a class="md-source" href="https://github.com/dieterich-lab/Baltica/" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"></path></svg>
+</div>
+<div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+</div>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="index.html" title="1 - Index">
+      1 - Index
+    </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="intro.html" title="2 - Introduction">
+      2 - Introduction
+    </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="setup.html" title="3 - Getting started">
+      3 - Getting started
+    </a>
+</li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" data-md-toggle="toc" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+        4 - Methods
+        <span class="md-nav__icon md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"></path></svg>
+</span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="workflows.html" title="4 - Methods">
+      4 - Methods
+    </a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"></path></svg>
+</span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#method-inclusion-criteria">
+    Method inclusion criteria
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#baltica-configuration">
+    Baltica configuration
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#quality-control-workflow">
+    Quality control workflow
+  </a>
+<nav aria-label="Quality control workflow" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#software-dependencies">
+    Software dependencies
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#dju-workflow">
+    DJU workflow
+  </a>
+<nav aria-label="DJU workflow" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#leafcutter-workflow">
+    Leafcutter workflow
+  </a>
+<nav aria-label="Leafcutter workflow" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#software-dependencies_1">
+    Software dependencies
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#parameters">
+    Parameters
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#output">
+    Output
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#majiq-workflow">
+    Majiq workflow
+  </a>
+<nav aria-label="Majiq workflow" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#software-dependencies_2">
+    Software dependencies
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#parameters_1">
+    Parameters
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#output_1">
+    Output
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#junctionseq-workflow">
+    JunctionSeq workflow
+  </a>
+<nav aria-label="JunctionSeq workflow" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#software-dependencies_3">
+    Software dependencies
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#parameters_2">
+    Parameters
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#output_2">
+    Output
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#stringtie-workflow">
+    Stringtie workflow
+  </a>
+<nav aria-label="Stringtie workflow" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#software-dependencies_4">
+    Software dependencies
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#parameters_3">
+    Parameters
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="benchmark.html" title="5 - Benchmark with artificial transcripts">
+      5 - Benchmark with artificial transcripts
+    </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="integration.html" title="6 - DJU methods result integration">
+      6 - DJU methods result integration
+    </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="release-notes.html" title="Release notes">
+      Release notes
+    </a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"></path></svg>
+</span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#method-inclusion-criteria">
+    Method inclusion criteria
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#baltica-configuration">
+    Baltica configuration
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#quality-control-workflow">
+    Quality control workflow
+  </a>
+<nav aria-label="Quality control workflow" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#software-dependencies">
+    Software dependencies
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#dju-workflow">
+    DJU workflow
+  </a>
+<nav aria-label="DJU workflow" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#leafcutter-workflow">
+    Leafcutter workflow
+  </a>
+<nav aria-label="Leafcutter workflow" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#software-dependencies_1">
+    Software dependencies
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#parameters">
+    Parameters
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#output">
+    Output
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#majiq-workflow">
+    Majiq workflow
+  </a>
+<nav aria-label="Majiq workflow" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#software-dependencies_2">
+    Software dependencies
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#parameters_1">
+    Parameters
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#output_1">
+    Output
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#junctionseq-workflow">
+    JunctionSeq workflow
+  </a>
+<nav aria-label="JunctionSeq workflow" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#software-dependencies_3">
+    Software dependencies
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#parameters_2">
+    Parameters
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#output_2">
+    Output
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#stringtie-workflow">
+    Stringtie workflow
+  </a>
+<nav aria-label="Stringtie workflow" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#software-dependencies_4">
+    Software dependencies
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#parameters_3">
+    Parameters
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content">
+<article class="md-content__inner md-typeset"><a class="md-content__icon pdf-download-btn" download href="pdf/baltica_docs.pdf" title="Download"><i class="fa fas fa-download"></i><small> PDF</small></a>
+<a class="md-content__button md-icon" href="https://github.com/dieterich-lab/Baltica/tree/master/docs/workflows.md" title="Edit this page">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"></path></svg>
+</a>
+<h1>4 - Methods</h1>
+<p>This document details on the implementation and usage for each workflow in Baltica.</p>
+<p>Baltica comprises a collection of Snakemake workflows (in the SMK format). Each file determines a series of sub-tasks (rules). The sub-tasks run in a specific order; once the output of every rule is complete found, the workflow is considered successful. The following workflows were implemented following instructions and parameters suggested by the methods authors unless otherwise noted.</p>
+<p><img alt="" class="center" src="img/Baltica_overview.png"/>
+<strong>Fig. 4.1 - Baltica overview</strong>: As input (1), Baltica takes the alignment (BAM format) files, and transcriptome annotation and a configuration file that matches the sample names to the alignment file. The file also holds any workflow parameters. In the first optional step (2), Baltica produces a quality control report with MultiQC, which summarizes the results from FastQC and RSeQC. Next (3), Baltica computes the DJU methods and produces a <em>de novo</em> transcriptome with Stringtie. The novel exons and transcripts are indispensable for the integration step (4). Finally, the output of the DJU methods is parsed</p>
+<p>Which are achieved by successively calling: </p>
+<ol>
+<li>Input</li>
+<li>Quality control: <br/>
+<code>baltica qc config.yml</code></li>
+<li>Differential Junction Usage (DJU) and <em>de novo</em> transcriptomics: <br/>
+<code>baltica junctionseq config.yml</code><br/>
+<code>baltica majiq config.yml</code><br/>
+<code>baltica leafcutter config.yml</code><br/>
+<code>baltica stringtie config.yml</code> </li>
+<li>Integration: <br/>
+<code>baltica analysis config.yml</code></li>
+</ol>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The transcriptome annotation is also important, so make sure you use the same annotation for read alignment and in Baltica parameter.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The impact on read alignment on DJU methods results were not fully explored. Expect different results from DJU methods, when comparing alignment files produced by different transcriptome aligners. We recommend STAR. </p>
+</div>
+<h2 id="method-inclusion-criteria">Method inclusion criteria<a class="headerlink" href="#method-inclusion-criteria" title="Permanent link">¶</a></h2>
+<p>There are a plethora of DJU methods, defined as methods that model SJ to identify differential splicing. Bellow is the inclusion criteria we used for Baltica. Methods are required to</p>
+<ul>
+<li>use as input RNA-Seq read alignment in the BAM format</li>
+<li>to detect AS splicing as changes on SJs level, not at the transcript level</li>
+<li>provide test statistic that compares a control group to a case group</li>
+<li>output effect size estimates, such as the deltaPSI</li>
+<li>detect unannotated SJ</li>
+</ul>
+<p>We are aware of other methods, such as Suppa <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> and rMATs <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>, also fit these criteria and aim to expand the catalogue of supported methods in the future.</p>
+<h2 id="baltica-configuration">Baltica configuration<a class="headerlink" href="#baltica-configuration" title="Permanent link">¶</a></h2>
+<p>The configuration file contains the parameters for workflows and file paths for input requirements and output destination.
+ We use the JSON file format as a<a href="https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html">configuration file</a>. 
+Please see a minimal working example <a href="https://github.com/dieterich-lab/Baltica/blob/master/baltica/config.yml">here</a>. </p>
+<p>The following parameters are mandatory:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter name</th>
+<th>Description</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>path</code></td>
+<td>absolute path to the logs and results</td>
+<td></td>
+</tr>
+<tr>
+<td><code>sample_path</code></td>
+<td>path to the parent directory to the alignment files</td>
+<td></td>
+</tr>
+<tr>
+<td><code>samples</code></td>
+<td>sample name to alignment files (BAM format) a condition name</td>
+<td><sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup></td>
+</tr>
+<tr>
+<td><code>comparison</code></td>
+<td>pair of groups to be tested</td>
+<td></td>
+</tr>
+<tr>
+<td><code>ref</code></td>
+<td>full path to the reference transcriptome annotation in the (GTF format)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>ref_fa</code></td>
+<td>full path to the reference genome sequence in the FASTA format</td>
+<td><sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
+</tr>
+<tr>
+<td><code>*_env</code></td>
+<td>Used if the required dependency is <strong>not</strong> available in the path</td>
+<td><sup id="fnref2:3"><a class="footnote-ref" href="#fn:3">3</a></sup></td>
+</tr>
+<tr>
+<td><code>strandedness</code></td>
+<td>choice between <code>reverse</code>, <code>forward</code> or None</td>
+<td><sup id="fnref2:4"><a class="footnote-ref" href="#fn:4">4</a></sup></td>
+</tr>
+<tr>
+<td><code>read_len</code></td>
+<td>positive integer representing the maximum read length</td>
+<td><sup id="fnref2:5"><a class="footnote-ref" href="#fn:5">5</a></sup></td>
+</tr>
+</tbody>
+</table>
+<!-- TODO detail on this usecase -->
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Junctionseq and Leafcutter support more complex designs, but these are not currently implemented in Baltica.</p>
+</div>
+<h2 id="quality-control-workflow">Quality control workflow<a class="headerlink" href="#quality-control-workflow" title="Permanent link">¶</a></h2>
+<p>The first step comprises the quality control of sequenced libraries and read alignments.
+This step aims to determine the success of sequencing and alignment.
+Baltica includes workflows for RSeQC <sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup> and FastQ. MultiQC <sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup> summarizes the output from both tools.
+In addition to the quality control, the tests may suggest biological differences among conditions.
+For example, RSeQC provides the proportion of reads per feature in the input annotation, which may show an increase users may identify enrichment of reads mapping to intronic regions, indicating either intron retention or accumulation of unspliced mRNA.
+RSeQC also implements an SJ saturation diagnostic, which quantifies the abundance of known and novel SJ.
+This metric relates to the sequencing depth. This diagnostic is done by sampling subsets of the dataset to identify which proportion of annotated and novel introns are observed in the sub-samples. 
+In conclusion, the quality control step serves to identify potential problems with the RNA-Seq library alignment and, potentially, direct on further troubleshooting and downstream analysis.</p>
+<h3 id="software-dependencies">Software dependencies<a class="headerlink" href="#software-dependencies" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RSeQC</td>
+<td>2.6.4</td>
+</tr>
+<tr>
+<td>FastQC</td>
+<td>0.11.8</td>
+</tr>
+<tr>
+<td>MultiQC</td>
+<td>0.8</td>
+</tr>
+</tbody>
+</table>
+<!-- [^1]: https://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/
+[^2]: http://rseqc.sourceforge.net/#usage-information
+[^3]: https://multiqc.info/docs/
+ -->
+<h2 id="dju-workflow">DJU workflow<a class="headerlink" href="#dju-workflow" title="Permanent link">¶</a></h2>
+<p>In term of implementation, the DJU tools use the following steps:
+1. Extracting split reads from the alignment file<br/>
+1. Defining which SJ or events should be tested<br/>
+1. Modelling the SJ/events abundance </p>
+<p>Unfortunately, there are differences the differences in implementation among the tools that lead to results that are not trivial to compare. </p>
+<h3 id="leafcutter-workflow">Leafcutter workflow<a class="headerlink" href="#leafcutter-workflow" title="Permanent link">¶</a></h3>
+<p>Leafcutter uses a series of scrips to extract the split reads from the BAM files. Recently, this step was changed to use <a href="https://github.com/griffithlab/regtools">regtools</a> to speed up the process. Our test show that this new step affects the workflow results, and so we have not implemented the change in Baltica.</p>
+<ol>
+<li>Extracting intron from the alignments files: reads with M and N cigar are extracted from the alignments, giving a
+minimum read overhang</li>
+<li>Intron clustering: introns with at least <code>minclureads</code> (default: 30) reads and up to <code>maxintronlen</code> kb (
+ default: 100000) are clustered. The clustering procedure iteratively discards introns supported by less than 
+ <code>mincluratio</code> reads within a cluster.</li>
+<li>Differential splicing analysis: Leafcutter uses a Dirichlet-Multinominal model to model the usage (proportion) of a 
+giving SJ within a cluster and compare this usage among conditions</li>
+</ol>
+<!-- !!! info
+
+  If you annotation use non-canonical chromosome names, you may have to change Leafcutter clustering scrip
+ -->
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>By default, Leafcutter clustering does not use the read strandedness information. In Baltica, we override these parameters and use the strand information for clustering.</p>
+</div>
+<h4 id="software-dependencies_1">Software dependencies<a class="headerlink" href="#software-dependencies_1" title="Permanent link">¶</a></h4>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>python</td>
+<td>2.7</td>
+</tr>
+<tr>
+<td>R</td>
+<td>3.5</td>
+</tr>
+<tr>
+<td>samtools</td>
+<td>1.9</td>
+</tr>
+</tbody>
+</table>
+<!-- TODO R dependencies -->
+<h4 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">¶</a></h4>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Name</th>
+<th>Default</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bam2junc</code></td>
+<td><code>use_strand</code></td>
+<td>TRUE</td>
+<td></td>
+</tr>
+<tr>
+<td><code>intron_clustering</code></td>
+<td><code>minclureads</code></td>
+<td>30</td>
+<td></td>
+</tr>
+<tr>
+<td><code>intron_clustering</code></td>
+<td><code>maxintronlen</code></td>
+<td>100000</td>
+<td></td>
+</tr>
+<tr>
+<td><code>intron_clustering</code></td>
+<td><code>mincluratio</code></td>
+<td>0.001</td>
+<td></td>
+</tr>
+<tr>
+<td><code>differential_splicing</code></td>
+<td><code>checkchrom</code></td>
+<td>TRUE</td>
+<td></td>
+</tr>
+<tr>
+<td><code>differential_splicing</code></td>
+<td><code>min_samples_per_group</code></td>
+<td>2</td>
+<td></td>
+</tr>
+<tr>
+<td><code>differential_splicing</code></td>
+<td><code>min_samples_per_intron</code></td>
+<td>2</td>
+<td></td>
+</tr>
+<tr>
+<td><code>differential_splicing</code></td>
+<td><code>fdr</code></td>
+<td>0.05</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="output">Output<a class="headerlink" href="#output" title="Permanent link">¶</a></h4>
+<p>The relevant output from Leafcutter is <code>_cluster_significance.txt</code> and 
+<code>_effect_sizes.txt</code>, which are computed for each comparison. Baltica parses these files.</p>
+<p>Column description:</p>
+<p><code>*_cluster_significance.txt</code>:
+1. <code>cluster</code>: <code>{chromosome}:{intron_start}:{intron_end}</code>
+1. <code>Status</code>: is this cluster testable?
+1. <code>loglr</code>: the log-likelihood ratio between the null model and alternative 
+1. <code>df</code>: degrees of freedom, equal to the number of introns in the cluster minus one (assuming two groups)
+1. <code>p</code> unadjusted p-value dor the under the asymptotic Chi-squared distribution</p>
+<p><code>*_effect_sizes.txt</code>:
+1. <code>intron</code>: intron identifier on the format <code>chromosome:intron_start:intron_end:cluster_id</code>
+1. <code>es</code>: TODO check fitted log effect size
+1. <code>{cond_1}</code>: fitted junction usage in condition <code>cond_1</code>
+1. <code>{cond_2}</code>: fitted junction usage in condition <code>cond_2</code>
+1. <code>deltapsi</code>: difference between usage in the two conditions  </p>
+<h2 id="majiq-workflow">Majiq workflow<a class="headerlink" href="#majiq-workflow" title="Permanent link">¶</a></h2>
+<p>Majiq workflow is implemented as follows:</p>
+<ol>
+<li>Create a configuration file (<code>majiq/build.ini</code>)</li>
+<li><strong>Majiq build</strong> generates the Splice Graph database with exons and SJ from the RNA-Seq experiment and the reference annotation</li>
+<li><strong>Majiq deltapsi</strong>: - computes PSI and deltaPSI and tests the if the deltaPSI changes between comparisons are significant </li>
+<li><strong>Voila tsv</strong>: filter and process the Majiq output</li>
+</ol>
+<p>Majiq also provides a visualization with the <code>voila view</code> that we find helpful. </p>
+<h3 id="software-dependencies_2">Software dependencies<a class="headerlink" href="#software-dependencies_2" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>python</td>
+<td>3.6</td>
+</tr>
+<tr>
+<td>htslib</td>
+<td>1.9</td>
+</tr>
+</tbody>
+</table>
+<h3 id="parameters_1">Parameters<a class="headerlink" href="#parameters_1" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Name</th>
+<th>Default</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>create_ini</td>
+<td><code>assembly</code></td>
+<td></td>
+<td>name of the assembly on the UCSC genome browser</td>
+</tr>
+<tr>
+<td>create_ini</td>
+<td><code>strandness</code></td>
+<td>reverse</td>
+<td>RNA-Sequencing library type</td>
+</tr>
+<tr>
+<td>create_ini</td>
+<td><code>read_len</code></td>
+<td>100</td>
+<td>maximum read lenght</td>
+</tr>
+<tr>
+<td>voila tsv</td>
+<td><code>--majiq_threshold</code></td>
+<td>0.2</td>
+<td>DeltaPSI cutoff for probability calculation</td>
+</tr>
+</tbody>
+</table>
+<h2 id="output_1">Output<a class="headerlink" href="#output_1" title="Permanent link">¶</a></h2>
+<p>Detailed information of Majiq's output can be found in the <a href="https://biociphers.bitbucket.io/majiq/VOILA_tsv.html">Majiq's online documentation</a></p>
+<!-- build |   |  -->
+<!--  `--min-experiments`
+    - Description:Iinteger or proportion of the minimum number of experiments a LSV event is observed to be considered
+  - Default: 0.5
+
+   `--min-intronic-cov`
+  - Description: Minimum number of coverage an intron needs to be tested for intron retention events
+  - Default: 0.01
+
+   `--min-denovo`
+  - Description: Minimum number of reads at all positions in an LSV to consider a de novo junction 
+  - Default: 2
+
+    `--minreads`
+    - Description: Minimum number of reads at all positions in an LSV to consider an LSV
+  - Default: 3
+
+  `--minpos`
+  - Description: Minimum number of start positions with at least one read in an LSV to consider that the LSV "exist in the data".
+  - Default: 2
+
+    `--markstacks`
+  - Description: p-value threshold (or negative number to disable) to mark stack positions 
+  - Default: 1e-07
+
+    `--k`
+  - Description: Number of positions to sample per iteration.
+  - Default: 50
+
+    `--m`
+  - Description: Number of sampling steps using on bootstrap
+  - Default: 30
+  - baltica: -->
+<!-- - For Majiq deltapsi:
+
+    `--binsize`
+  - Description: Number of bins for the PSI value distribution 
+  - Default: 0.025
+
+    `--prior-minreads`
+    - Description: Minimum number of reads at all to included 
+  - Default: 20
+
+    `--prior-minnonzero`
+  - Minimum number of positions for the best set.
+  - Default: 10
+ -->
+<!--    `--non-changing-threshold`
+    - Description: None 
+  - Default: 0.05
+
+   `--probability-threshold` 
+  - Description: None
+  - default: off
+ -->
+<h2 id="junctionseq-workflow">JunctionSeq workflow<a class="headerlink" href="#junctionseq-workflow" title="Permanent link">¶</a></h2>
+<p>JunctionSeq <sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup> tests statistical significance over difference usage among exonic and intronic disjoint genomic bins. It takes as input read count matrix obtained with QoRTs <sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup>, for annotated SJ, novel SJ, and exons, so in fact, JunctionSeq fits both the DEU and DJU classifications. 
+Bins selected as testable as modelled with generalized linear models, as described in DEXSeq <sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup>, but reporting a test statistic at the genomic feature (exon or junction) and gene level.
+Different from other DJU methods, JunctionSeq does not group the SJ in AS events, and so it does not compute PSI events.
+By default, SJ with p.adjust &lt; 0.05 are called significant.</p>
+<h3 id="software-dependencies_3">Software dependencies<a class="headerlink" href="#software-dependencies_3" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R</td>
+<td>3.6</td>
+</tr>
+<tr>
+<td>qorts</td>
+<td>1.1.8</td>
+</tr>
+</tbody>
+</table>
+<p>Qorts depends on Java. We currently use it with Java 11.0.6. JunctionSeq itself relies on a series of BioConductor packages.</p>
+<h3 id="parameters_2">Parameters<a class="headerlink" href="#parameters_2" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Name</th>
+<th>Default</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>qc</td>
+<td><code>strandness</code></td>
+<td>reverse</td>
+<td></td>
+</tr>
+<tr>
+<td>qc</td>
+<td><code>read_len</code></td>
+<td>100</td>
+<td></td>
+</tr>
+<tr>
+<td>qc</td>
+<td><code>is_single_end</code></td>
+<td>True</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="output_2">Output<a class="headerlink" href="#output_2" title="Permanent link">¶</a></h3>
+<p>Detailed output information can be found on page 14 of the <a href="https://github.com/hartleys/JunctionSeq/blob/13a323dda5fae2d7e74b82230824affb747d938d/JunctionSeq/vignettes/JunctionSeq.Rnw#L514">JunctionSeq Package User Manual</a></p>
+<h2 id="stringtie-workflow">Stringtie workflow<a class="headerlink" href="#stringtie-workflow" title="Permanent link">¶</a></h2>
+<p>Baltica uses splice graph information to determine the reconcile the SJ coordinates and to and assign AS type. </p>
+<p>De novo transcriptomic workflow is procced with Stringtie [@pertea_2015]. First, we merge the alignment files from biological replicates. Next, we compute <em>de novo</em> annotation with Stringtie (v1.3.5) with  <code>-c 3</code>, <code>-j 3</code> and <code>-f 0.01</code>. Finally, the we merge the multiple annotation with <code>gffcompare -r {reference_annotation.gtf} -R -V</code>. The parameter selection is further detailed on the <a href="integration.html">Integration chapter</a>. </p>
+<h3 id="software-dependencies_4">Software dependencies<a class="headerlink" href="#software-dependencies_4" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stringtie</td>
+<td>1.3.5</td>
+</tr>
+</tbody>
+</table>
+<h3 id="parameters_3">Parameters<a class="headerlink" href="#parameters_3" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Name</th>
+<th>Default</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>create_ini</td>
+<td><code>assembly</code></td>
+<td></td>
+<td>name of the assembly on the UCSC genome browser</td>
+</tr>
+</tbody>
+</table>
+<div class="footnote">
+<hr/>
+<ol>
+<li id="fn:1">
+<p>Juan L. Trincado, Juan C. Entizne, Gerald Hysenaj, Babita Singh, Miha Skalic, David J. Elliott, and Eduardo Eyras. SUPPA2: fast, accurate, and uncertainty-aware differential splicing analysis across multiple conditions. <em>Genome Biology</em>, March 2018. URL: <a href="https://doi.org/10.1186/s13059-018-1417-1">https://doi.org/10.1186/s13059-018-1417-1</a>, <a href="https://doi.org/10.1186/s13059-018-1417-1">doi:10.1186/s13059-018-1417-1</a>. <a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">↩</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:2">
+<p>Shihao Shen, Juw Won Park, Zhi-xiang Lu, Lan Lin, Michael D. Henry, Ying Nian Wu, Qing Zhou, and Yi Xing. Rmats: robust and flexible detection of differential alternative splicing from replicate rna-seq data. <em>Proceedings of the National Academy of Sciences</em>, 111(51):E5593–E5601, Dec 2014. URL: <a href="http://dx.doi.org/10.1073/pnas.1419161111">http://dx.doi.org/10.1073/pnas.1419161111</a>, <a href="https://doi.org/10.1073/pnas.1419161111">doi:10.1073/pnas.1419161111</a>. <a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">↩</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn:3">
+<p>Liguo Wang, Shengqin Wang, and Wei Li. RSeQC: quality control of RNA-seq experiments. <em>Bioinformatics</em>, 28(16):2184–2185, June 2012. URL: <a href="https://doi.org/10.1093/bioinformatics/bts356">https://doi.org/10.1093/bioinformatics/bts356</a>, <a href="https://doi.org/10.1093/bioinformatics/bts356">doi:10.1093/bioinformatics/bts356</a>. <a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">↩</a><a class="footnote-backref" href="#fnref2:3" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+<li id="fn:4">
+<p>Philip Ewels, Måns Magnusson, Sverker Lundin, and Max Käller. Multiqc: summarize analysis results for multiple tools and samples in a single report. <em>Bioinformatics</em>, 32(19):3047–3048, Jun 2016. URL: <a href="http://dx.doi.org/10.1093/bioinformatics/btw354">http://dx.doi.org/10.1093/bioinformatics/btw354</a>, <a href="https://doi.org/10.1093/bioinformatics/btw354">doi:10.1093/bioinformatics/btw354</a>. <a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">↩</a><a class="footnote-backref" href="#fnref2:4" title="Jump back to footnote 4 in the text">↩</a></p>
+</li>
+<li id="fn:5">
+<p>Stephen W. Hartley and James C. Mullikin. Detection and visualization of differential splicing in RNA-seq data with JunctionSeq. <em>Nucleic Acids Research</em>, pages gkw501, June 2016. URL: <a href="https://doi.org/10.1093/nar/gkw501">https://doi.org/10.1093/nar/gkw501</a>, <a href="https://doi.org/10.1093/nar/gkw501">doi:10.1093/nar/gkw501</a>. <a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">↩</a><a class="footnote-backref" href="#fnref2:5" title="Jump back to footnote 5 in the text">↩</a></p>
+</li>
+<li id="fn:6">
+<p>Stephen W. Hartley and James C. Mullikin. Qorts: a comprehensive toolset for quality control and data processing of rna-seq experiments. <em>BMC Bioinformatics</em>, Jul 2015. URL: <a href="http://dx.doi.org/10.1186/s12859-015-0670-5">http://dx.doi.org/10.1186/s12859-015-0670-5</a>, <a href="https://doi.org/10.1186/s12859-015-0670-5">doi:10.1186/s12859-015-0670-5</a>. <a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">↩</a></p>
+</li>
+<li id="fn:7">
+<p>S. Anders, A. Reyes, and W. Huber. Detecting differential usage of exons from RNA-seq data. <em>Genome Research</em>, 22(10):2008–2017, June 2012. URL: <a href="https://doi.org/10.1101/gr.133744.111">https://doi.org/10.1101/gr.133744.111</a>, <a href="https://doi.org/10.1101/gr.133744.111">doi:10.1101/gr.133744.111</a>. <a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer class="md-footer">
+<div class="md-footer-nav">
+<nav aria-label="Footer" class="md-footer-nav__inner md-grid">
+<a class="md-footer-nav__link md-footer-nav__link--prev" href="setup.html" rel="prev" title="3 - Getting started">
+<div class="md-footer-nav__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"></path></svg>
+</div>
+<div class="md-footer-nav__title">
+<div class="md-ellipsis">
+<span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                3 - Getting started
+              </div>
+</div>
+</a>
+<a class="md-footer-nav__link md-footer-nav__link--next" href="benchmark.html" rel="next" title="5 - Benchmark with artificial transcripts">
+<div class="md-footer-nav__title">
+<div class="md-ellipsis">
+<span class="md-footer-nav__direction">
+                  Next
+                </span>
+                5 - Benchmark with artificial transcripts
+              </div>
+</div>
+<div class="md-footer-nav__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"></path></svg>
+</div>
+</a>
+</nav>
+</div>
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-footer-copyright">
+<div class="md-footer-copyright__highlight">
+            Thiago Britto-Borges, Dieterichlab - MIT Licese
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+          Material for MkDocs
+        </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<script src="assets/javascripts/vendor.d710d30a.min.js"></script>
+<script src="assets/javascripts/bundle.b39636ac.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+<script>
+        app = initialize({
+          base: ".",
+          features: ["instant"],
+          search: Object.assign({
+            worker: "assets/javascripts/worker/search.a68abb33.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+</body>
+</html>
