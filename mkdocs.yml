@@ -29,12 +29,9 @@ nav:
   - 2 - Introduction: intro.md
   - 3 - Getting started: setup.md 
   - 4 - Methods: workflows.md 
-  # - 5 - Tutorial: tutorial.md
   - 5 - Benchmark with artificial transcripts: benchmark.md
   - 6 - DJU methods result integration: integration.md 
-  # - Bibliography: bibliography.md
   - Release notes: release-notes.md 
-  # - License: license.md
 
 markdown_extensions:
   - admonition
