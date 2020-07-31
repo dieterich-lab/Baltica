@@ -5,6 +5,7 @@ ___
 
 ## Features
 - Snakemake workflows for DJU: JunctionSeq, Majiq, and Leafcutter
+- Snakemake workflow for _de novo_ transcriptome annotation with Stringtie
 - Process and integrate the results from the methods  
 - Summarise AS class of differently spliced junctions
 - Benchmark using a set of artificial transcript in RNA Sequencing experiment
@@ -19,9 +20,9 @@ grid engines systems, for instructions on how to use it on different systems, pl
 
 The documentation is hosted by GitHub pages at https://dieterich-lab.github.io/Baltica/.
 
-### Setting up Baltica (once):
+### Setting up Baltica:
 
-[Here](https://dieterich-lab.github.io/Baltica/setup.html)
+[Instalation instructions](https://dieterich-lab.github.io/Baltica/setup.html)
      
 
 ## Contribution  
