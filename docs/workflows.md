@@ -1,9 +1,9 @@
-This document details on the implementation and usage for each workflow in Baltica.
+This chapter details the implementation and usage of each workflow in Baltica.
 
-Baltica comprises a collection of Snakemake workflows (in the SMK format). Each file determines a series of sub-tasks (rules). The sub-tasks run in a specific order; once the output of every rule is complete found, the workflow is considered successful. The following workflows were implemented following instructions and parameters suggested by the methods authors unless otherwise noted.
+Baltica comprises a collection of Snakemake workflows (in the SMK format). Each file determines a series of sub-tasks (rules). The sub-tasks run in a specific order; once the output of every rule is complete, the workflow is considered successful. We implemented the workflows following instructions and parameters suggested by the methods authors unless otherwise noted.
 
 ![](img/Baltica_overview.png){ .center }
-__Fig. 4.1 - Baltica overview__: As input (1), Baltica takes the alignment (BAM format) files, and transcriptome annotation and a configuration file that matches the sample names to the alignment file. The file also holds any workflow parameters. In the first optional step (2), Baltica produces a quality control report with MultiQC, which summarizes the results from FastQC and RSeQC. Next (3), Baltica computes the DJU methods and produces a _de novo_ transcriptome with Stringtie. The novel exons and transcripts are indispensable for the integration step (4). Finally, the output of the DJU methods is parsed
+__Fig. 4.1 - Baltica overview__: As input (1), Baltica takes the alignment files in the BAM format, and transcriptome annotation and a configuration file that matches the sample names to the alignment file. The file also holds any workflow parameters. In the first optional step (2), Baltica produces a quality control report with MultiQC, which summarizes the results from FastQC and RSeQC. Next (3), Baltica computes the DJU methods and produces a _de novo_ transcriptome with Stringtie. The novel exons and transcripts are indispensable for the integration step (4). Finally, the framework parses and integrates the output of the DJU methods.
 
 Which are achieved by successively calling: 
 
@@ -19,29 +19,28 @@ Which are achieved by successively calling:
 `baltica analysis config.yml`
 
 !!! important
-    The transcriptome annotation is also important, so make sure you use the same annotation for read alignment and in Baltica parameter.
+    The transcriptome annotation is critical, so make sure you use the same annotation during read alignment and Baltica.
 
 !!! note
-    The impact on read alignment on DJU methods results were not fully explored. Expect different results from DJU methods, when comparing alignment files produced by different transcriptome aligners. We recommend STAR. 
+    The impact on read alignment on DJU methods results were not fully explored. You should expect different results with different read aligners. We recommend STAR. 
    
 
 ## Method inclusion criteria
 
-There are a plethora of DJU methods, defined as methods that model SJ to identify differential splicing. Bellow is the inclusion criteria we used for Baltica. Methods are required to
+There are a plethora of DJU methods, defined as methods that model SJ to identify differential splicing. Bellow is the inclusion criteria we used for Baltica. Methods are required to:
 
 - use as input RNA-Seq read alignment in the BAM format
-- to detect AS splicing as changes on SJs level, not at the transcript level
+- detect AS splicing as changes on SJs level, not at the transcript level
 - provide test statistic that compares a control group to a case group
 - output effect size estimates, such as the deltaPSI
 - detect unannotated SJ
 
 
-We are aware of other methods, such as Suppa [@Trincado2018] and rMATs [@Shen_2014], also fit these criteria and aim to expand the catalogue of supported methods in the future.
+We are aware of other methods, such as Suppa [@Trincado2018] and rMATs [@Shen_2014], also fit these criteria and aim to expand the catalog of supported methods in the future.
 
 ## Baltica configuration
 
-The configuration file contains the parameters for workflows and file paths for input requirements and output destination.
- We use the JSON file format as a[configuration file](https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html). 
+The configuration file contains the parameters for workflows and file paths for input requirements and output destination. We use the JSON file format as a [configuration file](https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html). 
 Please see a minimal working example [here](https://github.com/dieterich-lab/Baltica/blob/master/baltica/config.yml). 
 
 The following parameters are mandatory:
@@ -60,13 +59,13 @@ Parameter name | Description | Note
 
 [^1]: We use the following convention for the sample name: `{condition}_{replicate}`, where the condition is the experimental group name without spaces or underline character, and replicate a positive integer
 [^2]: Used by Majiq for GC content correction
-[^3]: User should prefer `--use-conda` or `--use-envmodules`; however if it's not possible to load the requirements for, this hack may help 
+[^3]: User should prefer `--use-conda` or `--use-envmodules`; however if it's not possible to load the requirements, this hack may help 
 [^4]: Check RSeQC infer_experiment result 
 [^5]: Check FastQC Sequence Length Distribution report
 
 
 !!! note
-    Junctionseq and Leafcutter support more complex designs, but these are not currently implemented in Baltica.
+    Junctionseq and Leafcutter support more complex experimental designs, which were not yet implemented in Baltica.
 
 ## Quality control workflow
 
@@ -74,7 +73,7 @@ The first step comprises the quality control of sequenced libraries and read ali
 This step aims to determine the success of sequencing and alignment.
 Baltica includes workflows for RSeQC [@Wang2012] and FastQ. MultiQC [@Ewels_2016] summarizes the output from both tools.
 In addition to the quality control, the tests may suggest biological differences among conditions.
-For example, RSeQC provides the proportion of reads per feature in the input annotation, which may show an increase users may identify enrichment of reads mapping to intronic regions, indicating either intron retention or accumulation of unspliced mRNA.
+For example, RSeQC provides the proportion of reads per feature in the input annotation, which may suggest an enrichment of reads mapping to intronic regions, indicating either intron retention or accumulation of unspliced mRNA.
 RSeQC also implements an SJ saturation diagnostic, which quantifies the abundance of known and novel SJ.
 This metric relates to the sequencing depth. This diagnostic is done by sampling subsets of the dataset to identify which proportion of annotated and novel introns are observed in the sub-samples. 
 In conclusion, the quality control step serves to identify potential problems with the RNA-Seq library alignment and, potentially, direct on further troubleshooting and downstream analysis.
@@ -97,13 +96,13 @@ In term of implementation, the DJU tools use the following steps:
 
 1. Extracting split reads from the alignment file    
 1. Defining which SJ or events should be tested  
-1. Modelling the SJ/events abundance  
+1. Modeling the SJ/events abundance  
 
-Unfortunately, there are differences the differences in implementation among the tools that lead to results that are not trivial to compare. 
+Unfortunately, there are differences in the differences in implementation among the tools that lead to results that are not trivial to compare. 
 
 ### Leafcutter workflow
 
-Leafcutter uses a series of scrips to extract the split reads from the BAM files. Recently, this step was changed to use [regtools](https://github.com/griffithlab/regtools) to speed up the process. Our test show that this new step affects the workflow results, and so we have not implemented the change in Baltica.
+Leafcutter uses a series of scrips to extract the split reads from the BAM files. This step was recently changed to use [regtools](https://github.com/griffithlab/regtools) to speed up the process. Our test shows that this new step affects the workflow results, and so we have not implemented the change in Baltica.
 
 1. Extracting intron from the alignments files: reads with M and N cigar are extracted from the alignments, giving a
 minimum read overhang
@@ -118,7 +117,7 @@ giving SJ within a cluster and compare this usage among conditions
   If you annotation use non-canonical chromosome names, you may have to change Leafcutter clustering scrip
  -->
 !!! info
-    By default, Leafcutter clustering does not use the read strandedness information. In Baltica, we override these parameters and use the strand information for clustering.
+    By default, Leafcutter clustering does not use the read strandedness information. In Baltica, we override this parameter and use the strand information for clustering.
 
 #### Software dependencies
 
@@ -143,8 +142,7 @@ Rule | Name | Default | Note
 
 #### Output
 
-The relevant output from Leafcutter is `_cluster_significance.txt` and 
-`_effect_sizes.txt`, which are computed for each comparison. Baltica parses these files.
+The relevant output files from Leafcutter have the `_cluster_significance.txt` and `_effect_sizes.txt` suffix, which are computed for each comparison.
 
 Column description:
 
@@ -187,11 +185,11 @@ Rule | Name | Default | Note
 create_ini | `assembly` | | name of the assembly on the UCSC genome browser
 create_ini | `strandness` | reverse | RNA-Sequencing library type 
 create_ini | `read_len` |  100 | maximum read lenght
-voila tsv | `--majiq_threshold` | 0.2 | DeltaPSI cutoff for probability calculation
+voila tsv | `majiq_threshold` | 0.2 | DeltaPSI cutoff for probability calculation
 
 ## Output
 
-Detailed information of Majiq's output can be found in the [Majiq's online documentation](https://biociphers.bitbucket.io/majiq/VOILA_tsv.html)
+Baltica parses the files `*_voila.tsv` (one per comparison). One can read regarding Majiq's output at [Majiq's online documentation](https://biociphers.bitbucket.io/majiq/VOILA_tsv.html)
 
 <!-- build |   |  -->
 <!--  `--min-experiments`
@@ -254,7 +252,7 @@ Detailed information of Majiq's output can be found in the [Majiq's online docum
 ## JunctionSeq workflow
 
 JunctionSeq [@Hartley2016] tests statistical significance over difference usage among exonic and intronic disjoint genomic bins. It takes as input read count matrix obtained with QoRTs [@Hartley_2015], for annotated SJ, novel SJ, and exons, so in fact, JunctionSeq fits both the DEU and DJU classifications. 
-Bins selected as testable as modelled with generalized linear models, as described in DEXSeq [@Anders2012], but reporting a test statistic at the genomic feature (exon or junction) and gene level.
+Bins selected as testable as modeled with generalized linear models, as described in DEXSeq [@Anders2012], but reporting a test statistic at the genomic feature (exon or junction) and gene level.
 Different from other DJU methods, JunctionSeq does not group the SJ in AS events, and so it does not compute PSI events.
 By default, SJ with p.adjust < 0.05 are called significant.
 
@@ -277,14 +275,14 @@ qc   | `is_single_end` | True |
 
 ### Output
 
-Detailed output information can be found on page 14 of the [JunctionSeq Package User Manual](https://github.com/hartleys/JunctionSeq/blob/13a323dda5fae2d7e74b82230824affb747d938d/JunctionSeq/vignettes/JunctionSeq.Rnw#L514)
+Baltica parses files with the `*_sigGenes.results.txt.gz` suffix (one per comparison). Detailed output information are in the [JunctionSeq Package User Manual](https://github.com/hartleys/JunctionSeq/blob/13a323dda5fae2d7e74b82230824affb747d938d/JunctionSeq/vignettes/JunctionSeq.Rnw#L514)
 
 
 ## Stringtie workflow
 
-Baltica uses splice graph information to determine the reconcile the SJ coordinates and to and assign AS type. 
+Baltica uses splice graph information to reconcile the SJ coordinates among methods and to assign AS type. 
  
-De novo transcriptomic workflow is procced with Stringtie [@pertea_2015]. First, we merge the alignment files from biological replicates. Next, we compute _de novo_ annotation with Stringtie (v1.3.5) with  `-c 3`, `-j 3` and `-f 0.01`. Finally, the we merge the multiple annotation with `gffcompare -r {reference_annotation.gtf} -R -V`. The parameter selection is further detailed on the [Integration chapter](integration.md). 
+We process _de novo_ transcriptomic workflow with Stringtie [@pertea_2015]. First, we merge the alignment files from biological replicates. Next, we compute _de novo_ annotation with Stringtie (v1.3.5) with  `-c 3`, `-j 3`, and `-f 0.01`. Finally, the merge the multiple annotation with `gffcompare -r {reference_annotation.gtf} -R -V`. Details on the parameter selection are in the [Integration chapter](integration.md). 
 
 ### Software dependencies
 
@@ -297,7 +295,11 @@ Stringtie | 1.3.5
 
 Rule | Name | Default | Note
 -----|------|---------|------
-create_ini | `assembly` | | name of the assembly on the UCSC genome browser
+denovo_transcriptomics | `strandness` | reverse | 
+denovo_transcriptomics | `min_isoform_proportion` | 0.001 | 
+denovo_transcriptomics | `min_junct_coverage` | 3 |
+denovo_transcriptomics | `minimum_read_per_bp_coverage` | 3 |
+
 
 
 \bibliography
