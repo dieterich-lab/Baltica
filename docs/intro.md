@@ -1,5 +1,5 @@
 ## The life of RNA transcripts is complex 
-Alternative romoter usage, Alternative Splicing (AS), and alternative polyadenylation site usage are processes that contribute to the transcriptome complexity by producing different RNA transcript isoforms.
+Alternative promoter usage, Alternative Splicing (AS), and alternative polyadenylation site usage are processes that contribute to the transcriptome complexity by producing different RNA transcript isoforms.
 AS is defined by a series of enzymatic reactions by which ribonucleoprotein complexes (spliceosomes) sequentially excise introns from a premature mRNA (pre-mRNA) and ligate the donor exon, at the 5' end of the intron, to the acceptor exon, at the 3' end of the intron. 
 Once complete, the series of splicing events produces an mRNA isoform, which encodes the protein-coding sequence. 
 Alternative combinations of exons produce different mRNA isoforms; thus, AS enables one pre-mRNA to generated many transcripts and protein isoforms, consequently diversifying the gene function. 
@@ -61,7 +61,7 @@ Here, we introduce Baltica, a framework that simplifies the execution and integr
 Besides presenting Baltica, we also provide a benchmark of the three DJU methods using the Spike-In RNA Variants (SIRVs) as ground-truth for alternative splicing detection.
 
 ## Tips on RNA-Seq aiming differential splicing detection
-For RNA-Sequencing experiments aiming to detect genes and transcripts with relatively low expression, a higher sequencing depth (40-60 million reads) is required, in contrast, to experiment that only aim finding the most abundant genes, and so only demand around 10 million reads [read here for more details](https://support.illumina.com/bulletins/2017/04/considerations-for-rna-seq-read-length-and-coverage-.html). This parameter is particularly relevant for samples with novel SJ. Read length and paired-end are also critical for splice junction identification, and longer reads offer more coverage of the exons boundaries (see [@Chhangawala]). The target nominal read length should be between 75-100 nucleotide, maximize the read overhang size, and, consequently, maximize the quality of the alignments.
+For RNA-Sequencing experiments aiming to detect genes and transcripts with relatively low expression, a higher sequencing depth (40-60 million reads) is required, in contrast, to experiment that only aim finding the most abundant genes, and so only demand around 10 million reads [read here for more details](https://support.illumina.com/bulletins/2017/04/considerations-for-rna-seq-read-length-and-coverage-.html). This parameter is particularly relevant for samples with novel SJ. Read length and paired-end are also critical for splice junction identification, and longer reads offer more coverage of the exons boundaries. The target nominal read length should be between 75-100 nucleotide, maximize the read overhang size, and, consequently, maximize the quality of the alignments.
 
 Also, databases such as the CHESS [2](http://ccb.jhu.edu/chess/) can provide additional evidence for splice sites absent in the annotation.
 

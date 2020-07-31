@@ -50,8 +50,8 @@ plugins:
       csl_file: "natbio"
   - mkpdfs:
       design: "mkpdfs-design-sample/report.css"
-      author: "Thiago Britto-Borges"
-      company: "Dieterichlab - Heidelberg University Hospital"
+      # author: "Thiago Britto-Borges"
+      # company: "Dieterichlab - Heidelberg University Hospital"
       output_path: "pdf/baltica_docs.pdf"
       toc_title: Table of Content
 
