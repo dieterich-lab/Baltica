@@ -1,7 +1,7 @@
 ## Getting started
 
 Baltica contains a collection of workflows and analysis scripts. Workflows are powered by [Snakemake](https://snakemake.readthedocs.io/en/stable/) [^1]. Analysis is done with the R using Bioconductor packages. 
-We developed and tested the workflows with the Debian Linux distribution (v8.11 Jesse). 
+We developed and tested the workflows with the Debian Linux distribution (v8.11 Jesse) and conda (4.8.3).
 We use the module system to test the workflows, but conda usage is similar. 
 Below, we document how to install the Baltica dependencies. 
 
@@ -10,7 +10,7 @@ Below, we document how to install the Baltica dependencies.
 ```bash
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh
-```  
+```
 
 Or get miniconda [here](https://docs.conda.io/en/latest/miniconda.html). 
 
@@ -28,10 +28,6 @@ python setup.py install
 ```
 
 
-!!! danger
-    Snakemake requires python versions between > 3.4 and < 3.6.
-
-
 ## Install Snakemake 
 ```bash
 conda install -c bioconda snakemake">=5.2" --yes
@@ -41,12 +37,20 @@ conda install -c bioconda snakemake">=5.2" --yes
     Snakemake requires python versions between > 3.4 and < 3.6.
 
 Some of dependencies can be directly created with conda, go to `baltica/envs` directory and install with:  
-    - `conda env create -f stringtie.yml`  
-    - `conda env create -f qc.yml`  
+```
+conda env create -f stringtie.yml
+```
+
+and
+
+```
+conda env create -f qc.yml
+```
 
 In general, R packages do not play nicely with conda, but we still use it because it's flexibility and the ability to 
 create isolated software environments.
-Cite Stringtie[^5].
+
+Stringtie citation [^5].
 
 ## Install Majiq 
 
@@ -56,13 +60,11 @@ Cite Stringtie[^5].
 Majiq[^2] can installation can be problematic, but the recipe bellow works for us:
 
 ```bash
-conda create --name majiq_env python=3.6 pysam numpy cython --yes -c bioconda
+conda create --name majiq_env python=3.6 pysam htslib "Cython==0.29.14" --yes -c bioconda
 conda activate majiq_env
-conda install --yes waitress==1.1.0 h5py>=2.8.0 Flask==1.0.2 Flask-WTF==0.14.2 GitPython>=2.1.11 gunicorn==19.9.0 psutil>=5.4.8 h5py>=2.8.0 scipy>=1.1.0
-conda install --yes -c bioconda htslib 
 
-python3 -m pip install --upgrade pip
-python3 -m pip install git+https://bitbucket.org/biociphers/majiq_stable.git#egg=majiq
+pip install --upgrade pip
+pip install git+https://bitbucket.org/biociphers/majiq_academic.git#egg=majiq 
 ```
 
 ## Installation Leafcutter
@@ -78,11 +80,9 @@ TAR='/bin/tar'
 Rscript -e "install.packages('devtools', repos='http://cran.us.r-project.org')"
 Rscript -e "devtools::install_github('stan-dev/rstantools')"
 ```
-<!-- R CMD INSTALL --no-lock <pkg> -->
 
 !!! warning
     Only use `TAR='/bin/tar'` or `set TAR '/bin/tar'` (fishshell) if you have problems with devtools selecting `gtar` instead of `tar`.
-
 
 !!! warning
     If you are experiencing the following the `ERROR: failed to create lock directory` error when trying to install R packages, add the following option to install.package `INSTALL_opts = c('--no-lock')`.
@@ -100,10 +100,16 @@ Rscript -e "BiocManager::install('JunctionSeq')"
 ## Clone or installing Baltica?
 Baltica can either installed as a python package or cloned from Github for each project.
 The installed version of Baltica is more convenient to be used with:  
-`baltica qc config.yml`
-(as long the snakemake profile is set).
+`baltica qc config.yml` (as long the dependecies are avaiable).
 Users who intend to modify the workflows should clone the framework and keep the change under version. 
 See (workflows)[workflows.md] for details on the configuration and parameters for each available workflow.
+
+## Baltica command line arguments
+
+Use the command below to list the comand line arguments and their options: 
+```
+baltica --help
+```
 
 ## Executing a Baltica workflow
 
@@ -111,6 +117,7 @@ See (workflows)[workflows.md] for details on the configuration and parameters fo
     `baltica qc config.yml --use-envmodule`
 * with conda enviroments:
     `baltica qc config.yml --use-conda`
+There are alternative to provide the software dependecies to Snakemake workflows. Fell free to contact us in case you need it.
 
 [^1]: If you use Baltica, please also [cite Snakemake](https://bioinformatics.oxfordjournals.org/content/28/19/2520)
 [^2]: If you use Majiq results, please [cite it]( https://elifesciences.org/articles/11752)

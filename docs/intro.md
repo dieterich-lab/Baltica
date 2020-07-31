@@ -20,7 +20,7 @@ Spliced isoforms may lead to truncated or extended protein domains, with a signi
 AS also modulates post-transcriptional regulation events. The encoding of a premature stop codon, that can happen as consequence of AS, activates the nonsense-mediated decay pathway, which leads to the degradation of the transcript and, thus, depletion of the encoded protein [@Lewis_2002]<sup>,</sup>[@Baserga_1992].
 However, experimental evidence to support AS biological consequence is limited in the scientific literature because of the many challenges in detecting and prioritizing AS events.
 For example, VastDB, a database of experimentally validated splicing events, contains only 1148 events (version 1.8). [@Tapial_2017].  
-<!-- \todo{There are examples of software that touch the topic of protein function changes in AS, notably  IsoformSwitchAnalyser, apprisws and I need to mention those somewhere}  -->
+
 
 ## Classes of computational methods for AS identification
 The number of reported AS events has increased enormously over the past ten years.
@@ -51,17 +51,17 @@ First, the SJ are extracted from the alignment files; second, testable AS events
 ## Current challenges of DJU methods
 However, these state-of-the-art DJU methods produce results with a low agreement with each other. 
 To demonstrate that, we included the Spike-in RNA Variant Control Mixes (SIRVs) in a recent dataset with knockdown and knockout of the CASC3 gene [@Gerbracht_2020]. 
-By computing DJU with JunctionSeq, Majiq and, Leafcutter, we report little intersection of significant identified genes and SJ on the SIRV artificial transcriptome, for which the ground truth is known (see the [Benchmark](benchmark.md)). 
+By computing DJU with JunctionSeq, Majiq and, Leafcutter, we report little intersection of significant identified genes and SJ on the SIRV artificial transcriptome, for which the ground truth is known (see the [Benchmark chapter](benchmark.md)). 
 The lack of consensus among the different tools represents a barrier to users who want to compare the various methods to select alternatively spliced exon-exon junctions to be experimentally validated.
 
 ## The aim of this project
-Despite the increase in the number of known AS events, there are still many challenges to further our understanding of the molecular mechanism underlying tissue and disease-specific RNA splicing. 
+Despite the increase in the number of known AS events, there are still many challenges to advance our understanding of the molecular mechanism underlying tissue and disease-specific RNA splicing. 
 The lack of consensus among the tools leads to difficulties in selecting which junctions are biologically relevant. This issue challenges the detection and validation of AS events. 
 Here, we introduce Baltica, a framework that simplifies the execution and integration of results from DJU methods and summarizes AS's potential biological consequences from changes in the annotation.
 Besides presenting Baltica, we also provide a benchmark of the three DJU methods using the Spike-In RNA Variants (SIRVs) as ground-truth for alternative splicing detection.
 
 ## Tips on RNA-Seq aiming differential splicing detection
-For RNA-Sequencing experiments aiming to detect genes and transcripts with relatively low expression, a higher sequencing depth (40-60 million reads) is required, in contrast, to experiment that only aim finding the most abundant genes, and so only demand around 10 million reads [see](https://support.illumina.com/bulletins/2017/04/considerations-for-rna-seq-read-length-and-coverage-.html). This parameter is particularly relevant for samples with novel SJ. Read length and paired-end are also critical for splice junction identification, and longer reads offer more coverage of the exons boundaries (see [@Chhangawala]). The target nominal read length should be between 75-100 nucleotide, maximize the read overhang size, and, consequently, maximize the quality of the alignments.
+For RNA-Sequencing experiments aiming to detect genes and transcripts with relatively low expression, a higher sequencing depth (40-60 million reads) is required, in contrast, to experiment that only aim finding the most abundant genes, and so only demand around 10 million reads [read here for more details](https://support.illumina.com/bulletins/2017/04/considerations-for-rna-seq-read-length-and-coverage-.html). This parameter is particularly relevant for samples with novel SJ. Read length and paired-end are also critical for splice junction identification, and longer reads offer more coverage of the exons boundaries (see [@Chhangawala]). The target nominal read length should be between 75-100 nucleotide, maximize the read overhang size, and, consequently, maximize the quality of the alignments.
 
 Also, databases such as the CHESS [2](http://ccb.jhu.edu/chess/) can provide additional evidence for splice sites absent in the annotation.
 

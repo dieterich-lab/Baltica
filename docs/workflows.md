@@ -93,10 +93,11 @@ MultiQC | 0.8
  -->
 ## DJU workflow
 
-In term of implementation, the DJU tools use the following steps:
-1. Extracting split reads from the alignment file  
+In term of implementation, the DJU tools use the following steps:  
+
+1. Extracting split reads from the alignment file    
 1. Defining which SJ or events should be tested  
-1. Modelling the SJ/events abundance 
+1. Modelling the SJ/events abundance  
 
 Unfortunately, there are differences the differences in implementation among the tools that lead to results that are not trivial to compare. 
 
