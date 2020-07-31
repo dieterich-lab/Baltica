@@ -22,7 +22,7 @@ You can test whether your installation was successful or not by running `conda -
 ## Clone and install Baltica
 
 ```bash
-git clone git@github.com:dieterich-lab/baltica.git
+git clone https://github.com/dieterich-lab/baltica
 cd baltica
 python setup.py install
 ```
@@ -57,15 +57,22 @@ Stringtie citation [^5].
 !!! warning
     Majiq requires an Academic or Commercial license for use. Users are required to obtain their license. [Academic download](https://majiq.biociphers.org/app_download/).
 
-Majiq[^2] can installation can be problematic, but the recipe bellow works for us:
+Majiq[^2] can installation can be problematic, but the recipe below works for us:
 
 ```bash
-conda create --name majiq_env python=3.6 pysam htslib "Cython==0.29.14" --yes -c bioconda
+conda create --name majiq_env python=3.6 htslib "Cython==0.29.14" git pip --yes -c bioconda
 conda activate majiq_env
 
-pip install --upgrade pip
+ENV_PATH=$HOME/miniconda3/envs/majiq_env
+export HTSLIB_LIBRARY_DIR=$ENV_PATH/lib
+export HTSLIB_INCLUDE_DIR=$ENV_PATH/include
 pip install git+https://bitbucket.org/biociphers/majiq_academic.git#egg=majiq 
 ```
+
+!!! danger
+    Confirm that `pip` used is the one from the `majiq_env` with `which pip`  
+
+Please inform us if you have issues with this recipe.
 
 ## Installation Leafcutter
 
@@ -100,13 +107,13 @@ Rscript -e "BiocManager::install('JunctionSeq')"
 ## Clone or installing Baltica?
 Baltica can either installed as a python package or cloned from Github for each project.
 The installed version of Baltica is more convenient to be used with:  
-`baltica qc config.yml` (as long the dependecies are avaiable).
+`baltica qc config.yml` (as long the dependencies are available).
 Users who intend to modify the workflows should clone the framework and keep the change under version. 
-See (workflows)[workflows.md] for details on the configuration and parameters for each available workflow.
+See (workflows)[workflows.md] for details on each available workflow configuration and parameters.
 
-## Baltica command line arguments
+## Baltica command-line arguments
 
-Use the command below to list the comand line arguments and their options: 
+Use the command below to list the command line arguments and their options: 
 ```
 baltica --help
 ```
@@ -117,7 +124,10 @@ baltica --help
     `baltica qc config.yml --use-envmodule`
 * with conda enviroments:
     `baltica qc config.yml --use-conda`
-There are alternative to provide the software dependecies to Snakemake workflows. Fell free to contact us in case you need it.
+* using an external conda enviroment, like the one we used for Majiq installation:
+    set `majiq_env_prefix = conda activate majiq_env;` in the configuration file
+
+There are alternatives to provide the software dependencies to Snakemake workflows, so feel free to contact them if you need an option.
 
 [^1]: If you use Baltica, please also [cite Snakemake](https://bioinformatics.oxfordjournals.org/content/28/19/2520)
 [^2]: If you use Majiq results, please [cite it]( https://elifesciences.org/articles/11752)
@@ -126,4 +136,3 @@ There are alternative to provide the software dependecies to Snakemake workflows
 [^5]: If you use the Baltica's analysis module, please also [cite Stringtie](http://www.nature.com/nbt/journal/vaop/ncurrent/full/nbt.3122.html)
 
 \bibliography
-
