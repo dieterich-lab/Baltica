@@ -59,28 +59,7 @@ For other profile configurations see [Snakemake profiles](https://github.com/Sna
      
 ## Documentation
 
-To build the documentation, install the required packages:
-```{bash}
-pip install mkdocs-material
-pip install mkdocs-bibtex
-pip install mkpdfs-mkdocs
-pip install git+https://github.com/zhaoterryy/mkdocs-pdf-export-plugin.git@master
-```
-And to build with:
-```{bash}
-mkdocs build
-```
-
-This should output `site/` and `site/pdf/` directories that hold the HTML or PDF format for the docs.  
-
-Alternatively, see:
-   - [Setting up Baltica: long edition](docs/setup.md)
-   - [Workflows](docs/workflows.md)  
-   - [Analysis](docs/analysis.md)
-   - [Benchmark](docs/benchmark.md)  
-
-
-
+The documentation is hosted by GitHub pages at https://dieterich-lab.github.io/Baltica/.
 
 ## Contribution  
 Feedback and contribution are welcome. Please submit via [the GitHub issue tracker](https://github.com/dieterich-lab/Baltica/issues)
