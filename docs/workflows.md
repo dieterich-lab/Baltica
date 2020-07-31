@@ -64,7 +64,6 @@ Parameter name | Description | Note
 [^4]: Check RSeQC infer_experiment result 
 [^5]: Check FastQC Sequence Length Distribution report
 
-<!-- TODO detail on this usecase -->
 
 !!! note
     Junctionseq and Leafcutter support more complex designs, but these are not currently implemented in Baltica.
@@ -128,8 +127,6 @@ python | 2.7
 R | 3.5 
 samtools | 1.9 
 
-<!-- TODO R dependencies -->
-
 #### Parameters
 
 Rule | Name | Default | Note
@@ -159,7 +156,7 @@ Column description:
 
 `*_effect_sizes.txt`:
 1. `intron`: intron identifier on the format `chromosome:intron_start:intron_end:cluster_id`
-1. `es`: TODO check fitted log effect size
+1. `es`: effect size
 1. `{cond_1}`: fitted junction usage in condition `cond_1`
 1. `{cond_2}`: fitted junction usage in condition `cond_2`
 1. `deltapsi`: difference between usage in the two conditions  

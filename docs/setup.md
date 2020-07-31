@@ -111,7 +111,6 @@ See (workflows)[workflows.md] for details on the configuration and parameters fo
     `baltica qc config.yml --use-envmodule`
 * with conda enviroments:
     `baltica qc config.yml --use-conda`
-<!-- TODO: 'external conda enviroment' -->
 
 [^1]: If you use Baltica, please also [cite Snakemake](https://bioinformatics.oxfordjournals.org/content/28/19/2520)
 [^2]: If you use Majiq results, please [cite it]( https://elifesciences.org/articles/11752)
