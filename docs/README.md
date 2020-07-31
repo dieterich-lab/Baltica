@@ -6,7 +6,7 @@ To get started, use the menu on the left-hand side or search function to navigat
   
 ## Citation
 
-Thiago Britto-Borges, Volker Boehm, Niels H. Gehring and Christoph Dieterich (2020)__Baltica: integrated splice junction usage analysis__. 
+Thiago Britto-Borges, Volker Boehm, Niels H. Gehring and Christoph Dieterich (2020) __Baltica: integrated splice junction usage analysis__. 
 Manuscript in preparation.
 
 Baltica is based on the work of many scientists and developers. Thus, if you use the results of their tools in your analysis, consider citing their work.
