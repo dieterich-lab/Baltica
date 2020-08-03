@@ -6,7 +6,7 @@ edit_uri: tree/master/docs/
 site_description: Baltica - Integrated differential junction usage (DJU)
 copyright: Thiago Britto-Borges, Dieterichlab - MIT License
 use_directory_urls: false
-<br><span class="md-footer-custom-text">  <a href="https://www.dieterichlab.org">www.dieterichlab.org</a> </span>
+# <br><span class="md-footer-custom-text">  <a href="https://www.dieterichlab.org">www.dieterichlab.org</a> </span>
 #   <br><span class="md-footer-custom-text">  <a href="https://www.klinikum.uni-heidelberg.de/en/zentrum-fuer-innere-medizin-medizin-klinik/innere-medizin-iii-kardiologie-angiologie-und-pneumologie/forschung/forschung/klaus-tschira-institut-fuer-computational-cardiology/">Dieterich lab</a>  </span>
 docs_dir: docs/
 theme:
