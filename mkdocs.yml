@@ -25,7 +25,7 @@ extra_css:
     - extra.css
 
 nav:
-  - 1 - Index: README.md
+  - 1 - Index: index.md
   - 2 - Introduction: intro.md
   - 3 - Getting started: setup.md 
   - 4 - Methods: workflows.md 
