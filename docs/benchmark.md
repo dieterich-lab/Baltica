@@ -77,7 +77,7 @@ The curves shows that Junctionseq outperforms the other two methods in the condi
 Despite the punctual similarities, the implementation of these three state-of-art methods vary. Here we present a direct comparison on a set of artificial transcripts. The cumulative differences in who to define which SJ are extracted and tested; how much the method relies on the annotation; and the framework for statistical modelling explain the small intersections in __ Fig. 5.2 __.
 
 In this case, Leafcutter suffers from a recall ceiling issue, because it ignores certain introns from the artificial transcripts. JunctionSeq has a clear advantage in this comparison because it relies heavily on the information of the annotation and the input annotation, that in this case, perfectly represents the structure of the transcripts.
-Majiq suffers from an excess of false-positive calls. Baltica aims to futher study these implementations differences and potentially suggestion advice to minimize the effect of the limitations mentioned above.
+Majiq suffers from an excess of false-positive calls. Baltica aims to further study these implementations differences and potentially suggestion advice to minimize the effect of the limitations mentioned above.
 
 \bibliography
 

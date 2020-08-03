@@ -15,7 +15,7 @@ Difference in interpretation among the tools:
 Analysis design
 
 For Junctionseq model include all conditions at once
-Majiq pairwise, Leafcutter currently pairwise, althought it also supports more complex design 
+Majiq pairwise, Leafcutter currently pairwise, although it also supports more complex design 
 
 As result, SJ from JunctionSeq have single p-value, while multiple   
 

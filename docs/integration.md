@@ -53,7 +53,7 @@ class_code | association between reference transcript and novel transcript | [se
 
 __Table 6.1: Columns added after annotation __
 
-## Selectin optimal _de novo_ transcriptome parameters
+## Selecting optimal parameters for _de novo_ transcriptome assembly
 We found that the parameters used to obtain the _de novo_ transcriptome are critical for maximum integration between the GTF and the SJ from DJU methods. __Fig 6.1__ shows a parameter scan where we vary the group, `-j` (minimum junction coverage), `-c` (minimum coverage), and `-f` (minimum isoform proportion) and compute the number of transcripts that match with SJ called significant. As expected, the merged annotation and not the group-specific annotation have the highest rate of annotated introns. The crucial result here is the dependency of the `-f` parameter, which is also associated with an increased number of annotated introns. As we confirmed this behavior in other datasets, we decided to use `-c 3 -j 3 -f 0.01` as default values in Baltica. The higher coverage (`-c` and `-j`) values counter the potential noise of transcripts with low abundance.
 
 ![](img/stringtie_parameter_scan_heatmap.png)  
@@ -67,13 +67,13 @@ Identifying the type of AS is critical to understand a potential molecular mecha
 In Baltica, we use a geometric approach to define AS in three classes:
 - ES, for exon skipping
 - A3SS, for alternative 3' splice-site
-- A5SS, for alterantive 5' splice-site
+- A5SS, for alternative 5' splice-site
 
 Figure 6.2 details how we use the distance between features start and end to determine the AS type.
 
 ![](img/Baltica_as_type.png)  
 
-__ Fig. 6.2: AS type assignment in Baltica. __ Baltica uses the genomic coordinates from the SJ and its overlapping exons to assing AS type to SJ and it's overlapping exons. Because many exons may be affected, multiple assignments are output. Donor and acceptor exons are assigned as JS and JE, respectively. 
+__ Fig. 6.2: AS type assignment in Baltica. __ Baltica uses the genomic coordinates from the SJ and its overlapping exons to assigning AS type to SJ and it's overlapping exons. Because many exons may be affected, multiple assignments are output. Donor and acceptor exons are assigned as JS and JE, respectively. 
 
 ## Simplify the AS event
 Because most of the final users are only interested in the list of genomic ranges, gene names, or event types, we offer a simplified output that removes the excess of redundant information. This step is useful for generating a final report. 

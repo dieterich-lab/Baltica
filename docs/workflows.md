@@ -71,7 +71,7 @@ Parameter name | Description | Note
 
 The first step comprises the quality control of sequenced libraries and read alignments.
 This step aims to determine the success of sequencing and alignment.
-Baltica includes workflows for RSeQC [@Wang2012] and FastQ. MultiQC [@Ewels_2016] summarizes the output from both tools.
+Baltica includes workflows for RSeQC [@Wang2012] and FastQC. MultiQC [@Ewels_2016] summarizes the output from both tools.
 In addition to the quality control, the tests may suggest biological differences among conditions.
 For example, RSeQC provides the proportion of reads per feature in the input annotation, which may suggest an enrichment of reads mapping to intronic regions, indicating either intron retention or accumulation of unspliced mRNA.
 RSeQC also implements an SJ saturation diagnostic, which quantifies the abundance of known and novel SJ.
@@ -184,7 +184,7 @@ Rule | Name | Default | Note
 -----|------|---------|------
 create_ini | `assembly` | | name of the assembly on the UCSC genome browser
 create_ini | `strandness` | reverse | RNA-Sequencing library type 
-create_ini | `read_len` |  100 | maximum read lenght
+create_ini | `read_len` |  100 | maximum read length
 voila tsv | `majiq_threshold` | 0.2 | DeltaPSI cutoff for probability calculation
 
 ## Output
@@ -193,7 +193,7 @@ Baltica parses the files `*_voila.tsv` (one per comparison). One can read regard
 
 <!-- build |   |  -->
 <!--  `--min-experiments`
-    - Description:Iinteger or proportion of the minimum number of experiments a LSV event is observed to be considered
+    - Description:integer or proportion of the minimum number of experiments a LSV event is observed to be considered
   - Default: 0.5
    
    `--min-intronic-cov`

@@ -24,7 +24,7 @@ For example, VastDB, a database of experimentally validated splicing events, con
 
 ## Classes of computational methods for AS identification
 The number of reported AS events has increased enormously over the past ten years.
-This increase is primarily due to advances in the RNA-Sequencing (RNA-Seq) technology. AS detection benefited primarly of the longer read-length, and the development of computational methods to detect AS from RNA-Seq.
+This increase is primarily due to advances in the RNA-Sequencing (RNA-Seq) technology. AS detection benefited primarily of the longer read-length, and the development of computational methods to detect AS from RNA-Seq.
 Read that align to two or more exons are evidence for intron excision.
 These reads are named exon-exon junctions or splice junctions (SJ) and represented by the N cigar in the read alignment.
 The splice graph is a network representation in which nodes and edges represent exon and SJ, respectively, and the different network paths form the different transcripts.
