@@ -49,7 +49,8 @@ plugins:
       cite_style: "pandoc"
       csl_file: "natbio"
   - mkpdfs:
-      design: "mkpdfs-design-sample/report.css"
+      #design: "mkpdfs-design-sample/report.css"
+      design: "/home/tjakobi/repos/others/mkpdfs-design-sample/report.css"
       # author: "Thiago Britto-Borges"
       # company: "Dieterichlab - Heidelberg University Hospital"
       output_path: "pdf/baltica_docs.pdf"
