@@ -289,9 +289,9 @@
 <a class="md-icon md-content__icon" href="https://github.com/dieterich-lab/Baltica/tree/master/docs/intro.md" title="Edit this page"></a>
 <h1>2 - Introduction</h1>
 <h2 id="the-life-of-rna-transcripts-is-complex">The life of RNA transcripts is complex<a class="headerlink" href="#the-life-of-rna-transcripts-is-complex" title="Permanent link">¶</a></h2>
-<p>Alternative promoter usage, Alternative Splicing (AS), and alternative polyadenylation site usage are processes that contribute to the transcriptome complexity by producing different RNA transcript isoforms.
-AS is defined by a series of enzymatic reactions by which ribonucleoprotein complexes (spliceosomes) sequentially excise introns from a premature mRNA (pre-mRNA) and ligate the donor exon, at the 5' end of the intron, to the acceptor exon, at the 3' end of the intron. 
-Once complete, the series of splicing events produces an mRNA isoform, which encodes the protein-coding sequence. 
+<p>Alternative promoter usage, alternative splicing (AS), and alternative polyadenylation site usage are processes that contribute to the transcriptome complexity by producing different RNA transcript isoforms.
+AS is defined by a series of enzymatic reactions by which ribonucleoprotein complexes (spliceosomes) sequentially excise introns from a precursor mRNA (pre-mRNA) and ligate the donor exon, at the 5' end of the intron, to the acceptor exon, at the 3' end of the intron. 
+Once complete, the series of splicing events produces an mRNA isoform, which entails the protein-coding sequence. 
 Alternative combinations of exons produce different mRNA isoforms; thus, AS enables one pre-mRNA to generated many transcripts and protein isoforms, consequently diversifying the gene function. 
 In addition, the combinatorial usage of exons augments the possibilities of differential regulation on the transcript level.</p>
 <h2 id="elements-of-splicing-regulation">Elements of splicing regulation<a class="headerlink" href="#elements-of-splicing-regulation" title="Permanent link">¶</a></h2>
@@ -304,13 +304,13 @@ A recent study has demonstrated that up to 10% of human genetic variants with ca
 <h2 id="consequence-of-splicing-and-motivation">Consequence of splicing and motivation<a class="headerlink" href="#consequence-of-splicing-and-motivation" title="Permanent link">¶</a></h2>
 <p>Changes in pre-mRNA splicing can have drastic consequences for protein function.
 Spliced isoforms may lead to truncated or extended protein domains, with a significant impact on protein function, for example, AS have been linked to the differential subcellular trafficking of proteins <sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup>.
-AS also modulates post-transcriptional regulation events. The encoding of a premature stop codon, that can happen as consequence of AS, activates the nonsense-mediated decay pathway, which leads to the degradation of the transcript and, thus, depletion of the encoded protein <sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup><sup>,</sup><sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup>.
+AS also modulates post-transcriptional regulation events. The inclusion of a premature stop  codon, which could be the consequence of AS, activates the nonsense-mediated decay pathway, which leads to the degradation of the transcript and, thus, depletion of the encoded protein <sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup><sup>,</sup><sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup>.
 However, experimental evidence to support AS biological consequence is limited in the scientific literature because of the many challenges in detecting and prioritizing AS events.
 For example, VastDB, a database of experimentally validated splicing events, contains only 1148 events (version 1.8). <sup id="fnref:8"><a class="footnote-ref" href="#fn:8">8</a></sup>.  </p>
 <h2 id="classes-of-computational-methods-for-as-identification">Classes of computational methods for AS identification<a class="headerlink" href="#classes-of-computational-methods-for-as-identification" title="Permanent link">¶</a></h2>
 <p>The number of reported AS events has increased enormously over the past ten years.
 This increase is primarily due to advances in the RNA-Sequencing (RNA-Seq) technology. AS detection benefited primarily of the longer read-length, and the development of computational methods to detect AS from RNA-Seq.
-Read that align to two or more exons are evidence for intron excision.
+Reads that align to two or more exons provide evidence for intron excision.
 These reads are named exon-exon junctions or splice junctions (SJ) and represented by the N cigar in the read alignment.
 The splice graph is a network representation in which nodes and edges represent exon and SJ, respectively, and the different network paths form the different transcripts.
 Methods to detect AS from RNA-Seq build a model based on the feature abundances and its difference between two or more experimental conditions to test for AS differences.

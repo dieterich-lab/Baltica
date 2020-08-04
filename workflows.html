@@ -588,7 +588,7 @@ In conclusion, the quality control step serves to identify potential problems wi
 <li>Defining which SJ or events should be tested  </li>
 <li>Modeling the SJ/events abundance  </li>
 </ol>
-<p>Unfortunately, there are differences in the differences in implementation among the tools that lead to results that are not trivial to compare. </p>
+<p>Unfortunately, there are differences among the utilized tools that lead to results that are not trivial to compare. </p>
 <h3 id="leafcutter-workflow">Leafcutter workflow<a class="headerlink" href="#leafcutter-workflow" title="Permanent link">¶</a></h3>
 <p>Leafcutter uses a series of scrips to extract the split reads from the BAM files. This step was recently changed to use <a href="https://github.com/griffithlab/regtools">regtools</a> to speed up the process. Our test shows that this new step affects the workflow results, and so we have not implemented the change in Baltica.</p>
 <ol>
@@ -831,7 +831,7 @@ giving SJ within a cluster and compare this usage among conditions</li>
  -->
 <h2 id="junctionseq-workflow">JunctionSeq workflow<a class="headerlink" href="#junctionseq-workflow" title="Permanent link">¶</a></h2>
 <p>JunctionSeq <sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup> tests statistical significance over difference usage among exonic and intronic disjoint genomic bins. It takes as input read count matrix obtained with QoRTs <sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup>, for annotated SJ, novel SJ, and exons, so in fact, JunctionSeq fits both the DEU and DJU classifications. 
-Bins selected as testable as modeled with generalized linear models, as described in DEXSeq <sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup>, but reporting a test statistic at the genomic feature (exon or junction) and gene level.
+Bins selected are testable as modeled with generalized linear models, as described in DEXSeq <sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup>, but reporting a test statistic at the genomic feature (exon or junction) and gene level.
 Different from other DJU methods, JunctionSeq does not group the SJ in AS events, and so it does not compute PSI events.
 By default, SJ with p.adjust &lt; 0.05 are called significant.</p>
 <h3 id="software-dependencies_3">Software dependencies<a class="headerlink" href="#software-dependencies_3" title="Permanent link">¶</a></h3>
