@@ -98,7 +98,7 @@ In term of implementation, the DJU tools use the following steps:
 1. Defining which SJ or events should be tested  
 1. Modeling the SJ/events abundance  
 
-Unfortunately, there are differences in the differences in implementation among the tools that lead to results that are not trivial to compare. 
+Unfortunately, there are differences among the utilized tools that lead to results that are not trivial to compare. 
 
 ### Leafcutter workflow
 
@@ -252,7 +252,7 @@ Baltica parses the files `*_voila.tsv` (one per comparison). One can read regard
 ## JunctionSeq workflow
 
 JunctionSeq [@Hartley2016] tests statistical significance over difference usage among exonic and intronic disjoint genomic bins. It takes as input read count matrix obtained with QoRTs [@Hartley_2015], for annotated SJ, novel SJ, and exons, so in fact, JunctionSeq fits both the DEU and DJU classifications. 
-Bins selected as testable as modeled with generalized linear models, as described in DEXSeq [@Anders2012], but reporting a test statistic at the genomic feature (exon or junction) and gene level.
+Bins selected are testable as modeled with generalized linear models, as described in DEXSeq [@Anders2012], but reporting a test statistic at the genomic feature (exon or junction) and gene level.
 Different from other DJU methods, JunctionSeq does not group the SJ in AS events, and so it does not compute PSI events.
 By default, SJ with p.adjust < 0.05 are called significant.
 
