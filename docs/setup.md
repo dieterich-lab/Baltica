@@ -104,7 +104,7 @@ conda activate leafcutter
 Rscript -e "BiocManager::install('JunctionSeq')"
 ```
 
-## Clone or installing Baltica?
+## Cloning or installing Baltica?
 Baltica can either installed as a python package or cloned from Github for each project.
 The installed version of Baltica is more convenient to be used with:  
 `baltica qc config.yml` (as long the dependencies are available).

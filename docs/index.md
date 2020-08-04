@@ -1,6 +1,6 @@
 Baltica enables integrated differential junction usage (DJU). 
 
-Baltica is a framework that provides Snakemake workflows for quality control and supports three DJU methods, Junctionseq, Majiq, and Leafcutter. It uses if _de novo_ transcript assembly with Stringtie to reconcile the differently spliced junction to transcripts. The tools also contain methods to process and integrate the results from the tools, allowing us to analyze the global changes in transcription biotype and do further downstream analysis. Our long term aim is to help users systematically prioritize splice-junctions (SJ) for experimental validation.
+Baltica is a framework that provides Snakemake workflows for quality control and supports three DJU methods, Junctionseq, Majiq, and Leafcutter. It uses if _de novo_ transcript assembly with Stringtie to reconcile the differently spliced junctions to transcripts. Baltica also provides methods to process and integrate the results from the three tools, allowing us to analyze the global changes in transcription biotype and do further downstream analysis. Our long term aim is to help users to systematically prioritize splice-junctions (SJ) for experimental validation.
 
 To get started, use the menu on the left-hand side or search function to navigate over this documentation. 
   
