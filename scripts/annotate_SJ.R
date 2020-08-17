@@ -8,6 +8,7 @@ suppressPackageStartupMessages({
   library(GenomicRanges)
   library(rtracklayer)
   library(readr)
+  library(yaml)
 })
 
 # from https://stackoverflow.com/a/15373917/1694714
@@ -38,6 +39,13 @@ option_list <- list(
     help = "Path to annotation (GTF/GFF format)",
     metavar = "character",
     default = "stringtie/merged/merged.combined.gtf"
+  ),  
+  make_option(
+    c("-r", "--reference"),
+    type = "character",
+    help = "Path to reference annotation (GTF/GFF format)",
+    metavar = "character",
+    default = yaml::read_yaml('../config.yml')$ref
   ),
   make_option(
     c("-o", "--output"),
@@ -101,6 +109,11 @@ gtf <- gtf[gtf$transcript_id %in% unique(tx$transcript_id)]
 ex_tx <- filter_multi_exon(gtf)
 introns <- get_introns(ex_tx)
 
+if(!is.null(opt$reference)){
+  reference <- rtracklayer::import.gff(opt$reference)
+  introns$is_novel <- !(introns %in% reference)
+}
+
 hits <- filter_hits_by_diff(gr, introns)
 
 message('Annotating set of introns')
@@ -134,5 +147,4 @@ introns_with_match <- merge(
 )
 introns_with_match <- subset(introns_with_match, select = -Row.names)
 write_csv(introns_with_match, opt$output)
-#introns_wo_match <- data[setdiff(seq_along(data), unique(queryHits(hits))), ]
-#write.csv(introns_wo_match, sub('csv', opt$output, 'nomatch.csv'))
+
