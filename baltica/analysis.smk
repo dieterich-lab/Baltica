@@ -77,11 +77,12 @@ rule parse_junctionseq:
         $path --cutoff {params.cutoff}
         """
 
-
 rule annotate:
     input:
         expand("{method}/{method}_junctions.csv", method=['majiq', 'leafcutter', 'junctionseq']),
         ref="stringtie/merged/merged.combined.gtf"
+    params:
+        ref=config.get("ref")
     envmodules:
         "R/3.6.0"
     output:
@@ -89,7 +90,7 @@ rule annotate:
     shell:
         """
         path=$(which annotate_SJ.R)
-        $path
+        $path --reference {params.ref}
         """
 
 
@@ -106,6 +107,8 @@ rule assign_AS_type:
         path=$(which assign_AS_type.R)
         $path
         """
+
+
 rule simplify:
     input:
         "results/SJ_annotated_assigned.csv",
