@@ -7,6 +7,7 @@ suppressPackageStartupMessages({
   library(optparse)
   library(GenomicRanges)
   library(reshape2)
+  library(readr)
 })
 
 option_list <- list(
@@ -134,4 +135,5 @@ hits$as_type <- apply(hits, 1, function(x) as.type(gr[ x[1]], exons[x[2]]))
 df <- merge(x=df, y=.as_type, by.x = 0, by.y = 'ind', all.x = T, sort = F)
 
 message('Writting output')
-write.csv(df, opt$output)
+df <- subset(df, select = -Row.names )
+readr::write_csv(df, opt$output)
