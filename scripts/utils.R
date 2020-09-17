@@ -37,6 +37,12 @@ filter_hits_by_diff <- function(query, subject, max_start = 2, max_end = 2) {
   hits
 }
 
+#' Creates exon by transcript list (ex_by_tx) and remove items with a single exon
+#'
+#' @param gtf GRange file loaded with rtracklayer::import
+#' @return  a list of exon by transcripts, excluding single exon trascripts 
+#' @export
+
 filter_multi_exon <- function(gtf) {
   stopifnot(is(gtf, "GRanges"))
 
@@ -60,8 +66,6 @@ get_introns <- function(ex_tx) {
   stopifnot(is(ex_tx, "List"))
 
   introns <- psetdiff(unlist(range(ex_tx), use.names = FALSE), ex_tx)
-  #n_introns <- lapply(introns, length)
-  #mcols(introns)['transcript_id'] <- rep(names(introns), n_introns)
   introns <- unlist(introns)
   introns
 }
@@ -130,16 +134,16 @@ append_to_basename <- function(filepath, to_append='_nomatch'){
   sub("\\.([^\\.]*)$", paste0(to_append, "\\.\\1"), filepath)
 }
 
+#' Append a string to the basename of a filepath
+#' @param junction.gr GRange of SJ
+#' @param to_append GR of exons
+#' @return alternative splice type for every SJ and Exon
+#' @export
+#'
 as.type <- function(junction.gr, exon.gr) {
-#   if (any(as.logical(strand(.gr) != strand(.ex)))) {
-#     warning('Junction and exon have different strand')
-#     return("NA")
-#   }
+  stopifnot(is(junction.gr, "GRanges"))
+  stopifnot(is(exon.gr, "GRanges"))
 
-#   if (length(junction.gr) != 1 | length(exon.gr) != 1) {
-#     warning('as.type function take one junction and exon per function call')
-#     return("NA")
-#   }
 
   j.strand <- as.character(strand(junction.gr)[1])
   j.start <- as.integer(start(junction.gr)[1])

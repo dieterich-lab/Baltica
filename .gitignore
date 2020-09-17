@@ -75,3 +75,5 @@ mkpdfs-design-sample/
 src
 src/
 src/*
+.Rproj.user
+Baltica.Rproj

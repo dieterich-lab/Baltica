@@ -32,7 +32,7 @@ option_list <- list(
 )
 
 opt <- parse_args(OptionParser(option_list = option_list))
-x <- read_csv(opt$input)
+df <- suppressMessages(read_csv(opt$input))
 
 simplify <- function(x, remove=c()){   
     x  %>% str_split(';') %>%
@@ -42,28 +42,27 @@ simplify <- function(x, remove=c()){
 }
 
 
-x <- x %>% 
+df <- df %>% 
     select(-c(width)) %>% 
     mutate(intron = as.character(str_glue('{seqnames}:{start}-{end}:{strand}'))) %>% 
     select(-c(seqnames, start, end, strand))
 
 
-for (col in c('gene_name', 'transcript_name', 'class_code', 'comparison', 'method', 'as_type' )){
+for (col in c('is_novel', 'gene_name', 'transcript_name', 'class_code', 'comparison', 'method', 'as_type')){
     if (col == 'as_type'){
-        x[[col]]  <- simplify(x[[col]], remove = c('JS', 'JE'))    
+        df[[col]]  <- simplify(df[[col]], remove = c('JS', 'JE'))    
         next
     }
     
-    x[[col]]  <- simplify(x[[col]])
+    df[[col]]  <- simplify(df[[col]])
     
 }
 
 # TODO provide more expressive output for score and AS_Type
 # for example: {method}_{comparison}_{score}
 # {transcript_id}_{exon_id}_{AS_assign}
-# TODO add novel_intron column 
 openxlsx::write.xlsx(
-  x,
+  df,
   file = opt$output,
   sheetName = "Sheet1",
 )
