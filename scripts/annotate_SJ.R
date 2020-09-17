@@ -29,7 +29,7 @@ option_list <- list(
   make_option(
     c("-i", "--input"),
     type = "character",
-    help = "Path to parsed DJU result", ,
+    help = "Path to parsed DJU result", 
     metavar = "character",
     default = "junctionseq/junctionseq_junctions.csv,leafcutter/leafcutter_junctions.csv,majiq/majiq_junctions.csv"
   ),
@@ -44,8 +44,7 @@ option_list <- list(
     c("-r", "--reference"),
     type = "character",
     help = "Path to reference annotation (GTF/GFF format)",
-    metavar = "character",
-    default = yaml::read_yaml('../config.yml')$ref
+    metavar = "character"
   ),
   make_option(
     c("-o", "--output"),
@@ -74,13 +73,13 @@ junctionseq_idx <- grep('junctionseq', files)
 
 suppress_read_csv <- function(x) { suppressMessages(read_csv(x)) }
 
-df  <-  list(
+df <- list(
     majiq = suppress_read_csv( files[[majiq_idx]] ),
     leafcutter = suppress_read_csv( files[[leafcutter_idx]] ) ,
     junctionseq = suppress_read_csv( files[[junctionseq_idx]]  )
 )
 
-gr  <- c(
+gr <- c(
     GRanges(df$majiq),
     GRanges(df$leafcutter),
     GRanges(df$junctionseq)
@@ -111,7 +110,10 @@ introns <- get_introns(ex_tx)
 
 if(!is.null(opt$reference)){
   reference <- rtracklayer::import.gff(opt$reference)
-  introns$is_novel <- !(introns %in% reference)
+  ref_ex_tx <- filter_multi_exon(reference)  
+
+  ref_introns <- get_introns(ref_ex_tx)
+  introns$is_novel <- !(introns %in% ref_introns)
 }
 
 hits <- filter_hits_by_diff(gr, introns)
@@ -145,6 +147,6 @@ introns_with_match <- merge(
   by.y = "idx",
   no.dups = T
 )
-introns_with_match <- subset(introns_with_match, select = -Row.names)
+introns_with_match <- subset(introns_with_match, select = -Row.names )
 write_csv(introns_with_match, opt$output)
 
