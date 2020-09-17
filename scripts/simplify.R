@@ -48,7 +48,7 @@ df <- df %>%
     select(-c(seqnames, start, end, strand))
 
 
-for (col in c('gene_name', 'transcript_name', 'class_code', 'comparison', 'method', 'as_type' )){
+for (col in c('is_novel', 'gene_name', 'transcript_name', 'class_code', 'comparison', 'method', 'as_type')){
     if (col == 'as_type'){
         df[[col]]  <- simplify(df[[col]], remove = c('JS', 'JE'))    
         next
