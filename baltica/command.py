@@ -19,7 +19,7 @@ except ImportError:
     baltica_installed = False
 
 _program = "baltica"
-__version__ = "0.1.0"
+__version__ = "1.0.1"
 p = Path(__file__)
 
 desc = f"{_program} implements workflows for differential junction usage and consequence analysis. Visit " \
@@ -76,7 +76,7 @@ def main():
     parser.add_argument(
         "--cluster",
         metavar='str',
-        default="sbatch --parsable --mem {cluster.mem} --out {cluster.out} --error {cluster.out} -c {cluster.cpu}",
+        default="sbatch --parsable --mem {cluster.mem} --out {cluster.out} --error {cluster.out} -c {cluster.cpu} --partition {cluster.partition}",
         help='Snakemake cluster parameter (default: %(default)s)'
     ),
     parser.add_argument(
