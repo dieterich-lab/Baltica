@@ -43,6 +43,7 @@ rule fastqc:
     threads: 10
     params: prefix="qc/fastqc/"
     envmodules: 'fastqc'
+    shadow: "shallow"
     shell: "fastqc -t {threads} {input} -o {params.prefix}"
 
 rule ref_annotation_gtf_to_bed:
@@ -50,6 +51,7 @@ rule ref_annotation_gtf_to_bed:
     output: "ref.bed12"
     conda: "envs/ucsc.yaml"
     envmodules: "ucsc"
+    shadow: "shallow"
     shell:
         """
         gtfToGenePred {input} temp.genepred
@@ -62,6 +64,7 @@ rule rseqc_gene_body_coverage:
     output: "qc/rseqc/geneBodyCoverage.curves.pdf"
     envmodules: "rseqc"
     params: prefix="qc/rseqc/"
+    shadow: "shallow"
     shell: "geneBody_coverage.py -r {input.bed} -i mappings/ -o {params.prefix}"
 
 rule rseqc_inner_distance:
@@ -70,6 +73,7 @@ rule rseqc_inner_distance:
     output: "qc/rseqc/{name}.inner_distance_plot.pdf"
     params: prefix="qc/rseqc/{name}"
     envmodules: "rseqc"
+    shadow: "shallow"
     shell: "inner_distance.py -i {input.bam} -o {params.prefix} -r {input.bed}"
 
 rule rseqc_read_gc:
@@ -77,6 +81,7 @@ rule rseqc_read_gc:
     output: "qc/rseqc/{name}.GC_plot.pdf"
     params: prefix="qc/rseqc/{name}"
     envmodules: "rseqc"
+    shadow: "shallow"
     shell: "read_GC.py -i {input} -o {params.prefix}"
 
 ### fix above output
@@ -85,6 +90,7 @@ rule rseqc_read_duplication:
     output: "qc/rseqc/{name}.DupRate_plot.pdf"
     params: prefix="qc/rseqc/{name}"
     envmodules: "rseqc"
+    shadow: "shallow"
     shell: "read_duplication.py -i {input} -o {params.prefix}"
 
 rule rseqc_junction_annotation:
@@ -94,6 +100,7 @@ rule rseqc_junction_annotation:
           "qc/rseqc/{name}.splice_events.pdf"
     params: prefix="qc/rseqc/{name}"
     envmodules: "rseqc"
+    shadow: "shallow"
     shell: "junction_annotation.py -i {input.bam} -r {input.bed} -o {params.prefix}"
 
 rule rseqc_junction_saturation:
@@ -102,6 +109,7 @@ rule rseqc_junction_saturation:
     output: "qc/rseqc/{name}.junctionSaturation_plot.pdf"
     params: prefix="qc/rseqc/{name}"
     envmodules: "rseqc"
+    shadow: "shallow"
     shell: "junction_saturation.py -i {input.bam} -r {input.bed} -o {params.prefix}"
 
 rule rseqc_infer_experiment:
@@ -109,11 +117,13 @@ rule rseqc_infer_experiment:
          bam="mappings/{name}.bam"
     output: "qc/rseqc/{name}.infer_experiment.txt"
     envmodules: "rseqc"
+    shadow: "shallow"
     shell: "infer_experiment.py -r {input.bed} -i {input.bam} > {output}"
 
 rule rseqc_bam_stat:
     input: "mappings/{name}.bam",
     output: "qc/rseqc/{name}.bam_stat.txt"
+    shadow: "shallow"
     shell: "bam_stat.py -i {input} > {output}"
 
 rule read_distribution:
@@ -121,10 +131,12 @@ rule read_distribution:
          bed="ref.bed12"
     envmodules: "rseqc"
     output: "qc/rseqc/{name}.read_distribution.txt"
+    shadow: "shallow"
     shell: "read_distribution.py -i {input.bam} -r {input.bed} &> {output}"
 
 rule multiqc:
     input: rules.all.input[:-1]
     envmodules: "multiqc"
     output: "qc/multiqc/multiqc_report.html"
+    shadow: "shallow"
     shell: "multiqc -d --dirs-depth 1 qc/ -o qc/multiqc"
