@@ -68,6 +68,7 @@ rule qc:
         max_read=config["read_len"],
 	is_paired_end='--singleEnded' if config.get("is_single_end") == True  else ''
     envmodules: "java qorts "
+    shadow: "shallow"
     shell:
          "qorts QC {params.strandness} {params.is_paired_end} --maxReadLength {params.max_read} "
          "--runFunctions writeKnownSplices,writeNovelSplices,writeSpliceExon "
@@ -88,6 +89,7 @@ rule create_decoder:
 rule cat_decoder:
     input: decoder=expand("junctionseq/{comparison}_decoder.tab", comparison=comp_names )
     output: "junctionseq/decoder.tab"
+    shadow: "shallow"
     shell:
         "awk 'FNR>1 || NR==1 ' {input.decoder} | awk '!x[$0]++' > {output} "
 
@@ -102,6 +104,7 @@ rule merge:
           min_count=config.get("mincount", 6),
           strandness= strandness.get(config.get("strandness"),  "")
     envmodules: "java qorts"
+    shadow: "shallow"
     shell:
          "qorts mergeNovelSplices "
          "--minCount {params.min_count} "
@@ -121,5 +124,6 @@ rule junctioseq_analysis:
     threads: 10
     params: script = dir_source("junctionSeq.R", "Rscript")
     envmodules: "R/3.6.0 junctionseq"
+    shadow: "shallow"
     shell:
         "{params.script} {input.decoder} {output} {threads}"

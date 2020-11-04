@@ -71,12 +71,12 @@ majiq_idx <- grep('majiq', files)
 leafcutter_idx <- grep('leafcutter', files)
 junctionseq_idx <- grep('junctionseq', files)
 
-suppress_read_csv <- function(x) { suppressMessages(read_csv(x)) }
+.read_csv <- function(x) { (read_csv(x, col_types = cols(chr=col_character()))) }
 
 df <- list(
-    majiq = suppress_read_csv( files[[majiq_idx]] ),
-    leafcutter = suppress_read_csv( files[[leafcutter_idx]] ) ,
-    junctionseq = suppress_read_csv( files[[junctionseq_idx]]  )
+  majiq = .read_csv( files[[majiq_idx]] ),
+  leafcutter = .read_csv( files[[leafcutter_idx]] ) ,
+  junctionseq = .read_csv( files[[junctionseq_idx]]  )
 )
 
 gr <- c(
