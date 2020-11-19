@@ -73,8 +73,7 @@ rule create_ini:
             "bamdirs={}".format("mappings/"),
             "genome={}".format(config["assembly"]),
             "genome_path={}".format(config["ref_fa"]),
-            "strandness={}".format(config["strandness"]),
-            "[experiments]"]
+            "strandness={}".format(config.get("strandness", 'None')),                      "[experiments]"]
 
         lines.extend(
             ["{}={}".format(k, ",".join(v))
