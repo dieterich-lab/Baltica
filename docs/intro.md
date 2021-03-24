@@ -1,7 +1,7 @@
 ## The life of RNA transcripts is complex 
-Alternative promoter usage, Alternative Splicing (AS), and alternative polyadenylation site usage are processes that contribute to the transcriptome complexity by producing different RNA transcript isoforms.
-AS is defined by a series of enzymatic reactions by which ribonucleoprotein complexes (spliceosomes) sequentially excise introns from a premature mRNA (pre-mRNA) and ligate the donor exon, at the 5' end of the intron, to the acceptor exon, at the 3' end of the intron. 
-Once complete, the series of splicing events produces an mRNA isoform, which encodes the protein-coding sequence. 
+Alternative promoter usage, alternative splicing (AS), and alternative polyadenylation site usage are processes that contribute to the transcriptome complexity by producing different RNA transcript isoforms.
+AS is defined by a series of enzymatic reactions by which ribonucleoprotein complexes (spliceosomes) sequentially excise introns from a precursor mRNA (pre-mRNA) and ligate the donor exon, at the 5' end of the intron, to the acceptor exon, at the 3' end of the intron. 
+Once complete, the series of splicing events produces an mRNA isoform, which entails the protein-coding sequence. 
 Alternative combinations of exons produce different mRNA isoforms; thus, AS enables one pre-mRNA to generated many transcripts and protein isoforms, consequently diversifying the gene function. 
 In addition, the combinatorial usage of exons augments the possibilities of differential regulation on the transcript level.
 
@@ -17,15 +17,15 @@ A recent study has demonstrated that up to 10% of human genetic variants with ca
 ## Consequence of splicing and motivation
 Changes in pre-mRNA splicing can have drastic consequences for protein function.
 Spliced isoforms may lead to truncated or extended protein domains, with a significant impact on protein function, for example, AS have been linked to the differential subcellular trafficking of proteins [@Link_2016].
-AS also modulates post-transcriptional regulation events. The encoding of a premature stop codon, that can happen as consequence of AS, activates the nonsense-mediated decay pathway, which leads to the degradation of the transcript and, thus, depletion of the encoded protein [@Lewis_2002]<sup>,</sup>[@Baserga_1992].
+AS also modulates post-transcriptional regulation events. The inclusion of a premature stop  codon, which could be the consequence of AS, activates the nonsense-mediated decay pathway, which leads to the degradation of the transcript and, thus, depletion of the encoded protein [@Lewis_2002]<sup>,</sup>[@Baserga_1992].
 However, experimental evidence to support AS biological consequence is limited in the scientific literature because of the many challenges in detecting and prioritizing AS events.
 For example, VastDB, a database of experimentally validated splicing events, contains only 1148 events (version 1.8). [@Tapial_2017].  
 
 
 ## Classes of computational methods for AS identification
 The number of reported AS events has increased enormously over the past ten years.
-This increase is primarily due to advances in the RNA-Sequencing (RNA-Seq) technology. AS detection benefited primarly of the longer read-length, and the development of computational methods to detect AS from RNA-Seq.
-Read that align to two or more exons are evidence for intron excision.
+This increase is primarily due to advances in the RNA-Sequencing (RNA-Seq) technology. AS detection benefited primarily of the longer read-length, and the development of computational methods to detect AS from RNA-Seq.
+Reads that align to two or more exons provide evidence for intron excision.
 These reads are named exon-exon junctions or splice junctions (SJ) and represented by the N cigar in the read alignment.
 The splice graph is a network representation in which nodes and edges represent exon and SJ, respectively, and the different network paths form the different transcripts.
 Methods to detect AS from RNA-Seq build a model based on the feature abundances and its difference between two or more experimental conditions to test for AS differences.

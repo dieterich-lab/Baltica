@@ -71,7 +71,7 @@ Parameter name | Description | Note
 
 The first step comprises the quality control of sequenced libraries and read alignments.
 This step aims to determine the success of sequencing and alignment.
-Baltica includes workflows for RSeQC [@Wang2012] and FastQ. MultiQC [@Ewels_2016] summarizes the output from both tools.
+Baltica includes workflows for RSeQC [@Wang2012] and FastQC. MultiQC [@Ewels_2016] summarizes the output from both tools.
 In addition to the quality control, the tests may suggest biological differences among conditions.
 For example, RSeQC provides the proportion of reads per feature in the input annotation, which may suggest an enrichment of reads mapping to intronic regions, indicating either intron retention or accumulation of unspliced mRNA.
 RSeQC also implements an SJ saturation diagnostic, which quantifies the abundance of known and novel SJ.
@@ -98,7 +98,7 @@ In term of implementation, the DJU tools use the following steps:
 1. Defining which SJ or events should be tested  
 1. Modeling the SJ/events abundance  
 
-Unfortunately, there are differences in the differences in implementation among the tools that lead to results that are not trivial to compare. 
+Unfortunately, there are differences among the utilized tools that lead to results that are not trivial to compare. 
 
 ### Leafcutter workflow
 
@@ -184,7 +184,7 @@ Rule | Name | Default | Note
 -----|------|---------|------
 create_ini | `assembly` | | name of the assembly on the UCSC genome browser
 create_ini | `strandness` | reverse | RNA-Sequencing library type 
-create_ini | `read_len` |  100 | maximum read lenght
+create_ini | `read_len` |  100 | maximum read length
 voila tsv | `majiq_threshold` | 0.2 | DeltaPSI cutoff for probability calculation
 
 ## Output
@@ -193,7 +193,7 @@ Baltica parses the files `*_voila.tsv` (one per comparison). One can read regard
 
 <!-- build |   |  -->
 <!--  `--min-experiments`
-    - Description:Iinteger or proportion of the minimum number of experiments a LSV event is observed to be considered
+    - Description:integer or proportion of the minimum number of experiments a LSV event is observed to be considered
   - Default: 0.5
    
    `--min-intronic-cov`
@@ -252,7 +252,7 @@ Baltica parses the files `*_voila.tsv` (one per comparison). One can read regard
 ## JunctionSeq workflow
 
 JunctionSeq [@Hartley2016] tests statistical significance over difference usage among exonic and intronic disjoint genomic bins. It takes as input read count matrix obtained with QoRTs [@Hartley_2015], for annotated SJ, novel SJ, and exons, so in fact, JunctionSeq fits both the DEU and DJU classifications. 
-Bins selected as testable as modeled with generalized linear models, as described in DEXSeq [@Anders2012], but reporting a test statistic at the genomic feature (exon or junction) and gene level.
+Bins selected are testable as modeled with generalized linear models, as described in DEXSeq [@Anders2012], but reporting a test statistic at the genomic feature (exon or junction) and gene level.
 Different from other DJU methods, JunctionSeq does not group the SJ in AS events, and so it does not compute PSI events.
 By default, SJ with p.adjust < 0.05 are called significant.
 

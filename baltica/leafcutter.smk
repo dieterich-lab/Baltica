@@ -68,6 +68,7 @@ rule bam2junc:
           use_strand="--use-RNA-strand" if config.get("strandness") else ""
     envmodules: "samtools"
     conda: "../envs/leafcutter.yml"
+    shadow: "shallow"
     shell:
          """
          samtools view {input} \
@@ -110,6 +111,7 @@ rule intron_clustering:
           script_path=dir_source("leafcutter_cluster.py", "python")
     output: "leafcutter/{comp_names}/{comp_names}_perind_numers.counts.gz"
     conda: "../envs/leafcutter.yml"
+    shadow: "shallow"
     shell:
          """
          {params.script_path} \
@@ -127,6 +129,7 @@ rule gtf_to_exon:
     conda: "../envs/leafcutter.yml"
     envmodules:
         "R/3.6.0"
+    shadow: "shallow"
     shell:
          """
          gzip -c {input} > {output.a}
@@ -149,6 +152,7 @@ rule differential_splicing:
     conda: "../envs/leafcutter.yml"
     envmodules:
         "R/3.6.0 leafcutter"
+    shadow: "shallow"
     shell:
          """
          {params.leafcutter_ds_path} --exon_file={input.a} \

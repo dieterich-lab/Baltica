@@ -4,9 +4,9 @@ site_author: Thiago Britto-Borges
 repo_url: https://github.com/dieterich-lab/Baltica
 edit_uri: tree/master/docs/
 site_description: Baltica - Integrated differential junction usage (DJU)
-copyright: Thiago Britto-Borges, Dieterichlab - MIT Licese
+copyright: Thiago Britto-Borges, Dieterichlab - MIT License
 use_directory_urls: false
-#   <br><span class="md-footer-custom-text"> Baltica is distribuited with a MIT License </span>
+# <br><span class="md-footer-custom-text">  <a href="https://www.dieterichlab.org">www.dieterichlab.org</a> </span>
 #   <br><span class="md-footer-custom-text">  <a href="https://www.klinikum.uni-heidelberg.de/en/zentrum-fuer-innere-medizin-medizin-klinik/innere-medizin-iii-kardiologie-angiologie-und-pneumologie/forschung/forschung/klaus-tschira-institut-fuer-computational-cardiology/">Dieterich lab</a>  </span>
 docs_dir: docs/
 theme:
@@ -25,7 +25,7 @@ extra_css:
     - extra.css
 
 nav:
-  - 1 - Index: README.md
+  - 1 - Index: index.md
   - 2 - Introduction: intro.md
   - 3 - Getting started: setup.md 
   - 4 - Methods: workflows.md 
@@ -49,7 +49,8 @@ plugins:
       cite_style: "pandoc"
       csl_file: "natbio"
   - mkpdfs:
-      design: "mkpdfs-design-sample/report.css"
+      #design: "mkpdfs-design-sample/report.css"
+      design: "/home/tjakobi/repos/others/mkpdfs-design-sample/report.css"
       # author: "Thiago Britto-Borges"
       # company: "Dieterichlab - Heidelberg University Hospital"
       output_path: "pdf/baltica_docs.pdf"

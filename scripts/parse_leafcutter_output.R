@@ -26,7 +26,7 @@ option_list <- list(
   make_option(
     c("-c", "--cutoff"),
     type = "double",
-    default = 0.90,
+    default = 0.05,
     help = "Discard junction with probability threshold < than --cutoff [default %default]"
   )
 )

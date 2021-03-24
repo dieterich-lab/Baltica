@@ -87,6 +87,7 @@ rule gtf_to_gff:
     output: "majiq/ref.gff"
     params: ref=config["ref"],
             gtf2gff3_path=dir_source("gtf2gff3.pl", 'perl')
+    shadow: "shallow"
     shell: "{params.gtf2gff3_path} {params.ref} > {output}"
 
 
@@ -98,6 +99,7 @@ rule build:
     conda: "../envs/majiq.yml"
     threads: len(conditions)
     envmodules: "majiq/2.2"
+    shadow: "shallow"
     shell: " majiq build --conf {input.ini} --nproc {threads} --output majiq/ {input.ref}"
 
 rule deltapsi:
@@ -110,6 +112,7 @@ rule deltapsi:
           name2=lambda wc: wc.contrast.replace("-vs-", "_"),
           cont=lambda wc: wc.contrast
     envmodules: "majiq/2.2"
+    shadow: "shallow"
     shell: "majiq deltapsi -grp1 {input.a} -grp2 {input.b} " 
            "--nproc {threads} --output majiq/{params.cont} "
            "--names {params.name} ; "
@@ -123,4 +126,5 @@ rule voila:
     conda: "../envs/majiq.yml"
     envmodules: "majiq/2.2"
     params: threshold=config.get('majiq_threshold', 0.2)
+    shadow: "shallow"
     shell: "voila tsv --threshold {params.threshold} {input} -f {output}"

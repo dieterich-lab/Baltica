@@ -67,6 +67,7 @@ rule merge_bam:
   threads: 10
   wildcard_constraints: group="|".join(cond)
   envmodules: "samtools"
+  shadow: "shallow"
   shell: "samtools merge {output.bam} {input} --threads {threads};" \
        "samtools index {output.bam} {output.bai} "
 
@@ -81,6 +82,7 @@ rule denovo_transcriptomics:
   wildcard_constraints: group="|".join(cond)
   log: "logs/stringtie_{group}.log"
   envmodules: "stringtie"
+  shadow: "shallow"
   shell: "stringtie {input} -o {output} " \
        "-p {threads} " \
        " {params.strandness} " \
@@ -98,5 +100,6 @@ rule merge_gtf:
     gtf=config["ref"],
     out="stringtie/merged/merged"
   envmodules: "rnaseqtools"
+  shadow: "shallow"
   shell: "gffcompare {input} -r {params.gtf} " \
       "-R -V -o {params.out} 2>{log}"

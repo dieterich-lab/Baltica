@@ -89,7 +89,7 @@ Rscript -e "devtools::install_github('stan-dev/rstantools')"
 ```
 
 !!! warning
-    Only use `TAR='/bin/tar'` or `set TAR '/bin/tar'` (fishshell) if you have problems with devtools selecting `gtar` instead of `tar`.
+    Only use `TAR='/bin/tar'` or `set TAR '/bin/tar'` if you have problems with devtools selecting `gtar` instead of `tar`.
 
 !!! warning
     If you are experiencing the following the `ERROR: failed to create lock directory` error when trying to install R packages, add the following option to install.package `INSTALL_opts = c('--no-lock')`.
@@ -104,7 +104,7 @@ conda activate leafcutter
 Rscript -e "BiocManager::install('JunctionSeq')"
 ```
 
-## Clone or installing Baltica?
+## Cloning or installing Baltica?
 Baltica can either installed as a python package or cloned from Github for each project.
 The installed version of Baltica is more convenient to be used with:  
 `baltica qc config.yml` (as long the dependencies are available).
@@ -124,7 +124,7 @@ baltica --help
     `baltica qc config.yml --use-envmodule`
 * with conda enviroments:
     `baltica qc config.yml --use-conda`
-* using an external conda enviroment, like the one we used for Majiq installation:
+* using an external conda environment, like the one we used for Majiq installation:
     set `majiq_env_prefix = conda activate majiq_env;` in the configuration file
 
 There are alternatives to provide the software dependencies to Snakemake workflows, so feel free to contact them if you need an option.
@@ -133,6 +133,6 @@ There are alternatives to provide the software dependencies to Snakemake workflo
 [^2]: If you use Majiq results, please [cite it]( https://elifesciences.org/articles/11752)
 [^3]: If you use Leafcutter results, please [cite it](https://www.nature.com/articles/s41588-017-0004-9)
 [^4]: If you use Junctionseq results, please [cite it](http://nar.oxfordjournals.org/content/early/2016/06/07/nar.gkw501.full)
-[^5]: If you use the Baltica's analysis module, please also [cite Stringtie](http://www.nature.com/nbt/journal/vaop/ncurrent/full/nbt.3122.html)
+[^5]: If you use the Baltica's analysis module, please also [cite Stringtie](https://www.nature.com/articles/nbt.3122)
 
 \bibliography
