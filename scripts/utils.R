@@ -186,3 +186,56 @@ as.type <- function(junction.gr, exon.gr) {
     TRUE ~ "NA")
   return(type)
 }
+
+#' Process for alternative splice site rMATs output files 
+#' @param df dataframe from rMATs 
+#' @param start name of the start column
+#' @param end name of the end column
+#' @param type flag for splice junction type 
+#' @param FDR is the FDR cutoff
+#' @return GenomicRange of the selected SJ 
+#' @export
+#'
+process_RMATS_ass <- function(df, start='flankingES', end='shortES', type, FDR=0.05){
+  
+  df <- df %>%
+    dplyr::filter(FDR < !!FDR) %>% 
+    dplyr::select(chr, !!start, !!end, strand, comparison, FDR, IncLevelDifference) %>% 
+    dplyr::rename(c(start=!!start, end=!!end)) %>% 
+    mutate(start=pmin(start, end), end=pmax(start, end))
+  
+  df <- makeGRangesFromDataFrame(df, keep.extra.columns = T)
+  df <- df[width(df) > 1,]
+  df <- unique(df)
+  df$type <- type
+  seqlevelsStyle(df) <- 'Ensembl'
+  
+  
+  df  
+}
+
+
+#' Process for exon skipping and intron retention rMATs output files 
+#' @param df dataframe from rMATs 
+#' @param start name of the start column
+#' @param end name of the end column
+#' @param type flag for splice junction type 
+#' @param FDR is the FDR cutoff
+#' @return GenomicRange of the selected SJ 
+#' @export
+#'
+process_RMATS <- function(df, start, end, type, FDR=0.05) {
+
+  df <- df %>%   
+    dplyr::filter(FDR < !!FDR) %>% 
+    dplyr::select(chr, !!start, !!end, strand, comparison, FDR, IncLevelDifference) %>% 
+    dplyr::rename(c(start=!!start, end=!!end))
+  
+  df <- makeGRangesFromDataFrame(df, keep.extra.columns = T)
+  df <- unique(df)
+  df$type <- type
+  seqlevelsStyle(df) <- 'Ensembl'
+  
+  df  
+}
+

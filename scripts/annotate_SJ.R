@@ -148,5 +148,5 @@ introns_with_match <- merge(
   no.dups = T
 )
 introns_with_match <- subset(introns_with_match, select = -Row.names )
-write_csv(introns_with_match, opt$output)
+write_csv( introns_with_match[!duplicated(introns_with_match),], opt$output)
 
