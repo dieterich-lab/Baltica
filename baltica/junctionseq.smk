@@ -31,7 +31,7 @@ cond, rep = glob_wildcards("mappings/{cond}_{rep}.bam")
 cond = set(cond)
 
 strandness = {
-    'forward': '--stranded --fr_secondStrand',
+    'forward': '--stranded_fr_secondstrand',
     'reverse': '--stranded'
 }
 def dir_source(script, ex):
