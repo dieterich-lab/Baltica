@@ -102,6 +102,7 @@ rule build:
     shadow: "shallow"
     shell: " majiq build --conf {input.ini} --nproc {threads} --output majiq/ {input.ref}"
 
+
 rule deltapsi:
     input: a=lambda wc: comparison(wc, 0, mapping),
          b=lambda wc: comparison(wc, -1, mapping)
@@ -110,14 +111,17 @@ rule deltapsi:
     threads: 10
     params: name=lambda wc: wc.contrast.replace("-vs-", " "),
           name2=lambda wc: wc.contrast.replace("-vs-", "_"),
-          cont=lambda wc: wc.contrast
+          cont=lambda wc: wc.contrast,
+          minreads=config.get('minreads', 3)
     envmodules: "majiq/2.2"
     shadow: "shallow"
     shell: "majiq deltapsi -grp1 {input.a} -grp2 {input.b} " 
            "--nproc {threads} --output majiq/{params.cont} "
-           "--names {params.name} ; "
+           "--names {params.name} "
+           "--minreads {params.majiq_minreads} ;"
            "mv majiq/{params.cont}/{params.name2}.deltapsi.voila "
            "{output} "
+
 
 rule voila:
     input: "majiq/splicegraph.sql",

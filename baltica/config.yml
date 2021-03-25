@@ -56,15 +56,17 @@ ref:
 ref_fa:
   /beegfs/homes/tbrittoborges/Baltica/data/SIRV.fa
 
-# LeafCutter parameters to define cluster
+# Leafcutter-specific parameters
 min_samples_per_group:
   3
 min_samples_per_intron:
   5
 
-# Probability cut-off for Majiq
+# Majiq-specific parametes
 majiq_threshold:
   0.2
+majiq_minreads:
+  5
 # adjusted p-value threshold for LeafCutter and JunctionSeq
 fdr:
   0.05
