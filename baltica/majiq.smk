@@ -112,7 +112,7 @@ rule deltapsi:
     params: name=lambda wc: wc.contrast.replace("-vs-", " "),
           name2=lambda wc: wc.contrast.replace("-vs-", "_"),
           cont=lambda wc: wc.contrast,
-          minreads=config.get('minreads', 3)
+          majiq_minreads=config.get('minreads', 3)
     envmodules: "majiq/2.2"
     shadow: "shallow"
     shell: "majiq deltapsi -grp1 {input.a} -grp2 {input.b} " 
@@ -129,6 +129,11 @@ rule voila:
     output: "majiq/voila/{contrast}_voila.tsv"
     conda: "../envs/majiq.yml"
     envmodules: "majiq/2.2"
-    params: threshold=config.get('majiq_threshold', 0.2)
+    params: 
+        threshold=config.get('majiq_threshold', 0.2),
+        non_changing_threshold=config.get('majiq_non_changing_threshold', 0.05)
     shadow: "shallow"
-    shell: "voila tsv --threshold {params.threshold} {input} -f {output}"
+    shell: "voila tsv " 
+           "--threshold {params.threshold} "
+           "--non-changing-threshold {params.non_changing_threshold} "
+           "{input} -f {output}"

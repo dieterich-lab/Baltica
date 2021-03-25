@@ -63,6 +63,8 @@ min_samples_per_intron:
   5
 
 # Majiq-specific parametes
+majiq_non_changing_threshold:
+  0.05
 majiq_threshold:
   0.2
 majiq_minreads:
