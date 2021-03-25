@@ -57,10 +57,16 @@ ref_fa:
   /beegfs/homes/tbrittoborges/Baltica/data/SIRV.fa
 
 # Leafcutter-specific parameters
-min_samples_per_group:
+leafcutter_min_samples_per_group:
   3
-min_samples_per_intron:
+leafcutter_min_samples_per_intron:
   5
+leafcutter_min_coverage:
+  20
+leafcutter_min_cluster_reads:
+  30
+leafcutter_max_intron_length:
+  500000
 
 # Majiq-specific parametes
 majiq_non_changing_threshold:

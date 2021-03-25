@@ -41,7 +41,7 @@ conditions = [x.split("_")[0] for x in name]
 sample_path = config["sample_path"]
 comp_names = config["contrasts"].keys()
 
-localrules: all, concatenate, symlink
+localrules: all, leafcutter_concatenate, symlink
 
 include: "symlink.smk"
 
@@ -56,7 +56,7 @@ rule all:
         expand("leafcutter/{name}.junc", name=name)
 
 # step 1.1
-rule bam2junc:
+rule leafcutter_bam2junc:
     input: "mappings/{name}.bam"
     output:
           bed="leafcutter/{name}.bed",
@@ -77,8 +77,8 @@ rule bam2junc:
           {params.bed2junc_path} {output.bed} {output.junc}
          """
 
-rule concatenate:
-    input: expand(rules.bam2junc.output, name=name)
+rule leafcutter_concatenate:
+    input: expand(rules.leafcutter_bam2junc.output, name=name)
     output:
           junc="leafcutter/{comp_names}/juncfiles.txt",
           test="leafcutter/{comp_names}/diff_introns.txt"
@@ -100,14 +100,14 @@ rule concatenate:
                     file_out.write("{} {}\n".format(n, cond_b))
 # step 2
 # m= min numb reads per cluster, l = intron length
-rule intron_clustering:
-    input: rules.concatenate.output.junc
+rule leafcutter_intron_clustering:
+    input: rules.leafcutter_concatenate.output.junc
     params:
-          m=50,
-          l=500000,
+          m=config.get('leafcutter_min_cluster_reads', 30),
+          l=config.get('leafcutter_max_intron_length', 500000),
           prefix="leafcutter/{comp_names}/{comp_names}",
           n="{comp_names}",
-          strand="--strand True" if config.get("strandness") else "",
+          strand="--strand True" if config.get("strandness") is not None else "",
           script_path=dir_source("leafcutter_cluster.py", "python")
     output: "leafcutter/{comp_names}/{comp_names}_perind_numers.counts.gz"
     conda: "../envs/leafcutter.yml"
@@ -120,7 +120,7 @@ rule intron_clustering:
          """
 
 # step 3.1
-rule gtf_to_exon:
+rule leafcutter_gtf_to_exon:
     input: gtf_path
     output:
           a="leafcutter/" + basename(gtf_path, suffix=".gz"),
@@ -137,15 +137,16 @@ rule gtf_to_exon:
          """
 
 # step 3.2
-rule differential_splicing:
+rule leafcutter_differential_splicing:
     input:
-         a=rules.gtf_to_exon.output.b,
+         a=rules.leafcutter_gtf_to_exon.output.b,
          b="leafcutter/{comp_names}/{comp_names}_perind_numers.counts.gz",
          c="leafcutter/{comp_names}/diff_introns.txt"
     output: "leafcutter/{comp_names}/{comp_names}_cluster_significance.txt"
     params:
-          min_samples_per_group=config["min_samples_per_group"],
-          min_samples_per_intron=config["min_samples_per_intron"],
+          min_samples_per_group=config.get("leafcutter_min_samples_per_group", 3),
+          min_samples_per_intron=config.get("leafcutter_min_samples_per_intron", 5),
+          min_coverage=config.get("leafcutter_min_coverage", 20),
           prefix="leafcutter/{comp_names}/{comp_names}",
           leafcutter_ds_path=dir_source("leafcutter_ds_pair.R", "Rscript")
     threads: 10
@@ -156,6 +157,7 @@ rule differential_splicing:
     shell:
          """
          {params.leafcutter_ds_path} --exon_file={input.a} \
+         --min_coverage {params.min_coverage}  \
          {input.b} {input.c} --num_threads {threads} --output_prefix={params.prefix} \
          -i {params.min_samples_per_intron} -g {params.min_samples_per_group}
          """
