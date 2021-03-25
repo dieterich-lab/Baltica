@@ -28,6 +28,9 @@ strand = {
 d = defaultdict(list)
 for x in keys: d[x[0]].append(x[1])
 
+include: "symlink.smk"
+
+
 rule all:
     input:
     	expand("rmats/{group}.txt", group=d.keys()),

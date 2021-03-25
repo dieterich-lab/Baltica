@@ -32,7 +32,7 @@ def main():
                                      usage=f"{_program} <workflow> <config> <options>")
     parser.add_argument(
         "workflow",
-        choices=["leafcutter", "majiq", "junctionseq", "qc", "stringtie", "analysis"],
+        choices=["rmats", "leafcutter", "majiq", "junctionseq", "qc", "stringtie", "analysis"],
         help="Workflow to be run"
     )
     parser.add_argument(
