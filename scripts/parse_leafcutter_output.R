@@ -27,7 +27,7 @@ option_list <- list(
     c("-c", "--cutoff"),
     type = "double",
     default = 0.05,
-    help = "Discard junction with probability threshold < than --cutoff [default %default]"
+    help = "Discard junction with p.adjust < than --cutoff [default %default]"
   )
 )
 # enabling both baltica or snakemake input
