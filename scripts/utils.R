@@ -88,14 +88,14 @@ get_exon_number <- function(ex_tx) {
 
 #' Annotated a set of features with overllaping gene_name
 #'
-#' @param introns_by_transcript list of introns by transcript
+#' @param gtf annotation with gene_names 
+#' @param df 
 #' @return a data.frame with acceptor and donor exon number for an intron
 #' @export
 
 annotate_gene <- function(gtf, df) {
   stopifnot(is(gtf, "GRanges"))
   stopifnot(is(df, "data.frame"))
-
   gr <- GRanges(df)
   tx <- subset(gtf, type == 'transcript')
   hits <- findOverlaps(gr, tx)
@@ -198,6 +198,15 @@ as.type <- function(junction.gr, exon.gr) {
 #'
 process_RMATS_ass <- function(df, start='flankingES', end='shortES', type, FDR=0.05){
   
+  if (nrow(df)==0){
+    df = GenomicRanges::GRanges()
+    mcols(df) = data.frame(
+      type=character(), 
+      FDR=double(),
+      IncLevelDifference=double())
+    return(df)
+  }
+
   df <- df %>%
     dplyr::filter(FDR < !!FDR) %>% 
     dplyr::select(chr, !!start, !!end, strand, comparison, FDR, IncLevelDifference) %>% 
@@ -208,7 +217,7 @@ process_RMATS_ass <- function(df, start='flankingES', end='shortES', type, FDR=0
   df <- df[width(df) > 1,]
   df <- unique(df)
   df$type <- type
-  seqlevelsStyle(df) <- 'Ensembl'
+  try(seqlevelsStyle(df) <- 'Ensembl')
   
   
   df  
@@ -225,16 +234,25 @@ process_RMATS_ass <- function(df, start='flankingES', end='shortES', type, FDR=0
 #' @export
 #'
 process_RMATS <- function(df, start, end, type, FDR=0.05) {
+  
+  if (nrow(df)==0){
+    df = GenomicRanges::GRanges()
+    mcols(df) = data.frame(
+      type=character(), 
+      FDR=double(),
+      IncLevelDifference=double())
+    return(df)
+    }
 
   df <- df %>%   
     dplyr::filter(FDR < !!FDR) %>% 
     dplyr::select(chr, !!start, !!end, strand, comparison, FDR, IncLevelDifference) %>% 
     dplyr::rename(c(start=!!start, end=!!end))
   
-  df <- makeGRangesFromDataFrame(df, keep.extra.columns = T)
+  df <- GenomicRanges::makeGRangesFromDataFrame(df, keep.extra.columns = T)
   df <- unique(df)
   df$type <- type
-  seqlevelsStyle(df) <- 'Ensembl'
+  try(seqlevelsStyle(df) <- 'Ensembl')
   
   df  
 }
