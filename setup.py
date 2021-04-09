@@ -75,8 +75,8 @@ setup(name=_program,
           "scripts/sam2bed.pl",
           "scripts/utils.R",
           "scripts/assign_AS_type.R",
-          "scripts/simplify.R"
-
+          "scripts/simplify.R",
+          "scripts/parse_rmats_output.R" 
           ],
       keywords=['differential splicing', 'bioinformatics', 'rna-seq'],
       zip_safe=False,
