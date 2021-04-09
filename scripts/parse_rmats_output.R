@@ -50,17 +50,28 @@ res=split(files, str_split(files, '/', simplify = T)[, 2])
 
 get_rmats_coord <- function(.files, .comparison) {
   message("Processing files for ", .comparison)
-  x <- lapply(.files, readr::read_delim, '\t')
+  x <- lapply(.files, readr::read_delim, '\t', col_types=c(
+  .default = col_double(),
+  GeneID = col_character(),
+  geneSymbol = col_character(),
+  chr = col_character(),
+  strand = col_character(),
+  IJC_SAMPLE_1 = col_character(),
+  SJC_SAMPLE_1 = col_character(),
+  IJC_SAMPLE_2 = col_character(),
+  SJC_SAMPLE_2 = col_character(),
+  IncLevel1 = col_character(),
+  IncLevel2 = col_character()))
   names(x) <- str_split(.files, pattern = '[/.]', simplify = T)[, 3]
   for (i in names(x)) { x[[i]]$comparison = .comparison }
   
-  es_ssj <- process_RMATS(x$SE, 'upstreamEE', 'downstreamES', 'ES_SJ')
-  es_isj <- process_RMATS(x$SE, 'upstreamEE', 'exonStart_0base', 'EI_SJ')
-  ir <- process_RMATS(x$RI, 'upstreamEE', 'downstreamES', 'IR')
-  a5ss_SSJ <- process_RMATS_ass(x$A5SS, 'longExonEnd', 'flankingES', 'A5SS_SSJ')
-  a5ss_ISJ <- process_RMATS_ass(x$A5SS, 'shortEE', 'flankingES', 'A5SS_ISJ')
-  a3ss_SSJ <- process_RMATS_ass(x$A3SS, 'flankingEE', 'longExonStart_0base', 'A5SS_SSJ')
-  a3ss_ISJ <- process_RMATS_ass(x$A3SS, 'flankingES', 'shortES', 'A5SS_ISJ')
+  es_ssj <-  process_RMATS(x$SE, 'upstreamEE', 'downstreamES', 'ES_SJ', FDR=opt$cutoff)
+  es_isj <- process_RMATS(x$SE, 'upstreamEE', 'exonStart_0base', 'EI_SJ', FDR=opt$cutoff)
+  ir <- process_RMATS(x$RI, 'upstreamEE', 'downstreamES', 'IR', FDR=opt$cutoff)
+  a5ss_SSJ <- process_RMATS_ass(x$A5SS, 'longExonEnd', 'flankingES', 'A5SS_SSJ', FDR=opt$cutoff)
+  a5ss_ISJ <- process_RMATS_ass(x$A5SS, 'shortEE', 'flankingES', 'A5SS_ISJ', FDR=opt$cutoff)
+  a3ss_SSJ <- process_RMATS_ass(x$A3SS, 'flankingEE', 'longExonStart_0base', 'A5SS_SSJ', FDR=opt$cutoff)
+  a3ss_ISJ <- process_RMATS_ass(x$A3SS, 'flankingES', 'shortES', 'A5SS_ISJ', FDR=opt$cutoff)
   
   gr <- c(es_ssj, es_isj, ir, a5ss_SSJ, a5ss_ISJ, a3ss_SSJ, a3ss_ISJ)
   gr$method <- 'rmats' 
