@@ -50,7 +50,8 @@ res=split(files, str_split(files, '/', simplify = T)[, 2])
 
 get_rmats_coord <- function(.files, .comparison) {
   message("Processing files for ", .comparison)
-  x <- lapply(.files, readr::read_delim, '\t', col_types=c(
+  x <- suppressWarnings(
+    lapply(.files, readr::read_delim, '\t', col_types=c(
   .default = col_double(),
   GeneID = col_character(),
   geneSymbol = col_character(),
@@ -61,7 +62,7 @@ get_rmats_coord <- function(.files, .comparison) {
   IJC_SAMPLE_2 = col_character(),
   SJC_SAMPLE_2 = col_character(),
   IncLevel1 = col_character(),
-  IncLevel2 = col_character()))
+  IncLevel2 = col_character())))
   names(x) <- str_split(.files, pattern = '[/.]', simplify = T)[, 3]
   for (i in names(x)) { x[[i]]$comparison = .comparison }
   

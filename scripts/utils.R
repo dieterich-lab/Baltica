@@ -217,7 +217,7 @@ process_RMATS_ass <- function(df, start='flankingES', end='shortES', type, FDR=0
   df <- df[width(df) > 1,]
   df <- unique(df)
   df$type <- type
-  try(seqlevelsStyle(df) <- 'Ensembl')
+  suppressWarnings(try(seqlevelsStyle(df) <- 'Ensembl'))
   
   
   df  
@@ -252,7 +252,7 @@ process_RMATS <- function(df, start, end, type, FDR=0.05) {
   df <- GenomicRanges::makeGRangesFromDataFrame(df, keep.extra.columns = T)
   df <- unique(df)
   df$type <- type
-  try(seqlevelsStyle(df) <- 'Ensembl')
+  suppressWarnings(try(seqlevelsStyle(df) <- 'Ensembl'))
   
   df  
 }
