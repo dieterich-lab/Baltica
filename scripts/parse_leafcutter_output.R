@@ -98,11 +98,11 @@ message("Merging tables")
 res <- inner_join(es, cluster_sig, by = c('comparison', 'cluster'))
 res$chr <- gsub('chr', '', res$chr)
 # add ranks for psi per cluster
-res <- res %>%
-  arrange(comparison, cluster, ref_psi) %>%
-  group_by(comparison, cluster) %>%
-  mutate(is_canonical = row_number() == 1) %>%
-  ungroup()
+# res <- res %>%
+#   arrange(comparison, cluster, ref_psi) %>%
+#   group_by(comparison, cluster) %>%
+#   mutate(is_canonical = row_number() == 1) %>%
+#   ungroup()
 
 res <- select(res, -c('clu', 'clu_number'))
 # create a unique junction column for each row

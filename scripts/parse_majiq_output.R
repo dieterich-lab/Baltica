@@ -84,11 +84,11 @@ res <- bind_rows(res, .id = 'comparison') %>%
     convert = T
   )
 # flag canonical SJ
-res <- res %>%
-  arrange(comparison, lsv_id, ref_mean_psi) %>%
-  group_by(comparison, lsv_id) %>%
-  mutate(is_canonical = row_number() == 1) %>%
-  ungroup()
+# res <- res %>%
+#   arrange(comparison, lsv_id, ref_mean_psi) %>%
+#   group_by(comparison, lsv_id) %>%
+#   mutate(is_canonical = row_number() == 1) %>%
+#   ungroup()
 
 
 junction_pattern <- "(\\d+)-(\\d+)"
@@ -109,8 +109,7 @@ res <- dplyr::select(res, c(
   probability_non_changing,
   lsv_id,
   ref_mean_psi,
-  alt_mean_psi,
-  is_canonical)
+  alt_mean_psi)
 ) %>%
   filter(probability_non_changing > opt$cutoff) %>%
   mutate(method = 'majiq')

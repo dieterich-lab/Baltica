@@ -121,15 +121,15 @@ message("Loading processing the table")
 res <- lapply(files, read_junctionseq_out)
 names(res) <- file_names
 
-res  <- lapply(res, add_containers)
+# res  <- lapply(res, add_containers)
 res <-  bind_rows(res, .id = 'comparison')
 message("Computing SJ ranks")
 
-res <- res %>%
-  arrange(comparison, container, expr_ref) %>%
-  group_by(comparison, expr_ref) %>%
-  mutate(is_canonical = row_number() == 1) %>%
-  ungroup()
+# res <- res %>%
+#   arrange(comparison, container, expr_ref) %>%
+#   group_by(comparison, expr_ref) %>%
+#   mutate(is_canonical = row_number() == 1) %>%
+#   ungroup()
 
 message('Number of junctions output by JunctionSeq ', nrow(res))
 res <- res %>%
@@ -144,7 +144,7 @@ res <- res %>%
     contains('log2FC'),
     geneID,
     featureType,
-    container,
+    # container,
     expr_ref,
     expr_alt) %>%
   mutate(method = 'JunctionSeq')
