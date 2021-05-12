@@ -98,7 +98,7 @@ rule build:
           "majiq/splicegraph.sql"
     conda: "../envs/majiq.yml"
     threads: len(conditions)
-    envmodules: "majiq/2.2"
+    envmodules: "majiq/2.2_deb10"
     shadow: "shallow"
     shell: " majiq build --conf {input.ini} --nproc {threads} --output majiq/ {input.ref}"
 
@@ -113,7 +113,7 @@ rule deltapsi:
           name2=lambda wc: wc.contrast.replace("-vs-", "_"),
           cont=lambda wc: wc.contrast,
           majiq_minreads=config.get('minreads', 3)
-    envmodules: "majiq/2.2"
+    envmodules: "majiq/2.2_deb10"
     shadow: "shallow"
     shell: "majiq deltapsi -grp1 {input.a} -grp2 {input.b} " 
            "--nproc {threads} --output majiq/{params.cont} "
@@ -128,7 +128,7 @@ rule voila:
          "majiq/{contrast}/{contrast}.deltapsi.voila"
     output: "majiq/voila/{contrast}_voila.tsv"
     conda: "../envs/majiq.yml"
-    envmodules: "majiq/2.2"
+    envmodules: "majiq/2.2_deb10"
     params: 
         threshold=config.get('majiq_threshold', 0.2),
         non_changing_threshold=config.get('majiq_non_changing_threshold', 0.05)

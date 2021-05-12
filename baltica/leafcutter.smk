@@ -66,7 +66,7 @@ rule leafcutter_bam2junc:
           sam2bed_path=dir_source("sam2bed.pl", "perl"),
           bed2junc_path=dir_source("bed2junc.pl", "perl"),
           use_strand="--use-RNA-strand" if config.get("strandness") else ""
-    envmodules: "samtools"
+    envmodules: "samtools/1.7_deb10"
     conda: "../envs/leafcutter.yml"
     shadow: "shallow"
     shell:
@@ -128,7 +128,7 @@ rule leafcutter_gtf_to_exon:
     params: gtf_to_exon=dir_source("gtf_to_exons.R", "Rscript")
     conda: "../envs/leafcutter.yml"
     envmodules:
-        "R/3.6.0"
+        "R/4.0.5_deb10 leafcutter/0.2.7_deb10"
     shadow: "shallow"
     shell:
          """
@@ -152,7 +152,7 @@ rule leafcutter_differential_splicing:
     threads: 10
     conda: "../envs/leafcutter.yml"
     envmodules:
-        "R/3.6.0 leafcutter"
+        "R/4.0.5_deb10 leafcutter/0.2.7_deb10"
     shadow: "shallow"
     shell:
          """

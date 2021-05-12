@@ -123,7 +123,7 @@ rule junctioseq_analysis:
         "junctionseq/analysis/{comparison}_sigGenes.results.txt.gz"
     threads: 10
     params: script = dir_source("junctionSeq.R", "Rscript")
-    envmodules: "R/3.6.0 junctionseq"
+    envmodules: "R/3.6.3_deb10 junctionseq/1.16.0_deb10"
     shadow: "shallow"
     shell:
         "{params.script} {input.decoder} {output} {threads}"
