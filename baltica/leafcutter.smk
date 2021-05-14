@@ -55,27 +55,35 @@ rule all:
         expand("leafcutter/{comp_names}/{comp_names}_cluster_significance.txt", comp_names=comp_names),
         expand("leafcutter/{name}.junc", name=name)
 
-# step 1.1
 rule leafcutter_bam2junc:
+    # Details https://regtools.readthedocs.io/en/latest/commands/junctions-extract/
     input: "mappings/{name}.bam"
-    output:
-          bed="leafcutter/{name}.bed",
-          junc="leafcutter/{name}.junc"
+    output: "leafcutter/{name}.junc"
+    envmodules: "regtools/0.6"
     params:
-          filter_cs_path=dir_source("filter_cs.py", "python"),
-          sam2bed_path=dir_source("sam2bed.pl", "perl"),
-          bed2junc_path=dir_source("bed2junc.pl", "perl"),
-          use_strand="--use-RNA-strand" if config.get("strandness") else ""
-    envmodules: "samtools/1.7_deb10"
+        # defaults as suggested by leafcutter
+        minimum_anchor_length = config.get('minimum_anchor_length', 8),
+        minimum_intron_size = config.get('minimum_intron_size', 50),
+        maximum_intron_size = config.get('maximum_intron_size', 5e5),
+        # Strand specificity of RNA library preparation, 
+        # where 0 = unstranded/XS, 
+        # 1 = first-strand/RF, 
+        # 2 = second-strand/FR.s
+        # If your alignments contain XS tags,
+        # these will be used in the "unstranded" mode.
+        strand_specificity = config.get('strand_specificity', 2)
+    envmodules: "regtools"
     conda: "../envs/leafcutter.yml"
     shadow: "shallow"
     shell:
-         """
-         samtools view {input} \
-         | {params.filter_cs_path} \
-         | {params.sam2bed_path} {params.use_strand} - {output.bed}
-          {params.bed2junc_path} {output.bed} {output.junc}
-         """
+        """
+        regtools junctions extract \
+        -a {params.minimum_anchor_length} \
+        -m {params.minimum_intron_size} \
+        -M {params.maximum_intron_size} \
+        -s {params.strand_specificity} \
+        {input} -o {output}
+        """
 
 rule leafcutter_concatenate:
     input: expand(rules.leafcutter_bam2junc.output, name=name)
@@ -89,7 +97,8 @@ rule leafcutter_concatenate:
             work_path = Path(config.get("path", "."))
             for n in name:
                 if n.startswith(cond_a) or n.startswith(cond_b):
-                    file_out.write(str(work_path / "leafcutter/{}.junc\n".format(n)))
+                    file_out.write(
+                        str(work_path / "leafcutter/{}.junc\n".format(n)))
 
         with open(output.test, 'w') as file_out:
             for n in name:
@@ -103,19 +112,23 @@ rule leafcutter_concatenate:
 rule leafcutter_intron_clustering:
     input: rules.leafcutter_concatenate.output.junc
     params:
-          m=config.get('leafcutter_min_cluster_reads', 30),
+          m=config.get('leafcutter_min_cluster_reads', 50),
           l=config.get('leafcutter_max_intron_length', 500000),
           prefix="leafcutter/{comp_names}/{comp_names}",
           n="{comp_names}",
           strand="--strand True" if config.get("strandness") is not None else "",
-          script_path=dir_source("leafcutter_cluster.py", "python")
+          script_path=dir_source("leafcutter_cluster_regtools_py3.py", "python")
     output: "leafcutter/{comp_names}/{comp_names}_perind_numers.counts.gz"
     conda: "../envs/leafcutter.yml"
+    envmodules: "python3/3.6.13_deb10"
     shadow: "shallow"
     shell:
          """
          {params.script_path} \
-         -j {input} -m {params.m} -o {params.prefix} -l {params.l} {params.strand}
+         -j {input} -m {params.m} \
+         -o {params.prefix} \
+         -l {params.l} \
+         {params.strand} 
          rm *{params.n}.sorted.gz
          """
 
@@ -136,7 +149,6 @@ rule leafcutter_gtf_to_exon:
          {params.gtf_to_exon} {output.a} {output.b}
          """
 
-# step 3.2
 rule leafcutter_differential_splicing:
     input:
          a=rules.leafcutter_gtf_to_exon.output.b,
