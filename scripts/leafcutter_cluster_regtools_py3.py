@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python3
 # written by Yang Li for the Leafcutter repo 
 # forked by mdshw5 and converted to Python3 
 # https://github.com/mdshw5/leafcutter/blob/master/scripts/leafcutter_cluster_regtools.py
