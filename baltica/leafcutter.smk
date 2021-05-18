@@ -41,6 +41,11 @@ conditions = [x.split("_")[0] for x in name]
 sample_path = config["sample_path"]
 comp_names = config["contrasts"].keys()
 
+strand = {
+    "forward": 1,
+    "reverse": 2
+}
+
 localrules: all, leafcutter_concatenate, symlink
 
 include: "symlink.smk"
@@ -71,7 +76,7 @@ rule leafcutter_bam2junc:
         # 2 = second-strand/FR.s
         # If your alignments contain XS tags,
         # these will be used in the "unstranded" mode.
-        strand_specificity = config.get('strand_specificity', 2)
+        strand_specificity = strand.get(config.get('strandness', 2), 0)
     envmodules: "regtools"
     conda: "../envs/leafcutter.yml"
     shadow: "shallow"
@@ -116,7 +121,6 @@ rule leafcutter_intron_clustering:
           l=config.get('leafcutter_max_intron_length', 500000),
           prefix="leafcutter/{comp_names}/{comp_names}",
           n="{comp_names}",
-          strand="--strand True" if config.get("strandness") is not None else "",
           script_path=dir_source("leafcutter_cluster_regtools_py3.py", "python")
     output: "leafcutter/{comp_names}/{comp_names}_perind_numers.counts.gz"
     conda: "../envs/leafcutter.yml"
@@ -128,7 +132,6 @@ rule leafcutter_intron_clustering:
          -j {input} -m {params.m} \
          -o {params.prefix} \
          -l {params.l} \
-         {params.strand} 
          rm *{params.n}.sorted.gz
          """
 

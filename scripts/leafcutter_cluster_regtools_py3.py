@@ -500,7 +500,7 @@ if __name__ == "__main__":
     parser.add_option("-c", "--cluster", dest="cluster", default = None,
                   help="refined cluster file when clusters are already made")
 
-    parser.add_option("-k", "--checkchrom", dest="checkchrom", default = True,
+    parser.add_option("-k", "--checkchrom",  action='store_true', dest="checkchrom", default = False,
                   help="check that the chromosomes are well formated e.g. chr1, chr2, ..., or 1, 2, ...")
 
     (options, args) = parser.parse_args()
