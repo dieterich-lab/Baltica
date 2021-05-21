@@ -36,7 +36,7 @@ rule parse_majiq:
     output:
         "majiq/majiq_junctions.csv"
     envmodules:
-        "R/3.6.0"
+        "R/4.0.5_deb10"
     params:
         cutoff = 0.90,
     shell:
@@ -52,7 +52,7 @@ rule parse_leafcutter:
     output:
         "leafcutter/leafcutter_junctions.csv"
     envmodules:
-        "R/3.6.0"
+        "R/4.0.5_deb10"
     params:
         cutoff = 0.05
     shell:
@@ -68,7 +68,7 @@ rule parse_junctionseq:
     output:
         "junctionseq/junctionseq_junctions.csv"
     envmodules:
-        "R/3.6.0"
+        "R/4.0.5_deb10"
     params:
         cutoff = 0.05
     shell:
@@ -84,7 +84,7 @@ rule annotate:
     params:
         ref=config.get("ref")
     envmodules:
-        "R/3.6.0"
+        "R/4.0.5_deb10"
     output:
         "results/SJ_annotated.csv"
     shell:
@@ -99,7 +99,7 @@ rule assign_AS_type:
         "results/SJ_annotated.csv",
         ref="stringtie/merged/merged.combined.gtf"
     envmodules:
-        "R/3.6.0"
+        "R/4.0.5_deb10"
     output:
         "results/SJ_annotated_assigned.csv"
     shell:
@@ -113,7 +113,7 @@ rule simplify:
     input:
         "results/SJ_annotated_assigned.csv",
     envmodules:
-        "R/3.6.0"
+        "R/4.0.5_deb10"
     output:
         "results/SJ_annotated_assigned_simple.xlsx"
     shell:
