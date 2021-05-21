@@ -38,7 +38,7 @@ rule parse_majiq:
     envmodules:
         "R/4.0.5_deb10"
     params:
-        cutoff = 0.90,
+        cutoff = 0.05,
     shell:
         """
         path=$(which parse_majiq_output.R)
