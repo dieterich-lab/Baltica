@@ -111,7 +111,7 @@ res <- dplyr::select(res, c(
   ref_mean_psi,
   alt_mean_psi)
 ) %>%
-  filter(probability_non_changing > opt$cutoff) %>%
+  filter(probability_non_changing < opt$cutoff) %>%
   mutate(method = 'majiq')
 
 message('Number of junctions after filtering ', nrow(res))
