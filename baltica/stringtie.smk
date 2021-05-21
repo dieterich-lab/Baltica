@@ -66,7 +66,7 @@ rule merge_bam:
         bai="stringtie/merged_bam/{group}.bam.bai"
   threads: 10
   wildcard_constraints: group="|".join(cond)
-  envmodules: "samtools"
+  envmodules: "samtools/1.12_deb10"
   shadow: "shallow"
   shell: "samtools merge {output.bam} {input} --threads {threads};" \
        "samtools index {output.bam} {output.bai} "
