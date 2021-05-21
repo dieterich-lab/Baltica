@@ -198,17 +198,8 @@ as.type <- function(junction.gr, exon.gr) {
 #'
 process_RMATS_ass <- function(df, start='flankingES', end='shortES', type, FDR=0.05){
   
-  if (nrow(df)==0){
-    df = GenomicRanges::GRanges()
-    mcols(df) = data.frame(
-      type=character(), 
-      FDR=double(),
-      IncLevelDifference=double())
-    return(df)
-  }
-
   df <- df %>%
-    dplyr::filter(FDR < !!FDR) %>% 
+    dplyr::filter(FDR < !!FDR)  %>% 
     dplyr::select(chr, !!start, !!end, strand, comparison, FDR, IncLevelDifference) %>% 
     dplyr::rename(c(start=!!start, end=!!end)) %>% 
     mutate(start=pmin(start, end), end=pmax(start, end))
@@ -216,7 +207,8 @@ process_RMATS_ass <- function(df, start='flankingES', end='shortES', type, FDR=0
   df <- makeGRangesFromDataFrame(df, keep.extra.columns = T)
   df <- df[width(df) > 1,]
   df <- unique(df)
-  df$type <- type
+  mcols(df)['type'] <- type
+
   suppressWarnings(try(seqlevelsStyle(df) <- 'Ensembl'))
   
   
@@ -235,15 +227,6 @@ process_RMATS_ass <- function(df, start='flankingES', end='shortES', type, FDR=0
 #'
 process_RMATS <- function(df, start, end, type, FDR=0.05) {
   
-  if (nrow(df)==0){
-    df = GenomicRanges::GRanges()
-    mcols(df) = data.frame(
-      type=character(), 
-      FDR=double(),
-      IncLevelDifference=double())
-    return(df)
-    }
-
   df <- df %>%   
     dplyr::filter(FDR < !!FDR) %>% 
     dplyr::select(chr, !!start, !!end, strand, comparison, FDR, IncLevelDifference) %>% 
@@ -257,3 +240,4 @@ process_RMATS <- function(df, start, end, type, FDR=0.05) {
   df  
 }
 
+  
