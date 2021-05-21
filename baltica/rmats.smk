@@ -19,7 +19,6 @@ contrasts = config['contrasts']
 keys = config['samples'].keys()
 keys = [tuple(x.split('_')) for x in keys]
 
-shell.prefix('source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate rmats;')
 temp_dir = tempfile.TemporaryDirectory()
 strand = {
   'reverse': 'fr-secondstrand',
@@ -29,7 +28,7 @@ d = defaultdict(list)
 for x in keys: d[x[0]].append(x[1])
 
 include: "symlink.smk"
-
+localrules: create_rmats_input
 
 rule all:
     input:
@@ -41,9 +40,8 @@ rule create_rmats_input:
   input: lambda wc: expand("mappings/{{group}}_{rep}.bam", rep=d.get(wc.group))
   output: "rmats/{group}.txt"
   run:
-  	with open(str(output), "w") as fou:
-  		fou.write(','.join(input))
-                #fou.write(config['read_len'])
+    with open(str(output), "w") as fou:
+      fou.write(','.join(input))
 
 
 rule run_rmats:
@@ -51,15 +49,16 @@ rule run_rmats:
   output: directory("rmats/{alt}-vs-{ref}/")
   shadow: "shallow"
   threads: 10
+  envmodules: "rmats-turbo/4.1.1"
   params:
       gtf = config['ref'],
-      # is_paired = '-t single' if config['is_single_end'] else '',
+      is_paired = '-t single' if config.get('is_single_end') else '',
       lib = "--libType " + strand.get(config['strandness'], 'fr-unstranded'),
       read_len = config['read_len'],
       allow_clipping = "--allow-clipping",
       tmp = os.path.join(temp_dir.name, '{alt}_vs_{ref}/')
   shell: 
-      "python ~/rmats-turbo/rmats.py "
+      "run_rmats "
       "--b1 {input[0]} "
       "--b2 {input[1]} "
       "--gtf {params.gtf} "
