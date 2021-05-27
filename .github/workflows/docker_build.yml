@@ -19,6 +19,6 @@ jobs:
       - name: Push to Docker Hub
         uses: docker/build-push-action@v2
         with:
-          path: docker/majiq/2.2/Dockerfile
+          file: docker/majiq/2.2/Dockerfile
           push: true
           tags: tbrittoborges/baltica:latest
