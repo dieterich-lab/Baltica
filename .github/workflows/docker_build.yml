@@ -1,9 +1,6 @@
 name: build_dockerfile
 
 on:
-  push:
-    paths:
-      - 'docker/majiq/2.2/Dockerfile'
   workflow_dispatch
 
 jobs:
