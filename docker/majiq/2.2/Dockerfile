@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 FROM python:3.7
-LABEL maintainer Thiago Britto-Borbes <thiagobrittoborges@uni-heidelberg.de>
+LABEL maintainer="Thiago Britto-Borbes <thiagobrittoborges@uni-heidelberg.de>"
 
 RUN apt-get update && \
     apt-get upgrade -y && \
