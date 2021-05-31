@@ -77,9 +77,26 @@ rule parse_junctionseq:
         $path --cutoff {params.cutoff}
         """
 
+rule parse_rmats:
+    input:
+        expand("rmats/{contrast}/{st}.MATS.JC.tx", 
+            contrast=contrasts.keys(),
+            st=['A3SS', 'A5SS', 'RI', 'MXE', "SE"])
+    output:
+        "rmats/rmats_junctions.csv"
+    envmodules:
+        "R/4.0.5_deb10"
+    params:
+        cutoff = 0.05
+    shell:
+        """
+        path=$(which parse_rmats_output.R)
+        $path --cutoff {params.cutoff}
+        """
+
 rule annotate:
     input:
-        expand("{method}/{method}_junctions.csv", method=['majiq', 'leafcutter', 'junctionseq']),
+        expand("{method}/{method}_junctions.csv", method=['majiq', 'leafcutter', 'junctionseq', 'rmats']),
         ref="stringtie/merged/merged.combined.gtf"
     params:
         ref=config.get("ref")
