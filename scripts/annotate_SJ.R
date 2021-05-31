@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript
 # Title     : annotate_SJ from many DJU methods
-# Objective : To annotate SJ called DS by many DJU methods with gene and transcript level information
+# Objective : To annotate SJ called DS by many DJU methods with gene and
+# transcript level information
 # Created by: Thiago Britto-Borges (thiago.brittoborges@uni-heidelberg.de)
 # Created on: 30.04.20
 suppressPackageStartupMessages({
@@ -29,9 +30,12 @@ option_list <- list(
   make_option(
     c("-i", "--input"),
     type = "character",
-    help = "Path to parsed DJU result", 
+    help = "Path to parsed DJU result",
     metavar = "character",
-    default = "junctionseq/junctionseq_junctions.csv,leafcutter/leafcutter_junctions.csv,majiq/majiq_junctions.csv"
+    default = "junctionseq/junctionseq_junctions.csv,
+    leafcutter/leafcutter_junctions.csv,
+    majiq/majiq_junctions.csv,
+    rmats/rmats_junctions.csv"
   ),
   make_option(
     c("-a", "--annotation"),
@@ -39,7 +43,7 @@ option_list <- list(
     help = "Path to annotation (GTF/GFF format)",
     metavar = "character",
     default = "stringtie/merged/merged.combined.gtf"
-  ),  
+  ),
   make_option(
     c("-r", "--reference"),
     type = "character",
@@ -55,70 +59,96 @@ option_list <- list(
   )
 )
 # enabling both baltica or snakemake input
-if(exists('snakemake')){
+if (exists("snakemake")) {
   opt <- list(
-    input = paste0(c(snakemake@input[[1]], snakemake@input[[2]], snakemake@input[[3]]), collapse = ','),
-    annotation = snakemake@input[[4]],
+    input = paste0(
+      c(
+        snakemake@input[[1]],
+        snakemake@input[[2]],
+        snakemake@input[[3]],
+        snakemake@input[[4]]
+      ),
+      collapse = ","
+    ),
+    annotation = snakemake@input[[5]],
     output = snakemake@output[[1]]
   )
   snakemake@source("utils.R")
-  } else {
+} else {
   opt <- parse_args(OptionParser(option_list = option_list))
   source(file.path(dirname(thisFile()), "utils.R"))
 }
-files <- strsplit(opt$input, ',')[[1]]
-majiq_idx <- grep('majiq', files)
-leafcutter_idx <- grep('leafcutter', files)
-junctionseq_idx <- grep('junctionseq', files)
 
-.read_csv <- function(x) { (read_csv(x, col_types = cols(chr=col_character()))) }
+files <- strsplit(opt$input, ",")[[1]]
 
-df <- list(
-  majiq = .read_csv( files[[majiq_idx]] ),
-  leafcutter = .read_csv( files[[leafcutter_idx]] ) ,
-  junctionseq = .read_csv( files[[junctionseq_idx]]  )
-)
+message("Loading input")
 
-gr <- c(
-    GRanges(df$majiq),
-    GRanges(df$leafcutter),
-    GRanges(df$junctionseq)
-)
-
-mcols(gr) <- NULL
-mcols(gr)$method <- c(df$majiq$method, df$leafcutter$method, df$junctionseq$method)
-mcols(gr)$comparison <- c(df$majiq$comparison, df$leafcutter$comparison, df$junctionseq$comparison)
-mcols(gr)$score <- c(1 - df$majiq$probability_changing,  df$leafcutter$p.adjust, df$junctionseq$padjust)
-
-if (!all(as.logical(lapply(files, file.exists)))){
-  stop("Input file not found.", call.=FALSE)
+if (!all(as.logical(lapply(files, file.exists)))) {
+  stop("Input file not found.", call. = FALSE)
 } else if (!file.exists(opt$annotation)) {
-  stop("Annotation not found.", call.=FALSE)
+  stop("Annotation not found.", call. = FALSE)
 }
 
-message('Loading input')
-files <- strsplit(opt$input, ',')[[1]]
 gtf <- rtracklayer::import.gff2(opt$annotation)
+.read_csv <- function(x) {
+  (readr::read_csv(x, col_types = readr::cols(chr = readr::col_character())))
+}
+majiq_idx <- grep("majiq", files)
+leafcutter_idx <- grep("leafcutter", files)
+junctionseq_idx <- grep("junctionseq", files)
+rmats_idx <- grep("rmats", files)
 
-message('Processing annotation')
-tx <- subset(gtf, type == 'transcript')
+df <- list(
+  majiq = .read_csv(files[[majiq_idx]]),
+  leafcutter = .read_csv(files[[leafcutter_idx]]),
+  junctionseq = .read_csv(files[[junctionseq_idx]]),
+  rmats = .read_csv(files[[rmats_idx]])
+)
+
+gr <- suppressWarnings(c(
+  GRanges(df$majiq),
+  GRanges(df$leafcutter),
+  GRanges(df$junctionseq),
+  GRanges(df$rmats)
+))
+
+mcols(gr) <- NULL
+mcols(gr)$method <- c(
+  df$majiq$method,
+  df$leafcutter$method,
+  df$junctionseq$method,
+  df$rmats$method
+)
+mcols(gr)$comparison <- c(
+  df$majiq$comparison,
+  df$leafcutter$comparison,
+  df$junctionseq$comparison,
+  df$rmats$comparison
+)
+mcols(gr)$score <- c(
+  df$majiq$probability_non_changing,
+  df$leafcutter$p.adjust,
+  df$junctionseq$padjust,
+  df$rmats$FDR
+)
+
+message("Processing annotation")
+tx <- subset(gtf, type == "transcript")
 tx <- subsetByOverlaps(tx, gr)
 gtf <- gtf[gtf$transcript_id %in% unique(tx$transcript_id)]
 
 ex_tx <- filter_multi_exon(gtf)
 introns <- get_introns(ex_tx)
 
-if(!is.null(opt$reference)){
+if (!is.null(opt$reference)) {
   reference <- rtracklayer::import.gff(opt$reference)
-  ref_ex_tx <- filter_multi_exon(reference)  
+  ref_ex_tx <- filter_multi_exon(reference)
 
   ref_introns <- get_introns(ref_ex_tx)
   introns$is_novel <- !(introns %in% ref_introns)
 }
 
-hits <- filter_hits_by_diff(gr, introns)
-
-message('Annotating set of introns')
+message("Annotating set of introns")
 exon_number <- get_exon_number(ex_tx)
 txid_to_gene <- setNames(tx$gene_name, nm = tx$transcript_id)
 txid_to_tx_name <- setNames(tx$cmp_ref, nm = tx$transcript_id)
@@ -128,25 +158,39 @@ mcols(introns)$gene_name <- txid_to_gene[names(introns)]
 mcols(introns)$transcript_name <- txid_to_tx_name[names(introns)]
 mcols(introns)$class_code <- txid_to_classcode[names(introns)]
 mcols(introns)$exon_number <- exon_number$value
-introns$exon_number <- apply(introns$exon_number, 1, paste, collapse = '-')
+introns$exon_number <- apply(introns$exon_number, 1, paste, collapse = "-")
 names(introns) <- NULL
 
-introns <- aggregate_metadata(introns)
+aggregate_annotation <- function(gr) {
+  stopifnot(is(gr, "GRanges"))
+
+  equal_hits <- findOverlaps(gr, type = "equal")
+  equal_hits <- as.data.frame(equal_hits)
+  equal_hits <- igraph::graph_from_data_frame(equal_hits)
+  equal_hits_groups <- stack(igraph::groups(igraph::clusters(equal_hits)))
+
+  gr_ <- as.data.frame(mcols(gr))
+  gr_$coordinates <- as.character(gr)
+  gr_[as.numeric(equal_hits_groups$values), "group"] <- equal_hits_groups$ind
+  gr_ <- aggregate(. ~ group, gr_, unique)
+  gr <- GenomicRanges::GRanges(gr_$coordinates)
+  mcols(gr) <- gr_
+  gr
+}
+
+introns <- aggregate_annotation(introns)
+
 hits <- filter_hits_by_diff(gr, introns, max_start = 2, max_end = 2)
 
-gr_metadata <- mcols(gr)[queryHits(hits), c('comparison', 'method', 'score')]
-gr_metadata$idx <- subjectHits(hits)
-gr_metadata_agg <- aggregate(. ~ idx, gr_metadata, paste, collapse = ';')
+x <- mcols(gr)
+y <- mcols(introns)
+x[from(hits), "hits"] <- to(hits)
+x[is.na(x$hits), "hits"] <- -1
+y["hits"] <- seq_len(nrow(y))
 
-message('Matching SJ to introns')
+# all(mcols(gr)$score == xy$score)
 
-introns_with_match <- merge(
-  as.data.frame(introns),
-  gr_metadata_agg,
-  by.x = "row.names",
-  by.y = "idx",
-  no.dups = T
-)
-introns_with_match <- subset(introns_with_match, select = -Row.names )
-write_csv( introns_with_match[!duplicated(introns_with_match),], opt$output)
-
+message("Matching SJ to introns")
+xy <- plyr::join(data.frame(x), data.frame(y))
+mcols(gr) <- xy
+write_csv(as.data.frame(gr), opt$output)
