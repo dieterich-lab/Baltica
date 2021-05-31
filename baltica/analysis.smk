@@ -7,25 +7,19 @@ usage:
     snakemake -s majiq.smk --configfile config.yaml -j 10
 """
 
-try:
-    import baltica
-    baltica_installed = True
-except ImportError:
-    baltica_installed = False
-
 workdir: config.get("path", ".")
 
 name = config["samples"].keys()
 contrasts = config["contrasts"]
 
-def dir_source(script, ex):
-    return script if baltica_installed else srcdir(f"{ex} ../scripts/{script}")
+
+import sys
+import pathlib
+
+exec_path = pathlib.Path(sys.executable).parent
 
 rule all:
     input:
-        "majiq/majiq_junctions.csv",
-        "leafcutter/leafcutter_junctions.csv",
-        "junctionseq/junctionseq_junctions.csv",
         "results/SJ_annotated.csv",
         "results/SJ_annotated_assigned.csv",
         "results/SJ_annotated_assigned_simple.xlsx"
@@ -55,11 +49,7 @@ rule parse_leafcutter:
         "R/4.0.5_deb10"
     params:
         cutoff = 0.05
-    shell:
-        """
-        path=$(which parse_leafcutter_output.R)
-        $path --cutoff {params.cutoff}
-        """
+    script: str(exec_path / "parse_leafcutter_output.R")
 
 
 rule parse_junctionseq:
@@ -71,15 +61,12 @@ rule parse_junctionseq:
         "R/4.0.5_deb10"
     params:
         cutoff = 0.05
-    shell:
-        """
-        path=$(which parse_junctionseq_output.R)
-        $path --cutoff {params.cutoff}
-        """
+    script: str(exec_path / "parse_junctionseq_output.R")
+
 
 rule parse_rmats:
     input:
-        expand("rmats/{contrast}/{st}.MATS.JC.tx", 
+        expand("rmats/{contrast}/{st}.MATS.JC.txt", 
             contrast=contrasts.keys(),
             st=['A3SS', 'A5SS', 'RI', 'MXE', "SE"])
     output:
@@ -88,11 +75,9 @@ rule parse_rmats:
         "R/4.0.5_deb10"
     params:
         cutoff = 0.05
-    shell:
-        """
-        path=$(which parse_rmats_output.R)
-        $path --cutoff {params.cutoff}
-        """
+    script: str(exec_path / "parse_rmats_output.R")
+
+
 
 rule annotate:
     input:
@@ -104,11 +89,7 @@ rule annotate:
         "R/4.0.5_deb10"
     output:
         "results/SJ_annotated.csv"
-    shell:
-        """
-        path=$(which annotate_SJ.R)
-        $path --reference {params.ref}
-        """
+    script: str(exec_path / "annotate_SJ.R")
 
 
 rule assign_AS_type:
@@ -119,11 +100,7 @@ rule assign_AS_type:
         "R/4.0.5_deb10"
     output:
         "results/SJ_annotated_assigned.csv"
-    shell:
-        """
-        path=$(which assign_AS_type.R)
-        $path
-        """
+    script: str(exec_path / "assign_AS_type.R")
 
 
 rule simplify:
@@ -133,8 +110,4 @@ rule simplify:
         "R/4.0.5_deb10"
     output:
         "results/SJ_annotated_assigned_simple.xlsx"
-    shell:
-        """
-        path=$(which simplify.R)
-        $path
-        """
+    script: str(exec_path / "simplify.R")
