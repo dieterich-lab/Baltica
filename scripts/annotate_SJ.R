@@ -10,6 +10,7 @@ suppressPackageStartupMessages({
   library(rtracklayer)
   library(readr)
   library(yaml)
+  library(igraph)
 })
 
 # from https://stackoverflow.com/a/15373917/1694714
@@ -70,6 +71,7 @@ if (exists("snakemake")) {
       ),
       collapse = ","
     ),
+    reference = snakemake@params$ref,
     annotation = snakemake@input[[5]],
     output = snakemake@output[[1]]
   )
@@ -141,6 +143,8 @@ ex_tx <- filter_multi_exon(gtf)
 introns <- get_introns(ex_tx)
 
 if (!is.null(opt$reference)) {
+  message("Processing reference annotation")
+
   reference <- rtracklayer::import.gff(opt$reference)
   ref_ex_tx <- filter_multi_exon(reference)
 
@@ -193,4 +197,19 @@ y["hits"] <- seq_len(nrow(y))
 message("Matching SJ to introns")
 xy <- plyr::join(data.frame(x), data.frame(y))
 mcols(gr) <- xy
-write_csv(as.data.frame(gr), opt$output)
+
+gr <- as.data.frame(gr)
+
+for (col in c("gene_name", "transcript_name", "class_code", "exon_number")) {
+  gr[[col]] <- unlist(lapply(
+    gr[[col]], function(x) {
+      paste0(
+        unique(x),
+        collapse =  ";"
+      )
+    }
+  ))
+}
+
+
+readr::write_csv(gr, opt$output)
