@@ -34,7 +34,7 @@ def natural_sort_key(s, _nsre=re.compile("([0-9]+)")):
     return [int(text) if text.isdigit() else text.lower()
             for text in _nsre.split(s)]
 
-
+container: "docker://tbrittoborges/baltica:majiq_2_2"
 workdir: config.get("path", ".")
 name = config["samples"].keys()
 sample = config["samples"].values()
@@ -48,8 +48,6 @@ mapping = {c: [x for x in name if x[: x.index("_")] == c]
            for c in conditions}
 localrules: symlink, create_ini
 
-if 'majiq_env_prefix' in config:
-    shell.prefix(config["majiq_env_prefix"])
 
 include: "symlink.smk"
 
