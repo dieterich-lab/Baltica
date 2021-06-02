@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       method:
-        description: 'which method to pull to DockerHub'     
+        description: 'Which method to pull to DockerHub'     
         required: true
         default: 'stringtie'
       tag:
