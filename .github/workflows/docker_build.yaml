@@ -1,4 +1,4 @@
-name: build_dockerfile_majiq
+name: build_dockerfile
 
 on:
   workflow_dispatch:
