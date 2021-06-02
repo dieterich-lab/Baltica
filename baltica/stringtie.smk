@@ -37,6 +37,8 @@ strand = {
   'foward': '--rf'}
 
 workdir: config.get("path", ".")
+container: "docker://tbrittoborges/baltica:stringtie_2_1_15"
+
 cond, rep = extract_samples_replicates(config["samples"].keys())
 name = config["samples"].keys()
 raw_name = config["samples"].values()
@@ -49,8 +51,8 @@ cond = set(cond)
 
 include: "symlink.smk"
 
-if "stringtie_env_prefix" in config:
-    shell.prefix(config["stringtie_env_prefix"])
+
+
 
 rule all:
   input:
@@ -65,9 +67,11 @@ rule merge_bam:
   output: bam="stringtie/merged_bam/{group}.bam",
         bai="stringtie/merged_bam/{group}.bam.bai"
   threads: 10
+  singularity: "docker://tbrittoborges/baltica:stringtie_2_1_15"
+
   wildcard_constraints: group="|".join(cond)
   envmodules: "samtools/1.12_deb10"
-  shadow: "shallow"
+  # shadow: "shallow"
   shell: "samtools merge {output.bam} {input} --threads {threads};" \
        "samtools index {output.bam} {output.bai} "
 
@@ -82,6 +86,7 @@ rule denovo_transcriptomics:
   wildcard_constraints: group="|".join(cond)
   log: "logs/stringtie_{group}.log"
   envmodules: "stringtie"
+  container: "docker://bschiffthaler/stringtie:latest"
   shadow: "shallow"
   shell: "stringtie {input} -o {output} " \
        "-p {threads} " \

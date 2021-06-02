@@ -2,11 +2,11 @@
 # from withing Baltica directory
 
 path:
-  /beegfs/homes/tbrittoborges/sirv_test/
+  /home/tbrittoborges/sirv_test/
 
 # full path to the alignment files
 sample_path:
-  /beegfs/homes/tbrittoborges/Baltica/data/
+  /home/tbrittoborges/Baltica/data/
 
 
 samples:
