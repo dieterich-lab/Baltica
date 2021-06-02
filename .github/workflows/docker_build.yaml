@@ -29,6 +29,6 @@ jobs:
       - name: Push to Docker Hub
         uses: docker/build-push-action@v2
         with:
-          file: docker/${{ github.event.inputs.an_input }}/${{ github.event.inputs.tag }}/Dockerfile
+          file: docker/${{ github.event.inputs.method }}/${{ github.event.inputs.tag }}/Dockerfile
           push: true
           tags: tbrittoborges/${{ github.event.inputs.method }}:${{ github.event.inputs.tag }}
