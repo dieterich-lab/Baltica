@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM debian:latest
 
-ENV LANG=en_US.utf8
+ENV LANG=C
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -18,18 +18,19 @@ RUN apt-get update && \
 
 ARG STRINGTIE_VERSION=2.1.5
 
+WORKDIR /opt
 RUN git clone https://github.com/gpertea/stringtie --branch v$STRINGTIE_VERSION --single-branch && \
     cd stringtie && \
     make release && \
     cd 
 
-ARG GFFCOMPARE_VERSION=0.12.2
 
+ARG GFFCOMPARE_VERSION=0.12.2
+WORKDIR /opt
 RUN git clone https://github.com/gpertea/gffcompare --branch v$GFFCOMPARE_VERSION --single-branch && \
     cd gffcompare && \
     make release && \
     cd 
 
-ENV PATH="gffcompare/:stringtie/:${PATH}"
-
+RUN chmod -R 777 /opt
 LABEL maintainer='tbrittoborges'
