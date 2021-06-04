@@ -17,20 +17,14 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* /tmp/*
 
 ARG STRINGTIE_VERSION=2.1.5
-
-WORKDIR /opt
 RUN git clone https://github.com/gpertea/stringtie --branch v$STRINGTIE_VERSION --single-branch && \
-    cd stringtie && \
-    make release && \
-    cd 
+    cd stringtie && make release && cd 
 
 
 ARG GFFCOMPARE_VERSION=0.12.2
-WORKDIR /opt
 RUN git clone https://github.com/gpertea/gffcompare --branch v$GFFCOMPARE_VERSION --single-branch && \
-    cd gffcompare && \
-    make release && \
-    cd 
+    cd gffcompare && make release && cd
 
-RUN chmod -R 777 /opt
+RUN mv stringtie/* /usr/local/bin/ && mv /gffcompare/* /usr/local/bin/ 
+RUN rm -rf stringtie/ /gffcompare/
 LABEL maintainer='tbrittoborges'
