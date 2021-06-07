@@ -93,13 +93,19 @@ if (!all(as.logical(lapply(files, file.exists)))) {
 
 gtf <- rtracklayer::import.gff2(opt$annotation)
 .read_csv <- function(x) {
-  (readr::read_csv(x, col_types = readr::cols(chr = readr::col_character())))
+  suppressWarnings(
+    readr::read_csv(x, col_types = readr::cols(
+      chr = readr::col_character(),
+      seqnames = readr::col_character()
+    ))
+  )
 }
 majiq_idx <- grep("majiq", files)
 leafcutter_idx <- grep("leafcutter", files)
 junctionseq_idx <- grep("junctionseq", files)
 rmats_idx <- grep("rmats", files)
 
+message("Processing GRanges")
 df <- list(
   majiq = .read_csv(files[[majiq_idx]]),
   leafcutter = .read_csv(files[[leafcutter_idx]]),
