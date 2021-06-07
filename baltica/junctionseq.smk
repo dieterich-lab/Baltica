@@ -29,6 +29,7 @@ gtf_path = config["ref"]
 comp_names = config["contrasts"].keys()
 cond, rep = glob_wildcards("mappings/{cond}_{rep}.bam")
 cond = set(cond)
+container: "docker://tbrittoborges/junctionseq:1.16.0"
 
 strandness = {
     'forward': '--stranded_fr_secondstrand',
