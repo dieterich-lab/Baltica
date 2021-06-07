@@ -4,5 +4,5 @@ LABEL maintainer="Thiago Britto-Borbes <thiagobrittoborges@uni-heidelberg.de>"
 
 RUN apt-get update
 
-RUN R -e 'BiocManager::install("JunctionSeq", repos = "https://cloud.r-project.org/", dependencies = T, ask=F)' 
+RUN R -e 'BiocManager::install("JunctionSeq", dependencies = T, ask=F)' 
 

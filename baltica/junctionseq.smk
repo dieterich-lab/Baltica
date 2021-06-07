@@ -39,9 +39,6 @@ def dir_source(script, ex):
     return script if baltica_installed else srcdir(f"{ex} ../scripts/{script}")
 
 
-if "junctionseq_env_prefix" in config:
-    shell.prefix(config["junctionseq_env_prefix"])
-
 rule all:
     input:
         "logs/",
