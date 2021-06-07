@@ -33,11 +33,7 @@ rule parse_majiq:
         "R/4.0.5_deb10"
     params:
         cutoff = 0.05,
-    shell:
-        """
-        path=$(which parse_majiq_output.R)
-        $path --cutoff {params.cutoff}
-        """
+    script: str(exec_path / "parse_majiq_output.R")
 
 
 rule parse_leafcutter:
