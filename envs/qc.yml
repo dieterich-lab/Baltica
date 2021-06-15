@@ -3,8 +3,12 @@ name:
 
 channels:
   - bioconda
+  - conda-forge
 
 dependencies:
-  - rseqc
-  - multiqc
-  - fastqc
+  - "rseqc=4.0"
+  - "multiqc=1.10.1"
+  - "fastqc=0.11.8"
+  - wget
+  - ucsc-genepredtobed
+  - ucsc-gtftogenepred   

@@ -15,11 +15,9 @@ __license__ = "MIT"
 name = config["samples"].keys()
 sample = config["samples"].values()
 workdir: config.get("path", ".")
-
 include: "symlink.smk"
+container: "docker://tbrittoborges/qc:latest"
 
-if "qc_env_prefix" in config:
-    shell.prefix(config["qc_env_prefix"])
 
 rule all:
     input:
@@ -42,6 +40,7 @@ rule fastqc:
           zip="qc/fastqc/{name}_fastqc.zip"
     threads: 10
     params: prefix="qc/fastqc/"
+    conda: 'envs/qc.yml'
     envmodules: 'fastqc'
     shadow: "shallow"
     shell: "fastqc -t {threads} {input} -o {params.prefix}"
@@ -49,7 +48,7 @@ rule fastqc:
 rule ref_annotation_gtf_to_bed:
     input: config['ref']
     output: "ref.bed12"
-    conda: "envs/ucsc.yaml"
+    conda: 'envs/qc.yml'
     envmodules: "ucsc"
     shadow: "shallow"
     shell:
@@ -62,6 +61,7 @@ rule ref_annotation_gtf_to_bed:
 rule rseqc_gene_body_coverage:
     input: bed="ref.bed12"
     output: "qc/rseqc/geneBodyCoverage.curves.pdf"
+    conda: 'envs/qc.yml'
     envmodules: "rseqc"
     params: prefix="qc/rseqc/"
     shadow: "shallow"
@@ -72,6 +72,7 @@ rule rseqc_inner_distance:
          bam="mappings/{name}.bam"
     output: "qc/rseqc/{name}.inner_distance_plot.pdf"
     params: prefix="qc/rseqc/{name}"
+    conda: 'envs/qc.yml'
     envmodules: "rseqc"
     shadow: "shallow"
     shell: "inner_distance.py -i {input.bam} -o {params.prefix} -r {input.bed}"
@@ -89,6 +90,7 @@ rule rseqc_read_duplication:
     input: "mappings/{name}.bam"
     output: "qc/rseqc/{name}.DupRate_plot.pdf"
     params: prefix="qc/rseqc/{name}"
+    conda: 'envs/qc.yml'
     envmodules: "rseqc"
     shadow: "shallow"
     shell: "read_duplication.py -i {input} -o {params.prefix}"
@@ -99,6 +101,7 @@ rule rseqc_junction_annotation:
     output: "qc/rseqc/{name}.splice_junction.pdf",
           "qc/rseqc/{name}.splice_events.pdf"
     params: prefix="qc/rseqc/{name}"
+    conda: 'envs/qc.yml'
     envmodules: "rseqc"
     shadow: "shallow"
     shell: "junction_annotation.py -i {input.bam} -r {input.bed} -o {params.prefix}"
@@ -109,6 +112,7 @@ rule rseqc_junction_saturation:
     output: "qc/rseqc/{name}.junctionSaturation_plot.pdf"
     params: prefix="qc/rseqc/{name}"
     envmodules: "rseqc"
+    conda: 'envs/qc.yml'
     shadow: "shallow"
     shell: "junction_saturation.py -i {input.bam} -r {input.bed} -o {params.prefix}"
 
@@ -116,6 +120,7 @@ rule rseqc_infer_experiment:
     input: bed="ref.bed12",
          bam="mappings/{name}.bam"
     output: "qc/rseqc/{name}.infer_experiment.txt"
+    conda: 'envs/qc.yml'
     envmodules: "rseqc"
     shadow: "shallow"
     shell: "infer_experiment.py -r {input.bed} -i {input.bam} > {output}"
@@ -123,13 +128,16 @@ rule rseqc_infer_experiment:
 rule rseqc_bam_stat:
     input: "mappings/{name}.bam",
     output: "qc/rseqc/{name}.bam_stat.txt"
+    envmodules: "rseqc"
+    conda: 'envs/qc.yml'
     shadow: "shallow"
     shell: "bam_stat.py -i {input} > {output}"
 
 rule read_distribution:
     input: bam="mappings/{name}.bam",
          bed="ref.bed12"
-    envmodules: "rseqc"
+    envmodules: "rseqc"  
+    conda: 'envs/qc.yml'  
     output: "qc/rseqc/{name}.read_distribution.txt"
     shadow: "shallow"
     shell: "read_distribution.py -i {input.bam} -r {input.bed} &> {output}"
@@ -137,6 +145,7 @@ rule read_distribution:
 rule multiqc:
     input: rules.all.input[:-1]
     envmodules: "multiqc"
+    conda: 'envs/qc.yml'
     output: "qc/multiqc/multiqc_report.html"
     shadow: "shallow"
     shell: "multiqc -d --dirs-depth 1 qc/ -o qc/multiqc"

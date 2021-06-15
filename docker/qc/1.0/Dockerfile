@@ -1,28 +1,12 @@
+
 # syntax=docker/dockerfile:1
-################# BASE IMAGE ######################
-FROM python:3.6.12-buster
+FROM mambaorg/micromamba:0.13.1
 
-################## METADATA ######################
-LABEL maintainer="Thiago Britto-Borbes <thiagobrittoborges@uni-heidelberg.de>"
+COPY envs/qc.yml /opt/qc.yml
 
-################## INSTALLATION ######################
-RUN apt-get update && \
-    apt-get install -y \
-    unzip \
-    default-jdk \
-    libfindbin-libs-perl && \
-    apt-get clean && \
-    apt-get purge && \
-    rm -rf /var/lib/apt/lists/* /tmp/* 
+RUN micromamba install -y -n base -f /opt/qc.yml && \
+    micromamba clean --all --yes
 
-RUN pip install "multiqc==v1.10.1" "RSeQC==4.0.0" 
-
-ENV URL="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/"
-ENV FASTQC=fastqc_v0.11.9.zip  
-
-RUN wget ${URL}${FASTQC} && \
-    unzip ${FASTQC} && \
-    rm ${FASTQC} && \
-    chmod 755 /FastQC/fastqc
-
-ENV PATH "/FastQC:$PATH"
+ENV URL=http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/
+RUN wget ${URL}gtfToGenePred && chmod +x gtfToGenePred && mv gtfToGenePred /usr/local/bin/gtfToGenePred
+RUN wget ${URL}genePredToBed && chmod +x genePredToBed && mv genePredToBed /usr/local/bin/genePredToBed
