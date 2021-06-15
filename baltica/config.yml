@@ -51,10 +51,10 @@ read_len:
   101
 # full path to the reference transcriptome model
 ref:
-  /beegfs/homes/tbrittoborges/Baltica/data/SIRV.gtf
+  /home/tbrittoborges/Baltica/data/SIRV.gtf
 # full path to the reference sequence
 ref_fa:
-  /beegfs/homes/tbrittoborges/Baltica/data/SIRV.fa
+  /home/tbrittoborges/Baltica/data/SIRV.fa
 
 # Leafcutter-specific parameters
 leafcutter_min_samples_per_group:
@@ -79,9 +79,3 @@ majiq_minreads:
 fdr:
   0.05
 
-#qc_env_prefix: source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate qc;
-#leafcutter_env_prefix: source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate leafcutter;
-#majiq_env_prefix: source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate majiq;
-#junctionseq_env_prefix: source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate junctionseq;
-#stringtie_env_prefix: source ~/miniconda3/etc/profile.d/conda.sh; conda init; conda activate stringtie;
-#analysis_env_prefix: ""
