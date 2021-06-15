@@ -13,7 +13,7 @@ __license__ = "MIT"
 from collections import defaultdict
 import tempfile
 
-
+container: "docker://tbrittoborges/rmats:latest"
 workdir: config.get("path", ".")
 contrasts = config['contrasts']
 keys = config['samples'].keys()
@@ -58,7 +58,7 @@ rule run_rmats:
       allow_clipping = "--allow-clipping",
       tmp = os.path.join(temp_dir.name, '{alt}_vs_{ref}/')
   shell: 
-      "run_rmats "
+      "rmats.py "
       "--b1 {input[0]} "
       "--b2 {input[1]} "
       "--gtf {params.gtf} "
