@@ -34,7 +34,7 @@ def natural_sort_key(s, _nsre=re.compile("([0-9]+)")):
     return [int(text) if text.isdigit() else text.lower()
             for text in _nsre.split(s)]
 
-container: "docker://tbrittoborges/baltica:majiq_2_2"
+container: "docker://tbrittoborges/majiq:2.2"
 workdir: config.get("path", ".")
 name = config["samples"].keys()
 sample = config["samples"].values()
