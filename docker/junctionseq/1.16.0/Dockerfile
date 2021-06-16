@@ -12,8 +12,7 @@ RUN echo 'deb http://deb.debian.org/debian/ sid main' | sudo tee /etc/apt/source
 RUN wget http://hartleys.github.io/QoRTs/QoRTs.jar && \
     mv QoRTs.jar /usr/local/bin/ && \
     R -e 'install.packages("http://hartleys.github.io/QoRTs/QoRTs_LATEST.tar.gz", repos=NULL, type="source")' &&\
-    echo $'#!/bin/sh\nprefix=`dirname $(readlink $0 || echo $0)`\nexec java -Xmx16000m -XX:-UseGCOverheadLimit -jar QoRTs.jar "$@"' > /usr/local/bin/qorts
-
-RUN chmod 755 /usr/local/bin/qorts
+    echo $'#!/bin/sh\nprefix=`dirname $(readlink $0 || echo $0)`\nexec java -Xmx16000m -XX:-UseGCOverheadLimit -jar QoRTs.jar "$@"' > /usr/local/bin/qorts && \
+    chmod 755 /usr/local/bin/qorts
 
 RUN R -e 'BiocManager::install("JunctionSeq", dependencies = T, ask=F)' 
