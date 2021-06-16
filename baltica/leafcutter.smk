@@ -5,7 +5,8 @@ Snakemake workflow for LeafCutter.
 
 If you use LeafCutter, please cite:
 
-Li, Yang I., et al. "Annotation-free quantification of RNA splicing using LeafCutter." Nature genetics 50.1 (2018): 151-158.
+Li, Yang I., et al. "Annotation-free quantification of RNA splicing using LeafCutter." 
+Nature genetics 50.1 (2018): 151-158.
 
 ..Usage:
     snakemake -s leafcutter.smk --configfile config.yml
@@ -32,7 +33,7 @@ def basename(path, suffix=None):
         return str(Path(path).with_suffix(suffix).name)
     return str(Path(path).name)
 
-
+container: "docker://tbrittoborges/leafcutter:latest"
 workdir: config.get("path", ".")
 name = config["samples"].keys()
 sample = config["samples"].values()
@@ -49,9 +50,6 @@ strand = {
 localrules: all, leafcutter_concatenate, symlink
 
 include: "symlink.smk"
-
-if "leafcutter_env_prefix" in config:
-    shell.prefix(config["leafcutter_env_prefix"])
 
 rule all:
     input:
@@ -84,8 +82,8 @@ rule leafcutter_bam2junc:
         """
         regtools junctions extract \
         -a {params.minimum_anchor_length} \
-        -m {params.minimum_intron_size} \
-        -M {params.maximum_intron_size} \
+        -i {params.minimum_intron_size} \
+        -I {params.maximum_intron_size} \
         -s {params.strand_specificity} \
         {input} -o {output}
         """
