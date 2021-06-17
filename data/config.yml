@@ -2,7 +2,7 @@
 # from withing Baltica directory
 
 path:
-  /home/tbrittoborges/Baltica/sirv_test/
+  /home/tbrittoborges/sirv_test/
 
 # full path to the alignment files
 sample_path:
