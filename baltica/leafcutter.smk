@@ -18,15 +18,6 @@ __license__ = "MIT"
 
 from pathlib import Path
 
-try:
-    import baltica
-    baltica_installed = True
-except ImportError:
-    baltica_installed = False
-
-def dir_source(script, ex):
-    return script if baltica_installed else srcdir(f"{ex} ../scripts/{script}")
-
 
 def basename(path, suffix=None):
     if suffix:
@@ -75,7 +66,6 @@ rule leafcutter_bam2junc:
         # If your alignments contain XS tags,
         # these will be used in the "unstranded" mode.
         strand_specificity = strand.get(config.get('strandness', 2), 0)
-    envmodules: "regtools"
     conda: "../envs/leafcutter.yml"
     shadow: "shallow"
     shell:
@@ -101,7 +91,7 @@ rule leafcutter_concatenate:
             for n in name:
                 if n.startswith(cond_a) or n.startswith(cond_b):
                     file_out.write(
-                        str(work_path / "leafcutter/{}.junc\n".format(n)))
+                        str(work_path / "leafcutter" / n / ".junc\n")
 
         with open(output.test, 'w') as file_out:
             for n in name:
@@ -118,15 +108,14 @@ rule leafcutter_intron_clustering:
           m=config.get('leafcutter_min_cluster_reads', 50),
           l=config.get('leafcutter_max_intron_length', 500000),
           prefix="leafcutter/{comp_names}/{comp_names}",
-          n="{comp_names}",
-          script_path=dir_source("leafcutter_cluster_regtools_py3.py", "python")
+          n="{comp_names}"          
     output: "leafcutter/{comp_names}/{comp_names}_perind_numers.counts.gz"
     conda: "../envs/leafcutter.yml"
     envmodules: "python3/3.6.13_deb10"
     shadow: "shallow"
     shell:
          """
-         {params.script_path} \
+         leafcutter_cluster_regtools_py3.py \
          -j {input} -m {params.m} \
          -o {params.prefix} \
          -l {params.l} \
@@ -139,7 +128,6 @@ rule leafcutter_gtf_to_exon:
     output:
           a="leafcutter/" + basename(gtf_path, suffix=".gz"),
           b="leafcutter/exons.gtf.gz"
-    params: gtf_to_exon=dir_source("gtf_to_exons.R", "Rscript")
     conda: "../envs/leafcutter.yml"
     envmodules:
         "R/4.0.5_deb10 leafcutter/0.2.7_deb10"
@@ -147,7 +135,7 @@ rule leafcutter_gtf_to_exon:
     shell:
          """
          gzip -c {input} > {output.a}
-         {params.gtf_to_exon} {output.a} {output.b}
+         gtf_to_exons.R {output.a} {output.b}
          """
 
 rule leafcutter_differential_splicing:
@@ -160,8 +148,7 @@ rule leafcutter_differential_splicing:
           min_samples_per_group=config.get("leafcutter_min_samples_per_group", 3),
           min_samples_per_intron=config.get("leafcutter_min_samples_per_intron", 5),
           min_coverage=config.get("leafcutter_min_coverage", 20),
-          prefix="leafcutter/{comp_names}/{comp_names}",
-          leafcutter_ds_path=dir_source("leafcutter_ds_pair.R", "Rscript")
+          prefix="leafcutter/{comp_names}/{comp_names}"
     threads: 10
     conda: "../envs/leafcutter.yml"
     envmodules:
@@ -169,7 +156,7 @@ rule leafcutter_differential_splicing:
     shadow: "shallow"
     shell:
          """
-         {params.leafcutter_ds_path} --exon_file={input.a} \
+         leafcutter_ds_pair.R --exon_file={input.a} \
          --min_coverage {params.min_coverage}  \
          {input.b} {input.c} --num_threads {threads} --output_prefix={params.prefix} \
          -i {params.min_samples_per_intron} -g {params.min_samples_per_group}
