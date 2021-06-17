@@ -3,8 +3,13 @@ name:
 
 channels:
   - bioconda
+  - conda-forge
 
 dependencies:
-  - python = 2.7
-  - samtools
-  - R = 3.6
+  - "regtools=0.5.0"
+  - "samtools=1.11"
+  - "r-devtools=2.4.2"
+  - "r-base=4.1.0"
+  - "python=3.7"
+  - wget
+  - "conda-forge::r-rstan=2.21.2" 
