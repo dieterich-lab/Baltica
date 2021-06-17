@@ -8,9 +8,6 @@ If you use Majiq, please cite
 Vaquero-Garcia, Jorge, et al. "A new view of transcriptome complexity and
 regulation through the lens of local splicing variations." elife 5 (2016):
 e11752.
-
-.. usage:
-    snakemake -s majiq.smk --configfile config.yaml -j 10
 """
 __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2020, Dieterichlab"
