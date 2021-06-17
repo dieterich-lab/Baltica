@@ -2,8 +2,12 @@
 """
 Created on 17:07 27/07/2018
 Snakemake workflow for rMATS
-TODO citation
-TODO notes 
+
+If you use Majiq, please cite
+
+Shen, Shihao, et al. "rMATS: robust and flexible detection of differential 
+alternative splicing from replicate RNA-Seq data." Proceedings of the 
+National Academy of Sciences 111.51 (2014): E5593-E5601.
 """
 __author__ = "Thiago Britto Borges"
 __copyright__ = "Copyright 2020, Dieterichlab"
@@ -45,9 +49,11 @@ rule all:
         expand("rmats/{contrast}/", contrast=contrasts),
 
 
-rule create_rmats_input:
+rule rmats_create_input:
     input:
         lambda wc: expand("mappings/{{group}}_{rep}.bam", rep=d.get(wc.group)),
+    log:
+        "logs/rmats/create_input_{group}.log",
     output:
         "rmats/{group}.txt",
     run:
@@ -55,14 +61,16 @@ rule create_rmats_input:
             fou.write(",".join(input))
 
 
-rule run_rmats:
+rule rmats_run:
     input:
-        "rmats/{alt}.txt",
-        "rmats/{ref}.txt",
+        alt="rmats/{alt}.txt",
+        ref="rmats/{ref}.txt",
     output:
         directory("rmats/{alt}-vs-{ref}/"),
     shadow:
         "shallow"
+    log:
+        "logs/rmats/run_{alt}-vs-{ref}.log",
     threads: 10
     envmodules:
         "rmats-turbo/4.1.1",
@@ -75,8 +83,8 @@ rule run_rmats:
         tmp=os.path.join(temp_dir.name, "{alt}_vs_{ref}/"),
     shell:
         "rmats.py "
-        "--b1 {input[0]} "
-        "--b2 {input[1]} "
+        "--b1 {input.alt} "
+        "--b2 {input.ref} "
         "--gtf {params.gtf} "
         "--variable-read-length "
         "--readLength {params.read_len} "
