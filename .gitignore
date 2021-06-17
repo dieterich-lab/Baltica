@@ -77,3 +77,5 @@ src/
 src/*
 .Rproj.user
 Baltica.Rproj
+.Rhistory
+*.pdf
