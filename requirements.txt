@@ -1,2 +1,3 @@
 PyYAML
 snakemake >= 5.11
+ttp

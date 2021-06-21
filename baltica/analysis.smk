@@ -7,10 +7,15 @@ usage:
     snakemake -s majiq.smk --configfile config.yaml -j 10
 """
 
+
 workdir: config.get("path", ".")
+
 
 name = config["samples"].keys()
 contrasts = config["contrasts"]
+script_path="homes/tbrittoborges/Baltica/scripts/"
+
+container: "docker://tbrittoborges/baltica:latest"
 
 
 import sys
@@ -22,88 +27,132 @@ rule all:
     input:
         "results/SJ_annotated.csv",
         "results/SJ_annotated_assigned.csv",
-        "results/SJ_annotated_assigned_simple.xlsx"
-        
+        "results/SJ_annotated_assigned_simple.xlsx",
+        "result/gffcompare_stats.json",
+
+
 rule parse_majiq:
     input:
-        expand("majiq/voila/{contrast}_voila.tsv", contrast=config["contrasts"].keys())
+        expand("majiq/voila/{contrast}_voila.tsv", contrast=config["contrasts"].keys()),
     output:
-        "majiq/majiq_junctions.csv"
+        "majiq/majiq_junctions.csv",
     envmodules:
-        "R/4.0.5_deb10"
+        "R/4.0.5_deb10",
+    log:
+        "logs/parse_majiq.log",
     params:
-        cutoff = 0.05,
-    script: str(exec_path / "parse_majiq_output.R")
+        cutoff=1,
+    script:
+        "file:" + str( exec_path/ "parse_majiq_output.R")
 
 
 rule parse_leafcutter:
     input:
-        expand("leafcutter/{contrast}/{contrast}_cluster_significance.txt", contrast=contrasts.keys())
+        expand(
+            "leafcutter/{contrast}/{contrast}_cluster_significance.txt",
+            contrast=contrasts.keys(),
+        ),
     output:
-        "leafcutter/leafcutter_junctions.csv"
+        "leafcutter/leafcutter_junctions.csv",
     envmodules:
-        "R/4.0.5_deb10"
+        "R/4.0.5_deb10",
+    log:
+        "logs/parse_leafcutter.log",
     params:
-        cutoff = 0.05
-    script: str(exec_path / "parse_leafcutter_output.R")
+        cutoff=1,
+    script:
+        "/home/tbrittoborges/Baltica/scripts/parse_leafcutter_output.R"
 
 
 rule parse_junctionseq:
     input:
-        expand("junctionseq/analysis/{contrast}_sigGenes.results.txt.gz", contrast=contrasts.keys())
+        expand(
+            "junctionseq/analysis/{contrast}_sigGenes.results.txt.gz",
+            contrast=contrasts.keys(),
+        ),
     output:
-        "junctionseq/junctionseq_junctions.csv"
+        "junctionseq/junctionseq_junctions.csv",
     envmodules:
-        "R/4.0.5_deb10"
+        "R/4.0.5_deb10",
+    log:
+        "logs/parse_junctionseq.log",
     params:
-        cutoff = 0.05
-    script: str(exec_path / "parse_junctionseq_output.R")
+        cutoff=1,
+    script:
+        "/home/tbrittoborges/Baltica/scripts/parse_junctionseq_output.R"
 
 
 rule parse_rmats:
     input:
-        expand("rmats/{contrast}/{st}.MATS.JC.txt", 
+        expand(
+            "rmats/{contrast}/{st}.MATS.JC.txt",
             contrast=contrasts.keys(),
-            st=['A3SS', 'A5SS', 'RI', 'MXE', "SE"])
+            st=["A3SS", "A5SS", "RI", "MXE", "SE"],
+        ),
     output:
-        "rmats/rmats_junctions.csv"
+        "rmats/rmats_junctions.csv",
     envmodules:
-        "R/4.0.5_deb10"
+        "R/4.0.5_deb10",
+    log:
+        "logs/parse_rmats.log",
     params:
-        cutoff = 0.05
-    script: str(exec_path / "parse_rmats_output.R")
-
+        cutoff=1,
+    script:
+        "/home/tbrittoborges/Baltica/scripts/parse_rmats_output.R"
 
 
 rule annotate:
     input:
-        expand("{method}/{method}_junctions.csv", method=['majiq', 'leafcutter', 'junctionseq', 'rmats']),
-        ref="stringtie/merged/merged.combined.gtf"
+        expand(
+            "{method}/{method}_junctions.csv",
+            method=["majiq", "leafcutter", "junctionseq", "rmats"],
+        ),
+        ref="stringtie/merged/merged.combined.gtf",
     params:
-        ref=config.get("ref")
+        ref=config.get("ref"),
     envmodules:
-        "R/4.0.5_deb10"
+        "R/4.0.5_deb10",
+    log:
+        "logs/baltica_annotate.log",
     output:
-        "results/SJ_annotated.csv"
-    script: str(exec_path / "annotate_SJ.R")
+        "results/SJ_annotated.csv",
+    script:
+        "annotate_SJ.R"
 
 
 rule assign_AS_type:
     input:
         "results/SJ_annotated.csv",
-        ref="stringtie/merged/merged.combined.gtf"
+        ref="stringtie/merged/merged.combined.gtf",
     envmodules:
-        "R/4.0.5_deb10"
+        "R/4.0.5_deb10",
     output:
-        "results/SJ_annotated_assigned.csv"
-    script: str(exec_path / "assign_AS_type.R")
+        "results/SJ_annotated_assigned.csv",
+    log:
+        "logs/assign_AS_type.log",
+    script:
+        "assign_AS_type.R"
 
 
 rule simplify:
     input:
         "results/SJ_annotated_assigned.csv",
     envmodules:
-        "R/4.0.5_deb10"
+        "R/4.0.5_deb10",
     output:
-        "results/SJ_annotated_assigned_simple.xlsx"
-    script: str(exec_path / "simplify.R")
+        "results/SJ_annotated_assigned_simple.xlsx",
+    log:
+        "logs/simplify.log",
+    script:
+        "simplify.R"
+
+
+rule parse_gffcompare:
+    input:
+        "stringtie/merged/merged.stats",
+    output:
+        "result/gffcompare_stats.json",
+    log:
+        "logs/parse_ggfcompare.log",
+    script:
+        "parse_gffcompares_stats.py"
