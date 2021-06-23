@@ -23,9 +23,9 @@ baltica_path = Path(__file__)
 class CustomFormatter(logging.Formatter):
     """Logging Formatter to add colors and count warning / errors"""
 
-    grey = "\x1b[38;21m"
-    yellow = "\x1b[33;21m"
+    grey = "\x1b[38;21m"    
     green = "\x1b[32;21m"
+    yellow = "\x1b[33;21m"
     red = "\x1b[31;21m"
     bold_red = "\x1b[31;1m"
     reset = "\x1b[0m"
@@ -60,15 +60,15 @@ logger.addHandler(ch)
 # unknown options are passed to snakemake
 @click.command(context_settings=dict(ignore_unknown_options=True))
 @click.argument("workflow", type=click.Choice(avaiable_workflows_, case_sensitive=False), default='baltica')
-@click.argument("config",  type=click.Path(exists=True))
+@click.argument("config_file",  type=click.Path(exists=True))
 @click.option('-v', '--verbose', is_flag=True, help='Enables verbose mode.')  
 @click.argument('snakemake_args', nargs=-1, type=click.UNPROCESSED) 
-def baltica(workflow, config, verbose, snakemake_args):
+def baltica(workflow, config_file, verbose, snakemake_args):
     f"""{_program} {__version__}implements workflows for differential junction
      usage methods, and method integration and analysis. Visit
       https://github.com/dieterich-lab/Baltica for more information. 
       
-      Runs baltica WORKFLOW with CONFIG and SNAKEMAKE_ARGS"""
+      Runs baltica WORKFLOW with CONFIG_FILE and SNAKEMAKE_ARGS"""
     # TODO add link to baltica docs with important snakemake parameters
     if verbose:
         logger.setLevel(logging.DEBUG)
@@ -87,36 +87,59 @@ def baltica(workflow, config, verbose, snakemake_args):
     # check if workflow file is readable
     snakefile = (baltica_path.parent / workflow).with_suffix(".smk")
 
-    with open(config) as fin:
-        workflow_info = yaml.safe_load(fin)
+    with open(config_file) as fin:
+        config = yaml.safe_load(fin)
 
-    target = workflow_info["path"]
+    target = config["path"]
     
     try:
         os.makedirs(Path(target) / 'logs/')
     except FileExistsError:
         pass
 
-    snakemake_args = list(snakemake_args)    
+    snakemake_args = list(snakemake_args)
+    print(snakemake_args)
     if verbose:
         snakemake_args.extend(['--printshellcmds', '--verbose', '--reason'])
+    
     if not any([x in snakemake_args for x in ['--cores', '-c', '--job', '-j']]):
         snakemake_args.append('-j1')
+
+    # here we set bindings three directories needed by singularity
+    # the target path, where the output is written to
+    # the sample path, which contains the input data
+    # the baltica directory, which contains the analysis scripts
+    if '--use-singularity' in snakemake_args and "--singularity-args" not in snakemake_args:
+        relative_path = os.path.relpath(Path.home(), baltica_path)
+        relative_path = Path(relative_path).resolve()
+        home_baltica_path = Path.home() / '/'.join(baltica_path.parts[len(relative_path.parts):])
+        snakemake_args.extend(['--singularity-args', f'-B {config["path"]},{config["sample_path"]},{home_baltica_path}'])
+    
+    tmpdir = os.environ['TMPDIR']
+    if '--use-singularity' and tmpdir != '/tmp':
+        logger.warn("""Current TMPDIR is {tmpdir}, make sure it is writtable 
+        by singularity by using --singularity-args or setting TMPDIR to /tmp""")
+
+    # Singularity support 
+    try:
+        _ = subprocess.run(['singularity', '--version'], stdout=subprocess.DEVNULL)
+    except FileNotFoundError as e:
+        if '--use-singularity' in snakemake_args:
+            logger.critical("Baltica requires singularity, which was not found", exc_info=True)
+            sys.exit(1)
     
     logger.info(
         f"""Starting baltica (v{__version__}) analysis with:
     WORKFLOW: {workflow} (from {snakefile})
-    CONFIGURATION: {config}
+    CONFIGURATION: {config_file}
     TARGET DIRECTORY: {target}   
-    SNAKEMAKE ARGUMENTS: {''.join(snakemake_args)}
+    SNAKEMAKE ARGUMENTS: {' '.join(snakemake_args)}
     """)
-
     cmd = [
         'snakemake',
-        '--configfile', config,
+        '--configfile', config_file,
         '--snakefile', str(snakefile),
         *snakemake_args]
-
     logger.debug('Start of snakemake logger:')
     result = subprocess.run(cmd)
     return result.check_returncode
