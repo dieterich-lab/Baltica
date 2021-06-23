@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-import os
 import pathlib
-import sys
 from setuptools.command.install import install
 from setuptools import setup
 
@@ -16,10 +14,10 @@ README = (HERE / "README.md").read_text()
 
 # use a custom install https://blog.niteo.co/setuptools-run-custom-code-in-setup-py/
 class CustomInstallCommand(install):
-    """Customized setuptools install command - prints a friendly greeting."""
+    """"""
+
     def run(self):
         install.run(self)
-
 
 
 setup(name=_program,
@@ -39,25 +37,19 @@ setup(name=_program,
           "Intended Audience :: Science/Research"],
       entry_points="""
       [console_scripts]
-      {program} = baltica.command:main
+      {program} = baltica.command:cli
       """.format(program=_program),
       install_requires=required,
       include_package_data=True,
       scripts=[
-          "scripts/annotate_SJ.R",
-          "scripts/gtf2gff3.pl",
-          "scripts/gtf_to_exons.R",
-          "scripts/junctionSeq.R",
-          "scripts/leafcutter_cluster_regtools_py3.py",
-          "scripts/leafcutter_ds_pair.R",
-          "scripts/parse_junctionseq_output.R",
-          "scripts/parse_leafcutter_output.R",
-          "scripts/parse_majiq_output.R",
-          "scripts/utils.R",
-          "scripts/assign_AS_type.R",
-          "scripts/simplify.R",
-          "scripts/parse_rmats_output.R" 
-          ],
+          "baltica/annotate_SJ.R",
+          "baltica/parse_junctionseq_output.R",
+          "baltica/parse_leafcutter_output.R",
+          "baltica/parse_majiq_output.R",
+          "baltica/assign_AS_type.R",
+          "baltica/simplify.R",
+          "baltica/parse_rmats_output.R"
+      ],
       keywords=['differential splicing', 'bioinformatics', 'rna-seq'],
       zip_safe=False,
       project_urls={
