@@ -42,7 +42,6 @@ if (exists("snakemake")) {
 } else {
   opt <- parse_args(OptionParser(option_list = option_list))
   files <- Sys.glob(opt$input)
-  source("~/Baltica/scripts/utils.R")
 }
 
 #' Process for alternative splice site rMATs output files
@@ -67,7 +66,6 @@ process_RMATS_ass <- function(df, start = "flankingES", end = "shortES", type, F
   mcols(df)["type"] <- type
 
   suppressWarnings(try(seqlevelsStyle(df) <- "Ensembl"))
-
 
   df
 }
