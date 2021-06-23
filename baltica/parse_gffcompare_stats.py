@@ -3,15 +3,23 @@ import sys
 import json
 from ttp import ttp
 
-if 'snakemake' in globals():
-    input = snakemake.input
-    output = snakemake.output
-else:
-    input = sys.argv[1]
-    output = sys.argv[2]
 
+try:
+    if 'snakemake' in globals():
+        input_ = snakemake.input[0]
+        output = snakemake.output[0]
+    else:
+        input_ = sys.argv[1]
+        output = sys.argv[2]
 
-template = """
+    with open(input_) as fin:
+        data = fin.read()
+except (TypeError, IndexError):
+    print(
+        f'Please use the script as: \n    {sys.argv[0]} input_ output \n or use it within snakemake')
+    sys.exit(1)
+
+template="""
 <group name="{{ file_name }}">
 
 <group name="header">
@@ -38,22 +46,12 @@ template = """
 {{ ignore("\s+") }}Novel {{level}}:{{ ignore("\s+") }}{{ num }}/{{ den }}\t({{ ignore("\s+") }}{{ perc }}%)
 </group>
 
-
 </group>
 """
 
-try:
-    with open(input) as fin:
-        data = fin.read()
-except TypeError:
-    print(
-        f'Please the script as: \n    {sys.argv[0]} input output \n or use within snakemake')
-    sys.exit(1)
-
-
 parser = ttp(data=data, template=template)
 parser.parse()
-res = parser.result(structure="json")
+res = parser.result(format="json")
 
 with open(output, 'w') as out_file:
     json.dump(res, out_file)
