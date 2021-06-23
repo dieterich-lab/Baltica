@@ -34,19 +34,6 @@ option_list <- list(
   )
 )
 
-# from https://stackoverflow.com/a/15373917/1694714
-thisFile <- function() {
-  cmdArgs <- commandArgs(trailingOnly = FALSE)
-  needle <- "--file="
-  match <- grep(needle, cmdArgs)
-  if (length(match) > 0) {
-    # Rscript
-    return(normalizePath(sub(needle, "", cmdArgs[match])))
-  } else {
-    # 'source'd via R console
-    return(normalizePath(sys.frames()[[1]]$ofile))
-  }
-}
 
 if (exists("snakemake")) {
   opt <- list(
@@ -54,10 +41,8 @@ if (exists("snakemake")) {
     annotation = snakemake@input[[2]],
     output = snakemake@output[[1]]
   )
-  snakemake@source("utils.R")
 } else {
   opt <- parse_args(OptionParser(option_list = option_list))
-  source(file.path(dirname(thisFile()), "utils.R"))
 }
 
 
@@ -125,7 +110,7 @@ if (!file.exists(opt$input)) {
 gtf <- rtracklayer::import.gff2(opt$annotation)
 df <- read.csv(opt$input)
 
-message("Assigning AS, AFE and ALE type")
+message("Assigning AS type")
 gr <- GRanges(df)
 exons <- subset(gtf, type == "exon")
 hits <- as.data.frame(findOverlaps(gr, exons))
