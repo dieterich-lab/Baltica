@@ -21,15 +21,13 @@ container: "docker://tbrittoborges/baltica:latest"
 import sys
 import pathlib
 
-exec_path = pathlib.Path(sys.executable).parent
 
 rule all:
     input:
         "results/SJ_annotated.csv",
         "results/SJ_annotated_assigned.csv",
         "results/SJ_annotated_assigned_simple.xlsx",
-        "result/gffcompare_stats.json",
-
+        "results/gffcompare_stats.json",
 
 rule parse_majiq:
     input:
@@ -43,7 +41,7 @@ rule parse_majiq:
     params:
         cutoff=1,
     script:
-        "file:" + str( exec_path/ "parse_majiq_output.R")
+        "parse_majiq_output.R"
 
 
 rule parse_leafcutter:
@@ -61,7 +59,7 @@ rule parse_leafcutter:
     params:
         cutoff=1,
     script:
-        "/home/tbrittoborges/Baltica/scripts/parse_leafcutter_output.R"
+        "parse_leafcutter_output.R"
 
 
 rule parse_junctionseq:
@@ -79,7 +77,7 @@ rule parse_junctionseq:
     params:
         cutoff=1,
     script:
-        "/home/tbrittoborges/Baltica/scripts/parse_junctionseq_output.R"
+        "parse_junctionseq_output.R"
 
 
 rule parse_rmats:
@@ -96,9 +94,11 @@ rule parse_rmats:
     log:
         "logs/parse_rmats.log",
     params:
-        cutoff=1,
+        cutoff=1,   
+    log: 
+        "logs/parse_rmats.log",
     script:
-        "/home/tbrittoborges/Baltica/scripts/parse_rmats_output.R"
+        "parse_rmats_output.R"
 
 
 rule annotate:
@@ -151,8 +151,8 @@ rule parse_gffcompare:
     input:
         "stringtie/merged/merged.stats",
     output:
-        "result/gffcompare_stats.json",
+        "results/gffcompare_stats.json",
     log:
         "logs/parse_ggfcompare.log",
     script:
-        "parse_gffcompares_stats.py"
+        "parse_gffcompare_stats.py"
