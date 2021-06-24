@@ -14,13 +14,6 @@ __license__ = "MIT"
 
 from itertools import groupby, chain
 
-try:
-    import baltica
-
-    baltica_installed = True
-except ImportError:
-    baltica_installed = False
-
 
 workdir: config.get("path", ".")
 
@@ -37,10 +30,6 @@ container: "docker://tbrittoborges/junctionseq:1.16.0"
 
 
 strandness = {"forward": "--stranded_fr_secondstrand", "reverse": "--stranded"}
-
-
-def dir_source(script, ex):
-    return script if baltica_installed else srcdir(f"{ex} ../scripts/{script}")
 
 
 rule all:
@@ -154,11 +143,9 @@ rule junctioseq_analysis:
     log:
         "logs/junctioseq_analysis/{comparison}.log",
     threads: 10
-    params:
-        script=dir_source("junctionSeq.R", "Rscript"),
     envmodules:
         "R/3.6.3_deb10 junctionseq/1.16.0_deb10",
     shadow:
         "shallow"
     shell:
-        "{params.script} {input.decoder} {output} {threads} 2> {log}"
+        "junctionSeq.R {input.decoder} {output} {threads} 2> {log}"
