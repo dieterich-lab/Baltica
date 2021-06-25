@@ -7,11 +7,105 @@
 suppressPackageStartupMessages({
   library(optparse)
   library(GenomicRanges)
+  library(GenomicFeatures)
   library(rtracklayer)
   library(readr)
   library(yaml)
   library(igraph)
+  library(tidyverse)
 })
+
+#' Compute and filter hits based on the difference in the genomic start and end
+#'
+#' @param query first set of range
+#' @param subject second set of ranges
+#' @param max_start max_end absolute max difference at the start and
+#' end coordinates,
+#' respectively
+#' @return overlapping ranges given the contrain
+#' @export
+filter_hits_by_diff <- function(query, subject, max_start = 2, max_end = 2) {
+  stopifnot(is(query, "GRanges"))
+  stopifnot(is(subject, "GRanges"))
+  hits <- findOverlaps(query, subject)
+  query <- query[queryHits(hits)]
+  subject <- subject[subjectHits(hits)]
+  start_dif <- abs(start(query) - start(subject))
+  end_dif <- abs(end(query) - end(subject))
+  hits <- hits[start_dif <= max_start & end_dif <= max_end]
+  hits
+}
+
+#' Creates exon by transcript list (ex_by_tx) and remove items with a single exon
+#'
+#' @param gtf GRange file loaded with rtracklayer::import
+#' @return  a list of exon by transcripts, excluding single exon trascripts
+#' @export
+filter_multi_exon <- function(gtf) {
+  stopifnot(is(gtf, "GRanges"))
+
+  ex <- subset(gtf, type == "exon")
+  stopifnot(length(ex) > 0)
+
+  # discard single exons transcripts
+  multi_ex <- table(ex$transcript_id) > 1
+  ex <- subset(ex, mcols(ex)$transcript_id %in% names(multi_ex[multi_ex]))
+  ex_tx <- split(ex, ex$transcript_id)
+  ex_tx
+}
+
+#' Compute a set of introns from GTF files
+#'
+#' @param gtf_path path to to the gtf file
+#' @param read_gtf function to read the gtf_file
+#' @return a GRange that obj with the introns named by their parent trancripts
+#' @export
+get_introns <- function(ex_tx) {
+  stopifnot(is(ex_tx, "List"))
+
+  introns <- psetdiff(unlist(range(ex_tx), use.names = FALSE), ex_tx)
+  introns <- unlist(introns)
+  introns
+}
+
+#' Collapse `gr` by merging identical ranges and their annotations
+#' @param gr GRange with annotation
+#' @return a GRange with equal range and their annotation merged
+#' @export
+aggregate_annotation <- function(gr) {
+  stopifnot(is(gr, "GRanges"))
+
+  equal_hits <- findOverlaps(gr, type = "equal")
+  equal_hits <- as.data.frame(equal_hits)
+  equal_hits <- igraph::graph_from_data_frame(equal_hits)
+  equal_hits_groups <- stack(igraph::groups(igraph::clusters(equal_hits)))
+
+
+  gr_ <- as.data.frame(mcols(gr))
+  gr_$coordinates <- as.character(gr)
+  gr_[as.numeric(equal_hits_groups$values), "group"] <- equal_hits_groups$ind
+  gr_ <- aggregate(. ~ group, gr_, unique)
+  gr <- GenomicRanges::GRanges(gr_$coordinates)
+  mcols(gr) <- gr_
+  gr
+}
+
+#' Fetch exons pairs for an intron
+#'
+#' @param introns_by_transcript list of introns by transcript
+#' @return a data.frame with acceptor and donor exon number for an intron
+#' @export
+get_exon_number <- function(ex_tx) {
+  stopifnot(is(ex_tx, "List"))
+
+  exon_n_by_transcript <- lapply(ex_tx, function(x) embed(x$exon_number, 2))
+  exon_number <- tidyr::unnest(
+    tibble::enframe(exon_n_by_transcript),
+    cols = "value"
+  )
+
+  exon_number
+}
 
 
 option_list <- list(
@@ -68,8 +162,6 @@ if (exists("snakemake")) {
 
 files <- strsplit(opt$input, ",")[[1]]
 
-message("Loading input")
-
 if (!all(as.logical(lapply(files, file.exists)))) {
   stop("Input file not found.", call. = FALSE)
 } else if (!file.exists(opt$annotation)) {
@@ -90,7 +182,7 @@ leafcutter_idx <- grep("leafcutter", files)
 junctionseq_idx <- grep("junctionseq", files)
 rmats_idx <- grep("rmats", files)
 
-message("Processing GRanges")
+message("Processing DJU method output")
 df <- list(
   majiq = .read_csv(files[[majiq_idx]]),
   leafcutter = .read_csv(files[[leafcutter_idx]]),
@@ -112,6 +204,7 @@ mcols(gr)$method <- c(
   df$junctionseq$method,
   df$rmats$method
 )
+gr$method <- tolower(gr$method)
 mcols(gr)$comparison <- c(
   df$majiq$comparison,
   df$leafcutter$comparison,
@@ -119,49 +212,16 @@ mcols(gr)$comparison <- c(
   df$rmats$comparison
 )
 mcols(gr)$score <- c(
-  df$majiq$probability_non_changing,
-  df$leafcutter$p.adjust,
-  df$junctionseq$padjust,
-  df$rmats$FDR
+  1 - df$majiq$probability_non_changing,
+  1 - df$leafcutter$p.adjust,
+  1 - df$junctionseq$padjust,
+  1 - df$rmats$FDR
 )
 
-message("Processing annotation")
+message("Processing de novo annotation")
 tx <- subset(gtf, type == "transcript")
 tx <- subsetByOverlaps(tx, gr)
 gtf <- gtf[gtf$transcript_id %in% unique(tx$transcript_id)]
-
-#' Creates exon by transcript list (ex_by_tx) and remove items with a single exon
-#'
-#' @param gtf GRange file loaded with rtracklayer::import
-#' @return  a list of exon by transcripts, excluding single exon trascripts
-#' @export
-
-filter_multi_exon <- function(gtf) {
-  stopifnot(is(gtf, "GRanges"))
-
-  ex <- subset(gtf, type == "exon")
-  stopifnot(length(ex) > 0)
-
-  # discard single exons transcripts
-  multi_ex <- table(ex$transcript_id) > 1
-  ex <- subset(ex, mcols(ex)$transcript_id %in% names(multi_ex[multi_ex]))
-  ex_tx <- split(ex, ex$transcript_id)
-  ex_tx
-}
-
-#' Compute a set of introns from GTF files
-#'
-#' @param gtf_path path to to the gtf file
-#' @param read_gtf function to read the gtf_file
-#' @return a GRange that obj with the introns named by their parent trancripts
-#' @export
-get_introns <- function(ex_tx) {
-  stopifnot(is(ex_tx, "List"))
-
-  introns <- psetdiff(unlist(range(ex_tx), use.names = FALSE), ex_tx)
-  introns <- unlist(introns)
-  introns
-}
 
 ex_tx <- filter_multi_exon(gtf)
 introns <- get_introns(ex_tx)
@@ -175,22 +235,7 @@ if (!is.null(opt$reference)) {
   ref_introns <- get_introns(ref_ex_tx)
   introns$is_novel <- !(introns %in% ref_introns)
 }
-
-#' Fetch exons pairs for an intron
-#'
-#' @param introns_by_transcript list of introns by transcript
-#' @return a data.frame with acceptor and donor exon number for an intron
-#' @export
-get_exon_number <- function(ex_tx) {
-  stopifnot(is(ex_tx, "List"))
-
-  exon_n_by_transcript <- lapply(ex_tx, function(x) embed(x$exon_number, 2))
-  exon_number <- tidyr::unnest(tibble::enframe(exon_n_by_transcript), cols = "value")
-
-  exon_number
-}
-
-message("Annotating set of introns")
+message("preparing annotation")
 exon_number <- get_exon_number(ex_tx)
 txid_to_gene <- setNames(tx$gene_name, nm = tx$transcript_id)
 txid_to_tx_name <- setNames(tx$cmp_ref, nm = tx$transcript_id)
@@ -201,73 +246,76 @@ mcols(introns)$transcript_name <- txid_to_tx_name[names(introns)]
 mcols(introns)$class_code <- txid_to_classcode[names(introns)]
 mcols(introns)$exon_number <- exon_number$value
 introns$exon_number <- apply(introns$exon_number, 1, paste, collapse = "-")
-names(introns) <- NULL
-
-aggregate_annotation <- function(gr) {
-  stopifnot(is(gr, "GRanges"))
-
-  equal_hits <- findOverlaps(gr, type = "equal")
-  equal_hits <- as.data.frame(equal_hits)
-  equal_hits <- igraph::graph_from_data_frame(equal_hits)
-  equal_hits_groups <- stack(igraph::groups(igraph::clusters(equal_hits)))
-
-  gr_ <- as.data.frame(mcols(gr))
-  gr_$coordinates <- as.character(gr)
-  gr_[as.numeric(equal_hits_groups$values), "group"] <- equal_hits_groups$ind
-  gr_ <- aggregate(. ~ group, gr_, unique)
-  gr <- GenomicRanges::GRanges(gr_$coordinates)
-  mcols(gr) <- gr_
-  gr
-}
 
 introns <- aggregate_annotation(introns)
-#' Compute and filter hits based on the difference in the genomic start and end
-#'
-#' @param query first set of range
-#' @param subject second set of ranges
-#' @param max_start max_end absolute max difference at the start and end coordinates, respectively
-#' @return overlapping ranges given the contrain
-#' @export
+introns$group <- NULL
+introns_metadata <- mcols(introns)
+introns_metadata <- introns_metadata %>%
+  as_tibble() %>%
+  rownames_to_column("metadata_group")
 
-filter_hits_by_diff <- function(query, subject, max_start = 2, max_end = 2) {
-  stopifnot(is(query, "GRanges"))
-  stopifnot(is(subject, "GRanges"))
-  hits <- findOverlaps(query, subject)
-  query <- query[queryHits(hits)]
-  subject <- subject[subjectHits(hits)]
-  start_dif <- abs(start(query) - start(subject))
-  end_dif <- abs(end(query) - end(subject))
-  hits <- hits[start_dif <= max_start & end_dif <= max_end]
-  hits
-}
+mcols(introns) <- NULL
+names(introns) <- NULL
+mcols(introns)$metadata_group <- seq_along(introns)
 
+gr <- c(gr, introns)
 
-hits <- filter_hits_by_diff(gr, introns, max_start = 2, max_end = 2)
+message("Integration introns")
 
-x <- mcols(gr)
-y <- mcols(introns)
-x[from(hits), "hits"] <- to(hits)
-x[is.na(x$hits), "hits"] <- -1
-y["hits"] <- seq_len(nrow(y))
+hits <- findOverlaps(gr, drop.redundant = T)
+query <- gr[queryHits(hits)]
+subject <- gr[subjectHits(hits)]
+start_dif <- abs(start(query) - start(subject))
+end_dif <- abs(end(query) - end(subject))
+max_start <- 2
+max_end <- 2
+hits <- hits[start_dif <= max_start & end_dif <= max_end]
 
-# all(mcols(gr)$score == xy$score)
+df_base <- as_tibble(mcols(gr)[to(hits), ])
+df_base$group <- from(hits)
 
-message("Matching SJ to introns")
-xy <- plyr::join(data.frame(x), data.frame(y))
-mcols(gr) <- xy
+df <- df_base %>%
+  group_by(
+    group
+  ) %>%
+  fill(
+    metadata_group,
+    .direction = "up"
+  ) %>%
+  drop_na(method) %>%
+  pivot_wider(
+    id_cols = c(group, metadata_group),
+    names_from = c(method, comparison),
+    values_from = c(score),
+    # if there is more than one intron entry for
+    # the same comparison and method
+    # use the highest scoring one
+    # this happens for methods that test for multiple
+    # AS types
+    values_fn = c(score = max)
+  )
 
-gr <- as.data.frame(gr)
+message("Integrating annotation")
+index <- split(gr[to(hits), ], from(hits))
+group_to_annotation <- mcols(stack(index, "group"))
+group_to_annotation <- group_to_annotation[c("group", "metadata_group")]
+group_to_annotation <- group_to_annotation[
+  !is.na(group_to_annotation$metadata_group),
+]
 
-for (col in c("gene_name", "transcript_name", "class_code", "exon_number")) {
-  gr[[col]] <- unlist(lapply(
-    gr[[col]], function(x) {
-      paste0(
-        unique(x),
-        collapse =  ";"
-      )
-    }
-  ))
-}
+index_regions <- stack(range(range(index)), "group")
+index_regions$coord <- as.character(index_regions)
+index_regions <- mcols(index_regions)
 
+df <- plyr::join(df, as_tibble(group_to_annotation), match = "first")
+df <- plyr::join(df, introns_metadata, match = "first")
+df <- plyr::join(df, as_tibble(index_regions), match = "first")
+df <- df %>%
+  mutate(coordinates = coalesce(coord)) %>%
+  select(-coord, -group, -metadata_group) %>%
+  mutate_if(
+    is.list,
+    list(~ map_chr(., . %>% str_c(collapse = ";")))
+  )
 
-readr::write_csv(gr, opt$output)
+readr::write_csv(df, opt$output)
