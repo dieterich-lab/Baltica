@@ -11,7 +11,7 @@ with open('requirements.txt') as f:
 HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 
-
+test_required = ['pytest', 'pyfakefs']
 # use a custom install https://blog.niteo.co/setuptools-run-custom-code-in-setup-py/
 class CustomInstallCommand(install):
     """"""
@@ -40,6 +40,7 @@ setup(name=_program,
       {program} = baltica.command:cli
       """.format(program=_program),
       install_requires=required,
+      test_requires=test_required,
       include_package_data=True,
       scripts=[
           "baltica/annotate_SJ.R",
