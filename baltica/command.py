@@ -122,10 +122,8 @@ def cli(workflow, config_file, verbose, snakemake_args):
     # the sample path, which contains the input data
     # the baltica directory, which contains the analysis scripts
     if '--use-singularity' in snakemake_args and "--singularity-args" not in snakemake_args:
-        relative_path = os.path.relpath(Path.home(), baltica_path)
-        relative_path = Path(relative_path).resolve()
-        home_baltica_path = Path.home() / '/'.join(baltica_path.parts[len(relative_path.parts):])
-        snakemake_args.extend(['--singularity-args', f'-B {config["path"]},{config["sample_path"]},{home_baltica_path}'])
+        relative_path = Path(baltica_path).parent
+        snakemake_args.extend(['--singularity-args', f'-B {config["path"]},{config["sample_path"]},{relative_path}'])
     
     tmpdir = os.environ['TMPDIR']
     if '--use-singularity' and tmpdir != '/tmp':
