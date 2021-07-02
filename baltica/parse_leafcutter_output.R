@@ -13,7 +13,8 @@ option_list <- list(
     c("-i", "--input"),
     type = "character",
     default = "leafcutter/*/*_cluster_significance.txt",
-    help = "Path with glob character to Leafcutter result files. [default %default]",
+    help = "Path with glob character to Leafcutter result
+    files. [default %default]",
     metavar = "character"
   ),
   make_option(
@@ -31,26 +32,24 @@ option_list <- list(
   )
 )
 # enabling both baltica or snakemake input
-if (exists('snakemake')) {
-    opt <- list(
-      input = snakemake@input,
-      output = snakemake@output[[1]],
-      cutoff = snakemake@params[['cutoff']]
-      )
-    files <- opt$input
+if (exists("snakemake")) {
+  opt <- list(
+    input = snakemake@input,
+    output = snakemake@output[[1]],
+    cutoff = snakemake@params[["cutoff"]]
+  )
+  files <- opt$input
+} else {
+  opt <- parse_args(OptionParser(option_list = option_list))
+  files <- Sys.glob(opt$input)
+}
 
-  } else {
-
-    opt <- parse_args(OptionParser(option_list = option_list))
-    files <- Sys.glob(opt$input)
-  }
-
-file_names = str_split(files, '/', simplify = T)
-file_names = file_names[, ncol(file_names) - 1  ] 
-message('Comparison names: ', paste0(file_names, collapse='\t') )
+file_names <- str_split(files, "/", simplify = T)
+file_names <- file_names[, ncol(file_names) - 1]
+message("Comparison names: ", paste0(file_names, collapse = "\t"))
 
 message("Loading the cluster significance files")
-cluster_sig_file <- files # Sys.glob(file.path(out.path, '/*/*_cluster_significance.txt'))
+cluster_sig_file <- files
 
 cluster_sig <- lapply(
   cluster_sig_file,
@@ -67,14 +66,18 @@ cluster_sig <- lapply(
 )
 
 names(cluster_sig) <- file_names
-cluster_sig <- bind_rows(cluster_sig, .id = 'comparison')
+cluster_sig <- bind_rows(cluster_sig, .id = "comparison")
 
 message("Loading the effect sizes files")
-effec_size_files <- gsub(x = files, pattern = 'cluster_significance', replacement = 'effect_sizes')#  Sys.glob(file.path(out.path, '/*/*effect_sizes.txt'))
+effec_size_files <- gsub(
+  x = files,
+  pattern = "cluster_significance",
+  replacement = "effect_sizes"
+)
 es <- lapply(
   effec_size_files,
   read_tsv,
-  col_names = c('intron', 'logef', 'ref_psi', 'alt_psi', 'deltapsi'),
+  col_names = c("intron", "logef", "ref_psi", "alt_psi", "deltapsi"),
   skip = 1,
   col_types = c(
     .default = col_double(),
@@ -84,33 +87,35 @@ es <- lapply(
   )
 )
 names(es) <- file_names
-es <- bind_rows(es, .id = 'comparison')
+es <- bind_rows(es, .id = "comparison")
 
 # parse the intron column for merging
-es$intron <- str_replace_all(es$intron, '_', ':')
+es$intron <- str_replace_all(es$intron, "_", ":")
 
-intron <- read_delim(es$intron, delim = ':', col_names = c('chr', 'start', 'end', 'clu', 'clu_number', 'strand'))
+intron <- read_delim(
+  es$intron,
+  delim = ":",
+  col_names = c(
+    "chr", "start", "end", "clu", "clu_number", "strand"
+  )
+)
 es <- bind_cols(es, intron)
 # cluster will be the pivot for merging
-es$cluster <- as.character(str_glue_data(es, "{chr}:{clu}_{clu_number}_{strand}"))
+es$cluster <- as.character(
+  str_glue_data(es, "{chr}:{clu}_{clu_number}_{strand}")
+)
 message("Merging tables")
 
-res <- inner_join(es, cluster_sig, by = c('comparison', 'cluster'))
-res$chr <- gsub('chr', '', res$chr)
-# add ranks for psi per cluster
-# res <- res %>%
-#   arrange(comparison, cluster, ref_psi) %>%
-#   group_by(comparison, cluster) %>%
-#   mutate(is_canonical = row_number() == 1) %>%
-#   ungroup()
+res <- inner_join(es, cluster_sig, by = c("comparison", "cluster"))
+res$chr <- gsub("chr", "", res$chr)
 
-res <- select(res, -c('clu', 'clu_number'))
+res <- select(res, -c("clu", "clu_number"))
 # create a unique junction column for each row
-message('Number of junctions output by Leafcutter ', nrow(res))
+message("Number of junctions output by Leafcutter ", nrow(res))
 
 res <- res %>%
   filter(p.adjust < opt$cutoff) %>%
-  mutate(method = 'Leafcutter')
+  mutate(method = "Leafcutter")
 
-message('Number of junctions after filtering ', nrow(res))
+message("Number of junctions after filtering ", nrow(res))
 write_csv(res, opt$output)

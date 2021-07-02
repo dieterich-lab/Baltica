@@ -83,7 +83,10 @@ process_RMATS_ass <- function(df, start = "flankingES", end = "shortES", type, F
 process_RMATS <- function(df, start, end, type, FDR = 0.05) {
   df <- df %>%
     dplyr::filter(FDR < !!FDR) %>%
-    dplyr::select(chr, !!start, !!end, strand, comparison, FDR, IncLevelDifference) %>%
+    dplyr::select(
+      chr, !!start, !!end, strand, comparison,
+      FDR, IncLevelDifference
+    ) %>%
     dplyr::rename(c(start = !!start, end = !!end))
 
   df <- GenomicRanges::makeGRangesFromDataFrame(df, keep.extra.columns = T)

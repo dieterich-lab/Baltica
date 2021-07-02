@@ -13,7 +13,8 @@ option_list <- list(
     c("-i", "--input"),
     type = "character",
     default = "junctionseq/analysis/*_sigGenes.results.txt.gz",
-    help = "Path with glob character to JunctioSeq result files. [default %default]",,
+    help = "Path with glob character to JunctioSeq result files.
+    [default %default]", ,
     metavar = "character"
   ),
   make_option(
@@ -31,44 +32,33 @@ option_list <- list(
   )
 )
 
-if (exists('snakemake')) {
-    opt <- list(
-      input = snakemake@input,
-      output = snakemake@output[[1]],
-      cutoff = snakemake@params[['cutoff']]
-      )
-    files <- opt$input
-    file_names <- gsub(
-     x = opt$input,
-     pattern = 'junctionseq/analysis/(.+)_sigGenes.results.txt.gz',
-     replacement = '\\1')
-
-  } else {
-    opt <- parse_args(OptionParser(option_list = option_list))
-    files <- Sys.glob(opt$input)
-    file_names <- gsub(
-      x = files,
-      replacement = '\\1',
-      pattern = sub(x=opt$input, pattern='\\*', replacement = '(.*)')
-    )
-  }
+if (exists("snakemake")) {
+  opt <- list(
+    input = snakemake@input,
+    output = snakemake@output[[1]],
+    cutoff = snakemake@params[["cutoff"]]
+  )
+  files <- opt$input
+  file_names <- gsub(
+    x = opt$input,
+    pattern = "junctionseq/analysis/(.+)_sigGenes.results.txt.gz",
+    replacement = "\\1"
+  )
+} else {
+  opt <- parse_args(OptionParser(option_list = option_list))
+  files <- Sys.glob(opt$input)
+  file_names <- gsub(
+    x = files,
+    replacement = "\\1",
+    pattern = sub(x = opt$input, pattern = "\\*", replacement = "(.*)")
+  )
+}
 
 
 message("Loading JunctionSeq result")
-add_containers <-  function (junctionseq_result){
-    gr <- GRanges(junctionseq_result)
-    hits <- findOverlaps(gr, drop.redundant=F, drop.self=F, ignore.strand=F)
-    hits_groups <- split(gr[subjectHits(hits)], queryHits(hits))
-    containers <- unlist(range(hits_groups))
-    hits <- findOverlaps(gr, containers, type='within', select = 'all')
-    hits.by.row <- split(gr[subjectHits(hits)], queryHits(hits))
-    junctionseq_result$container <- as.character(unlist(range(hits.by.row)))
-    junctionseq_result
-}
 
 read_junctionseq_out <- function(x) {
-
-  col_names  <- "featureID
+  col_names <- "featureID
 geneID
 countbinID
 testable
@@ -96,7 +86,7 @@ geneWisePadj"
 
   tmp <- read_table2(
     x,
-    col_names = strsplit(col_names, '\n')[[1]],
+    col_names = strsplit(col_names, "\n")[[1]],
     skip = 1,
     col_types = cols(
       .default = col_double(),
@@ -113,25 +103,20 @@ geneWisePadj"
     )
   )
 
- tmp  %>% filter(tmp$testable == T )
-
+  tmp %>% filter(tmp$testable == T)
 }
 
 message("Loading processing the table")
 res <- lapply(files, read_junctionseq_out)
 names(res) <- file_names
 
-# res  <- lapply(res, add_containers)
-res <-  bind_rows(res, .id = 'comparison')
+res <- bind_rows(res, .id = "comparison")
 message("Computing SJ ranks")
 
-# res <- res %>%
-#   arrange(comparison, container, expr_ref) %>%
-#   group_by(comparison, expr_ref) %>%
-#   mutate(is_canonical = row_number() == 1) %>%
-#   ungroup()
-
-message('Number of junctions output by JunctionSeq ', nrow(res))
+message(
+  "Number of junctions output by JunctionSeq ",
+  nrow(res)
+)
 res <- res %>%
   filter(padjust < opt$cutoff) %>%
   select(
@@ -141,12 +126,12 @@ res <- res %>%
     end,
     strand,
     padjust,
-    contains('log2FC'),
+    contains("log2FC"),
     geneID,
     featureType,
-    # container,
     expr_ref,
-    expr_alt) %>%
-  mutate(method = 'JunctionSeq')
-message('Number of junctions after filtering ', nrow(res))
+    expr_alt
+  ) %>%
+  mutate(method = "JunctionSeq")
+message("Number of junctions after filtering ", nrow(res))
 write_csv(res, opt$output)
