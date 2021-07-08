@@ -28,7 +28,7 @@ container: "docker://tbrittoborges/qc:latest"
 rule all:
     input:
         expand("qc/fastqc/{name}_fastqc.zip", name=name),
-        "ref.bed12",
+        "qc/ref.bed12",
         expand("qc/rseqc/{name}.inner_distance_plot.pdf", name=name),
         expand("qc/rseqc/{name}.GC_plot.pdf", name=name),
         expand("qc/rseqc/{name}.DupRate_plot.pdf", name=name),
@@ -65,7 +65,7 @@ rule ref_annotation_gtf_to_bed:
     input:
         config["ref"],
     output:
-        "ref.bed12",
+        "qc/ref.bed12",
     conda:
         "envs/qc.yml"
     envmodules:
@@ -75,16 +75,15 @@ rule ref_annotation_gtf_to_bed:
     log:
         "logs/ref_annotation_gtf_to_bed.log",
     shell:
+        # awk '{{if ($3 != "gene") print $0;}}' {input} | grep -v '^#' |
         """
-        gtfToGenePred {input} temp.genepred 2>> {log}
-        genePredToBed temp.genepred {output} 2>> {log}
-        rm temp.genepred
+        gtfToGenePred {input} /dev/stdout | genePredToBed /dev/stdin {output}
         """
 
 
 rule rseqc_gene_body_coverage:
     input:
-        bed="ref.bed12",
+        bed="qc/ref.bed12",
     output:
         "qc/rseqc/geneBodyCoverage.curves.pdf",
     conda:
@@ -103,7 +102,7 @@ rule rseqc_gene_body_coverage:
 
 rule rseqc_inner_distance:
     input:
-        bed="ref.bed12",
+        bed="qc/ref.bed12",
         bam="mappings/{name}.bam",
     output:
         "qc/rseqc/{name}.inner_distance_plot.pdf",
@@ -160,7 +159,7 @@ rule rseqc_read_duplication:
 
 rule rseqc_junction_annotation:
     input:
-        bed="ref.bed12",
+        bed="qc/ref.bed12",
         bam="mappings/{name}.bam",
     output:
         "qc/rseqc/{name}.splice_junction.pdf",
@@ -181,7 +180,7 @@ rule rseqc_junction_annotation:
 
 rule rseqc_junction_saturation:
     input:
-        bed="ref.bed12",
+        bed="qc/ref.bed12",
         bam="mappings/{name}.bam",
     output:
         "qc/rseqc/{name}.junctionSaturation_plot.pdf",
@@ -201,7 +200,7 @@ rule rseqc_junction_saturation:
 
 rule rseqc_infer_experiment:
     input:
-        bed="ref.bed12",
+        bed="qc/ref.bed12",
         bam="mappings/{name}.bam",
     output:
         "qc/rseqc/{name}.infer_experiment.txt",
@@ -237,7 +236,7 @@ rule rseqc_bam_stat:
 rule rseqc_read_distribution:
     input:
         bam="mappings/{name}.bam",
-        bed="ref.bed12",
+        bed="qc/ref.bed12",
     envmodules:
         "rseqc",
     conda:
