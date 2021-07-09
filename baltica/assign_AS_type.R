@@ -111,7 +111,7 @@ gtf <- rtracklayer::import.gff2(opt$annotation)
 df <- read.csv(opt$input)
 
 message("Assigning AS type")
-gr <- GRanges(df)
+gr <- GRanges(df$coordinates)
 exons <- subset(gtf, type == "exon")
 hits <- as.data.frame(findOverlaps(gr, exons))
 hits$as_type <- apply(hits, 1, function(x) as.type(gr[x[1]], exons[x[2]]))

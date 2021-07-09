@@ -295,19 +295,11 @@ df <- df_base %>%
 
 message("Integrating annotation")
 index <- split(gr[to(hits), ], from(hits))
-group_to_annotation <- mcols(stack(index, "group"))
-group_to_annotation <- group_to_annotation[c("group", "metadata_group")]
-group_to_annotation <- group_to_annotation[
-  !is.na(group_to_annotation$metadata_group),
-]
 
 index_regions <- stack(range(range(index)), "group")
 index_regions$coord <- as.character(index_regions)
 index_regions <- mcols(index_regions)
-df <- plyr::join(df, as_tibble(group_to_annotation),
-  match = "first",
-  by = "group"
-)
+
 df <- plyr::join(df, introns_metadata, match = "first")
 df <- plyr::join(df, as_tibble(index_regions), match = "first")
 df <- df %>%
