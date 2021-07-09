@@ -5,14 +5,14 @@ sample = config["samples"].values()
 from os import symlink, path
 from shutil import copy2
 
-def make_symlink(origin, dest):
-    relative_path = path.relpath(
-        path.dirname(origin), 
-        path.dirname(dest)
-    )
-    new_origin = path.join(relative_path, path.basename(dest))
+# def make_symlink(origin, dest):
+#     relative_path = path.relpath(
+#         path.dirname(origin), 
+#         path.dirname(dest)
+#     )
+#     new_origin = path.join(relative_path, path.basename(dest))
 
-    symlink(new_origin, dest)
+#     symlink(new_origin, dest)
 
 rule symlink:
     input:
@@ -24,5 +24,5 @@ rule symlink:
     run:
         for bam_in, bai_in, bam_out, bai_out in zip(
                 input.bam, input.bai, output.bam, output.bai):
-            copy2(bam_in, bam_out)
-            copy2(bai_in, bai_out)
+            symlink(bam_in, bam_out)
+            symlink(bai_in, bai_out)
