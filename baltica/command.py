@@ -23,7 +23,7 @@ baltica_path = Path(__file__)
 class CustomFormatter(logging.Formatter):
     """Logging Formatter to add colors and count warning / errors"""
 
-    grey = "\x1b[38;21m"    
+    grey = "\x1b[38;21m"
     green = "\x1b[32;21m"
     yellow = "\x1b[33;21m"
     red = "\x1b[31;21m"
@@ -44,9 +44,11 @@ class CustomFormatter(logging.Formatter):
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)
 
+
 def avaiable_workflows(baltica_path):
     smk_files = baltica_path.parent.glob('*.smk')
     return [x.with_suffix('').name for x in smk_files]
+
 
 avaiable_workflows_ = avaiable_workflows(baltica_path)
 
@@ -58,19 +60,21 @@ logger.addHandler(ch)
 
 # https://click.palletsprojects.com/en/8.0.x/advanced/#forwarding-unknown-options
 # unknown options are passed to snakemake
+
+
 @click.command(context_settings=dict(ignore_unknown_options=True))
 @click.version_option(__version__, prog_name='baltica')
 @click.argument("workflow", type=click.Choice(avaiable_workflows_, case_sensitive=False))
 @click.argument("config_file",  type=click.Path(exists=True))
-@click.option('-v', '--verbose', is_flag=True, help='Enables verbose mode.')  
-@click.argument('snakemake_args', nargs=-1, type=click.UNPROCESSED) 
+@click.option('-v', '--verbose', is_flag=True, help='Enables verbose mode.')
+@click.argument('snakemake_args', nargs=-1, type=click.UNPROCESSED)
 def cli(workflow, config_file, verbose, snakemake_args):
     """
     Baltica implements workflows for differential junction
     usage methods, and method integration and analysis. Visit
-    https://github.com/dieterich-lab/Baltica for more information. 
-      
-    
+    https://github.com/dieterich-lab/Baltica for more information.
+
+
     Runs baltica <WORKFLOW> with <CONFIG_FILE> and <SNAKEMAKE_ARGS>
     """
     # TODO add link to baltica docs with important snakemake parameters
@@ -84,7 +88,7 @@ def cli(workflow, config_file, verbose, snakemake_args):
         snakemake.utils.min_version(min_snakemake_version)
     except snakemake.exceptions.WorkflowError as e:
         logger.error(
-            f'{_program} requires Snakemake version >= {min_snakemake_version}:',  
+            f'{_program} requires Snakemake version >= {min_snakemake_version}:',
             exc_info=True)
         sys.exit(1)
     # check if workflow file is readable
@@ -100,7 +104,7 @@ def cli(workflow, config_file, verbose, snakemake_args):
         yaml.dump(config, fou)
 
     target = config["path"]
-    
+
     try:
         os.makedirs(Path(target) / 'logs/')
     except FileExistsError:
@@ -108,16 +112,16 @@ def cli(workflow, config_file, verbose, snakemake_args):
 
     snakemake_args = list(snakemake_args)
     if workflow == 'all':
-    # append final rule name for end-to-end execution
+        # append final rule name for end-to-end execution
         snakemake_args.append('final')
 
     if verbose:
         snakemake_args.extend(['--printshellcmds', '--verbose', '--reason'])
-    
+
     if not any([x in snakemake_args for x in ['--cores', '-c', '--job', '-j']]):
         snakemake_args.append('-j1')
 
-    # Singularity support 
+    # Singularity support
     # here we set bindings three directories needed by singularity
     # the target path, where the output is written to
     # the sample path, which contains the input data
@@ -125,26 +129,29 @@ def cli(workflow, config_file, verbose, snakemake_args):
     if '--use-singularity' in snakemake_args and "--singularity-args" not in snakemake_args:
         relative_path = Path(baltica_path).parent.resolve()
         snakemake_args.extend(
-            ['--singularity-args', 
-            f'-B {config["path"]},{config["sample_path"]},{relative_path}'])
-    
-    tmpdir = os.environ['TMPDIR']
-    if '--use-singularity' and tmpdir != '/tmp/':
-        logger.warning(f"""Current TMPDIR is {tmpdir}, make sure it is writtable 
-        by singularity by using --singularity-args or setting TMPDIR to /tmp""")
+            ['--singularity-args', '-B ' + ','.join(
+                set([config["path"],
+                    str(config["sample_path"]),
+                    str(Path(config['ref']).parent),
+                    str(Path(config['ref_fa']).parent),
+                    str(Path(config['config_path']).parent),
+                    str(relative_path),
+                    os.environ['TMPDIR']]))])
 
     try:
-        _ = subprocess.run(['singularity', '--version'], stdout=subprocess.DEVNULL)
+        _ = subprocess.run(['singularity', '--version'],
+                           stdout=subprocess.DEVNULL)
     except FileNotFoundError as e:
         if '--use-singularity' in snakemake_args:
-            logger.critical("Baltica requires Singularity, which was not found", exc_info=True)
+            logger.critical(
+                "Baltica requires Singularity, which was not found", exc_info=True)
             sys.exit(1)
 
     logger.info(
         f"""Starting baltica (v{__version__}) analysis with:
     WORKFLOW: {workflow} (from {snakefile})
     CONFIGURATION: {config_file}
-    TARGET DIRECTORY: {target}   
+    TARGET DIRECTORY: {target}
     SNAKEMAKE ARGUMENTS: {' '.join(snakemake_args)}
     """)
     cmd = [
@@ -155,6 +162,7 @@ def cli(workflow, config_file, verbose, snakemake_args):
     logger.debug('Start of snakemake logger:')
     result = subprocess.run(cmd)
     return result.check_returncode
+
 
 if __name__ == '__main__':
     cli()
