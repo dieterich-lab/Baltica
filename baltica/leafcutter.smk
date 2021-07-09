@@ -147,8 +147,7 @@ rule leafcutter_intron_clustering:
         leafcutter_cluster_regtools_py3.py \
         -j {input} -m {params.m} \
         -o {params.prefix} \
-        -l {params.l}  2> {log} && \
-        rm *{params.n}.sorted.gz
+        -l {params.l}  2> {log}
         """
 
 

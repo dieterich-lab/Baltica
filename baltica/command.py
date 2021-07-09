@@ -94,6 +94,7 @@ def cli(workflow, config_file, verbose, snakemake_args):
         config = yaml.safe_load(fin)
 
     config['config_path'] = str(Path(config_file).resolve())
+
     logger.debug(f"Config file is {config['config_path']}")
     with open(config_file, 'w') as fou:
         yaml.dump(config, fou)
@@ -122,11 +123,13 @@ def cli(workflow, config_file, verbose, snakemake_args):
     # the sample path, which contains the input data
     # the baltica directory, which contains the analysis scripts
     if '--use-singularity' in snakemake_args and "--singularity-args" not in snakemake_args:
-        relative_path = Path(baltica_path).parent
-        snakemake_args.extend(['--singularity-args', f'-B {config["path"]},{config["sample_path"]},{relative_path}'])
+        relative_path = Path(baltica_path).parent.resolve()
+        snakemake_args.extend(
+            ['--singularity-args', 
+            f'-B {config["path"]},{config["sample_path"]},{relative_path}'])
     
     tmpdir = os.environ['TMPDIR']
-    if '--use-singularity' and tmpdir != '/tmp':
+    if '--use-singularity' and tmpdir != '/tmp/':
         logger.warning(f"""Current TMPDIR is {tmpdir}, make sure it is writtable 
         by singularity by using --singularity-args or setting TMPDIR to /tmp""")
 
@@ -134,7 +137,7 @@ def cli(workflow, config_file, verbose, snakemake_args):
         _ = subprocess.run(['singularity', '--version'], stdout=subprocess.DEVNULL)
     except FileNotFoundError as e:
         if '--use-singularity' in snakemake_args:
-            logger.critical("Baltica requires singularity, which was not found", exc_info=True)
+            logger.critical("Baltica requires Singularity, which was not found", exc_info=True)
             sys.exit(1)
 
     logger.info(

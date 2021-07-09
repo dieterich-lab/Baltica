@@ -1,81 +1,43 @@
-# the paths below assume youre are running the test
-# from withing Baltica directory
-
-path:
-  /home/tbrittoborges/sirv_test/
-
-# full path to the alignment files
-sample_path:
-  /home/tbrittoborges/Baltica/data/
-
-
-samples:
-  mix1_1: mix1_1.bam
-  mix2_1: mix2_1.bam
-  mix3_1: mix3_1.bam
-  mix1_2: mix1_2.bam
-  mix2_2: mix2_2.bam
-  mix3_2: mix3_2.bam
-  mix1_3: mix1_3.bam
-  mix2_3: mix2_3.bam
-  mix3_3: mix3_3.bam
-  mix1_4: mix1_4.bam
-  mix2_4: mix2_4.bam
-  mix3_4: mix3_4.bam
-  mix1_5: mix1_5.bam
-  mix2_5: mix2_5.bam
-  mix3_5: mix3_5.bam
-
-# which comparison should we make?
-# in the format case-vs-control
-# conditions groups are extracted from '{group}_{replicate}'
+assembly: GRCh38_90_SIRV
+config_path: /beegfs/homes/tbrittoborges/Baltica/data/config.yml
 contrasts:
   mix2-vs-mix1:
-    - mix2
-    - mix1
+  - mix2
+  - mix1
   mix3-vs-mix1:
-    - mix3
-    - mix1
+  - mix3
+  - mix1
   mix3-vs-mix2:
-    - mix3
-    - mix2
-
-# This parameters is not currently used in Baltica
-assembly:
-  GRCh38_90_SIRV
-# In case of doubt, please RSeQC infer_experiment result
-strandness:
-  reverse
-# If the read length is variable, use the maximum
-read_len:
-  101
-# full path to the reference transcriptome model
-ref:
-  /home/tbrittoborges/Baltica/data/SIRV.gtf
-# full path to the reference sequence
-ref_fa:
-  /home/tbrittoborges/Baltica/data/SIRV.fa
-
-# Leafcutter-specific parameters
-leafcutter_min_samples_per_group:
-  3
-leafcutter_min_samples_per_intron:
-  5
-leafcutter_min_coverage:
-  20
-leafcutter_min_cluster_reads:
-  30
-leafcutter_max_intron_length:
-  500000
-
-# Majiq-specific parametes
-majiq_non_changing_threshold:
-  0.05
-majiq_threshold:
-  0.2
-majiq_minreads:
-  5
-# adjusted p-value threshold for LeafCutter and JunctionSeq
-fdr:
-  0.05
-
+  - mix3
+  - mix2
+fdr: 0.05
+leafcutter_max_intron_length: 500000
+leafcutter_min_cluster_reads: 30
+leafcutter_min_coverage: 20
+leafcutter_min_samples_per_group: 3
+leafcutter_min_samples_per_intron: 5
+majiq_minreads: 5
+majiq_non_changing_threshold: 0.05
+majiq_threshold: 0.2
+path: /home/tbrittoborges/sirv_test/
+read_len: 101
+ref: /home/tbrittoborges/Baltica/data/SIRV.gtf
+ref_fa: /home/tbrittoborges/Baltica/data/SIRV.fa
+sample_path: /home/tbrittoborges/Baltica/data/
+samples:
+  mix1_1: mix1_1.bam
+  mix1_2: mix1_2.bam
+  mix1_3: mix1_3.bam
+  mix1_4: mix1_4.bam
+  mix1_5: mix1_5.bam
+  mix2_1: mix2_1.bam
+  mix2_2: mix2_2.bam
+  mix2_3: mix2_3.bam
+  mix2_4: mix2_4.bam
+  mix2_5: mix2_5.bam
+  mix3_1: mix3_1.bam
+  mix3_2: mix3_2.bam
+  mix3_3: mix3_3.bam
+  mix3_4: mix3_4.bam
+  mix3_5: mix3_5.bam
+strandness: reverse

@@ -14,14 +14,12 @@ suppressPackageStartupMessages({
   library(igraph)
   library(tidyverse)
 })
-
 #' Compute and filter hits based on the difference in the genomic start and end
 #'
 #' @param query first set of range
 #' @param subject second set of ranges
-#' @param max_start max_end absolute max difference at the start and
-#' end coordinates,
-#' respectively
+#' @param max_start max_end absolute max difference at the start and end
+#' coordinates, respectively
 #' @return overlapping ranges given the contrain
 #' @export
 filter_hits_by_diff <- function(query, subject, max_start = 2, max_end = 2) {
@@ -36,7 +34,8 @@ filter_hits_by_diff <- function(query, subject, max_start = 2, max_end = 2) {
   hits
 }
 
-#' Creates exon by transcript list (ex_by_tx) and remove items with a single exon
+#' Creates exon by transcript list (ex_by_tx) and remove items
+#' with a single exon
 #'
 #' @param gtf GRange file loaded with rtracklayer::import
 #' @return  a list of exon by transcripts, excluding single exon trascripts
@@ -68,10 +67,6 @@ get_introns <- function(ex_tx) {
   introns
 }
 
-#' Collapse `gr` by merging identical ranges and their annotations
-#' @param gr GRange with annotation
-#' @return a GRange with equal range and their annotation merged
-#' @export
 aggregate_annotation <- function(gr) {
   stopifnot(is(gr, "GRanges"))
 
@@ -107,6 +102,12 @@ get_exon_number <- function(ex_tx) {
   exon_number
 }
 
+default_input <- str_glue(
+  "{method}/{method}_junctions.csv",
+  method = c("junctionseq", "leafcutter", "majiq", "rmats")
+) %>% str_c(collapse = ",")
+
+#  ,/leafcutter_junctions.csv,majiq/majiq_junctions.csv,rmats/.csv"
 
 option_list <- list(
   make_option(
@@ -114,10 +115,7 @@ option_list <- list(
     type = "character",
     help = "Path to parsed DJU result",
     metavar = "character",
-    default = "junctionseq/junctionseq_junctions.csv,
-    leafcutter/leafcutter_junctions.csv,
-    majiq/majiq_junctions.csv,
-    rmats/rmats_junctions.csv"
+    default = default_input
   ),
   make_option(
     c("-a", "--annotation"),
@@ -306,8 +304,10 @@ group_to_annotation <- group_to_annotation[
 index_regions <- stack(range(range(index)), "group")
 index_regions$coord <- as.character(index_regions)
 index_regions <- mcols(index_regions)
-
-df <- plyr::join(df, as_tibble(group_to_annotation), match = "first")
+df <- plyr::join(df, as_tibble(group_to_annotation),
+  match = "first",
+  by = "group"
+)
 df <- plyr::join(df, introns_metadata, match = "first")
 df <- plyr::join(df, as_tibble(index_regions), match = "first")
 df <- df %>%
