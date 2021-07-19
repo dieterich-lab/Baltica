@@ -111,9 +111,6 @@ def cli(workflow, config_file, verbose, snakemake_args):
         pass
 
     snakemake_args = list(snakemake_args)
-    if workflow == 'all':
-        # append final rule name for end-to-end execution
-        snakemake_args.append('final')
 
     if verbose:
         snakemake_args.extend(['--printshellcmds', '--verbose', '--reason'])
@@ -128,15 +125,17 @@ def cli(workflow, config_file, verbose, snakemake_args):
     # the baltica directory, which contains the analysis scripts
     if '--use-singularity' in snakemake_args and "--singularity-args" not in snakemake_args:
         relative_path = Path(baltica_path).parent.resolve()
+        bound_path = set([config["path"],
+                          str(config["sample_path"]),
+                          str(Path(config['ref']).parent),
+                          str(Path(config['ref_fa']).parent),
+                          str(Path(config['config_path']).parent),
+                          str(relative_path),
+                          os.environ['TMPDIR']])
+
+        # bind several paths that contain input data
         snakemake_args.extend(
-            ['--singularity-args', '-B ' + ','.join(
-                set([config["path"],
-                    str(config["sample_path"]),
-                    str(Path(config['ref']).parent),
-                    str(Path(config['ref_fa']).parent),
-                    str(Path(config['config_path']).parent),
-                    str(relative_path),
-                    os.environ['TMPDIR']]))])
+            ['--singularity-args', '-B ' + ','.join(bound_path.difference('.'))])
 
     try:
         _ = subprocess.run(['singularity', '--version'],
@@ -146,6 +145,16 @@ def cli(workflow, config_file, verbose, snakemake_args):
             logger.critical(
                 "Baltica requires Singularity, which was not found", exc_info=True)
             sys.exit(1)
+
+    if '--singularity-prefix' not in snakemake_args:
+        # set $HOME/.baltica/singularity/ as download directory for the containers
+        snakemake_args.extend(
+            ['--singularity-prefix', Path.home() / '.baltica/singularity/']
+        )
+
+    if workflow == 'all':
+        # append final rule name for end-to-end execution
+        snakemake_args.append('final')
 
     logger.info(
         f"""Starting baltica (v{__version__}) analysis with:
