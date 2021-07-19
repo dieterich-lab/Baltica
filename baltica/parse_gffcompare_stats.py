@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import sys
-import json
 from ttp import ttp
 
 
@@ -19,7 +18,7 @@ except (TypeError, IndexError):
         f'Please use the script as: \n    {sys.argv[0]} input_ output \n or use it within snakemake')
     sys.exit(1)
 
-template="""
+template = """
 <group name="{{ file_name }}">
 
 <group name="header">
@@ -51,7 +50,7 @@ template="""
 
 parser = ttp(data=data, template=template)
 parser.parse()
-res = parser.result(format="json")
+res = parser.result(format="json")[0]
 
 with open(output, 'w') as out_file:
-    json.dump(res, out_file)
+    out_file.writelines(res)
