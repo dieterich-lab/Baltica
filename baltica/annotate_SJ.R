@@ -188,11 +188,22 @@ df <- list(
   rmats = .read_csv(files[[rmats_idx]])
 )
 
+try_grange <- function(x) {
+  tryCatch(
+    expr = {
+      GRanges(x)
+    },
+    error = function(e) {
+      GRanges()
+    }
+  )
+}
+
 gr <- suppressWarnings(c(
-  GRanges(df$majiq),
-  GRanges(df$leafcutter),
-  GRanges(df$junctionseq),
-  GRanges(df$rmats)
+  try_grange(df$junctionseq),
+  try_grange(df$leafcutter),
+  try_grange(df$majiq),
+  try_grange(df$rmats)
 ))
 
 mcols(gr) <- NULL
