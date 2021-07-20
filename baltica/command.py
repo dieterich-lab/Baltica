@@ -149,7 +149,8 @@ def cli(workflow, config_file, verbose, snakemake_args):
     if '--singularity-prefix' not in snakemake_args:
         # set $HOME/.baltica/singularity/ as download directory for the containers
         snakemake_args.extend(
-            ['--singularity-prefix', Path.home() / '.baltica/singularity/']
+            ['--singularity-prefix',
+                str(Path.home() / '.baltica/singularity/')]
         )
 
     if workflow == 'all':
