@@ -162,7 +162,6 @@ res <- lapply(setNames(names(res), names(res)), function(x) {
 })
 res <- as(res, "GRangesList")
 res <- unlist(res)
-seqnames(res) <- gsub(x = seqnames(res), pattern = "^chr", replacement = "")
 
 message("Number of junctions after filtering ", length(res))
 write_csv(data.frame(res), opt$output)
