@@ -38,7 +38,7 @@ conditions = [x.split("_")[0] for x in name]
 sample_path = config["sample_path"]
 comp_names = config["contrasts"].keys()
 
-strand = {"forward": 1, "reverse": 2}
+strand = {"forward": 2, "reverse": 1}
 
 
 localrules:
@@ -79,7 +79,7 @@ rule leafcutter_bam2junc:
         # Strand specificity of RNA library preparation, 
         # where 0 = unstranded/XS, 
         # 1 = first-strand/RF, 
-        # 2 = second-strand/FR.s
+        # 2 = second-strand/FR
         # If your alignments contain XS tags,
         # these will be used in the "unstranded" mode.
         strand_specificity=strand.get(config.get("strandness", 2), 0),
