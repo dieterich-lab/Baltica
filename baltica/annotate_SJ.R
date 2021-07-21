@@ -14,18 +14,25 @@ suppressPackageStartupMessages({
   library(igraph)
   library(tidyverse)
 })
+
 #' Compute and filter hits based on the difference in the genomic start and end
 #'
 #' @param query first set of range
-#' @param subject second set of ranges
-#' @param max_start max_end absolute max difference at the start and end
-#' coordinates, respectively
-#' @return overlapping ranges given the contrain
+#' @param subject optional, second set of ranges
+#' @param max_start max_end absolute max difference at the start and
+#' end coordinates,
+#' respectively
+#' @return overlapping ranges given the constrain
 #' @export
-filter_hits_by_diff <- function(query, subject, max_start = 2, max_end = 2) {
+filter_hits_by_diff <- function(query, subject = NULL, ..., max_start = 2, max_end = 2) {
   stopifnot(is(query, "GRanges"))
-  stopifnot(is(subject, "GRanges"))
-  hits <- findOverlaps(query, subject)
+  if (is.null(subject)) {
+    hits <- findOverlaps(query, ...)
+    subject <- query
+  } else {
+    stopifnot(is(subject, "GRanges"))
+    hits <- findOverlaps(query, subject, ...)
+  }
   query <- query[queryHits(hits)]
   subject <- subject[subjectHits(hits)]
   start_dif <- abs(start(query) - start(subject))
@@ -106,8 +113,6 @@ default_input <- str_glue(
   "{method}/{method}_junctions.csv",
   method = c("junctionseq", "leafcutter", "majiq", "rmats")
 ) %>% str_c(collapse = ",")
-
-#  ,/leafcutter_junctions.csv,majiq/majiq_junctions.csv,rmats/.csv"
 
 option_list <- list(
   make_option(
@@ -245,6 +250,7 @@ if (!is.null(opt$reference)) {
   introns$is_novel <- !(introns %in% ref_introns)
 }
 message("preparing annotation")
+message("preparing annotation")
 exon_number <- get_exon_number(ex_tx)
 txid_to_gene <- setNames(tx$gene_name, nm = tx$transcript_id)
 txid_to_tx_name <- setNames(tx$cmp_ref, nm = tx$transcript_id)
@@ -269,19 +275,17 @@ mcols(introns)$metadata_group <- seq_along(introns)
 
 gr <- c(gr, introns)
 
+############################################
 message("Integration introns")
 
-hits <- findOverlaps(gr, drop.redundant = T)
-query <- gr[queryHits(hits)]
-subject <- gr[subjectHits(hits)]
-start_dif <- abs(start(query) - start(subject))
-end_dif <- abs(end(query) - end(subject))
-max_start <- 2
-max_end <- 2
-hits <- hits[start_dif <= max_start & end_dif <= max_end]
+hits <- filter_hits_by_diff(gr, drop.redundant = T)
+hits <- igraph::graph_from_data_frame(data.frame(hits))
+hits <- stack(igraph::groups(igraph::clusters(hits)))
+hits$values <- as.integer(hits$values)
+split_hits <- split(gr[hits$values, ], hits$ind)
 
-df_base <- as_tibble(mcols(gr)[to(hits), ])
-df_base$group <- from(hits)
+df_base <- as_tibble(mcols(gr)[hits$values, ])
+df_base$group <- hits$ind
 
 df <- df_base %>%
   group_by(
@@ -305,14 +309,13 @@ df <- df_base %>%
   )
 
 message("Integrating annotation")
-index <- split(gr[to(hits), ], from(hits))
-
-index_regions <- stack(range(range(index)), "group")
-index_regions$coord <- as.character(index_regions)
-index_regions <- mcols(index_regions)
-
+region_names <- stack(range(split_hits))
+region_names <- tibble(
+  group = as.numeric(region_names$name),
+  coord = as.character(region_names)
+)
+df <- plyr::join(df, region_names)
 df <- plyr::join(df, introns_metadata, match = "first")
-df <- plyr::join(df, as_tibble(index_regions), match = "first")
 df <- df %>%
   mutate(coordinates = coalesce(coord)) %>%
   select(-coord, -group, -metadata_group) %>%
