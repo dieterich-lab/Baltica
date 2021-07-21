@@ -92,7 +92,6 @@ process_RMATS <- function(df, start, end, type, FDR = 0.05) {
   df <- GenomicRanges::makeGRangesFromDataFrame(df, keep.extra.columns = T)
   df <- unique(df)
   df$type <- type
-  suppressWarnings(try(seqlevelsStyle(df) <- "Ensembl"))
 
   df
 }
@@ -162,6 +161,10 @@ res <- lapply(setNames(names(res), names(res)), function(x) {
 })
 res <- as(res, "GRangesList")
 res <- unlist(res)
+suppressWarnings(try(seqlevelsStyle(res) <- "Ensembl"))
+res <- data.frame(res)
+# Force remove chr
+res$seqnames <- gsub(x = res$seqnames, replacement = "", pattern = "chr")
 
 message("Number of junctions after filtering ", length(res))
-write_csv(data.frame(res), opt$output)
+write_csv(res, opt$output)
