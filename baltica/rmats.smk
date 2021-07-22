@@ -79,18 +79,24 @@ rule rmats_run:
         is_paired="-t single" if config.get("is_single_end") else "",
         lib="--libType " + strand.get(config["strandness"], "fr-unstranded"),
         read_len=config["read_len"],
-        allow_clipping="--allow-clipping",
+        allow_clipping=config.get("rmats_allow_clipping", "--allow-clipping"),
+        variable_read_length=config.get(
+            "rmats_variable_read_length", "--variable-read-length"
+        ),
+        novel_ss=config.get("rmats_novel_ss", "--novelSS"),
+        extra=config.get("rmats_extra", ""),
         tmp=os.path.join(temp_dir.name, "{alt}_vs_{ref}/"),
     shell:
         "rmats.py "
         "--b1 {input.alt} "
         "--b2 {input.ref} "
         "--gtf {params.gtf} "
-        "--variable-read-length "
         "--readLength {params.read_len} "
         "--nthread {threads} "
-        "--novelSS "
+        "{params.novel_ss} "
         "{params.lib} "
-        "{params.allow_clipping} "
+        "{params.rmats_allow_clipping} "
+        "{params.rmats_variable_read_length} "
         "--od {output} "
-        "--tmp {params.tmp}"
+        "--tmp {params.tmp} "
+        "{params.extra}"
