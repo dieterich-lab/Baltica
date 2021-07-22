@@ -38,7 +38,7 @@ conditions = [x.split("_")[0] for x in name]
 sample_path = config["sample_path"]
 comp_names = config["contrasts"].keys()
 
-strand = {"forward": 2, "reverse": 1}
+strand = {"fr-secondstrand": 2, "fr-firststrand": 1}
 
 
 localrules:

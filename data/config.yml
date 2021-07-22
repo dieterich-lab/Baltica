@@ -40,4 +40,4 @@ samples:
   mix3_3: mix3_3.bam
   mix3_4: mix3_4.bam
   mix3_5: mix3_5.bam
-strandness: reverse
+strandness: fr-firststrand

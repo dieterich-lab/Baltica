@@ -29,7 +29,7 @@ cond = set(cond)
 container: "docker://tbrittoborges/junctionseq:1.16.0"
 
 
-strandness = {"forward": "--stranded_fr_secondstrand", "reverse": "--stranded"}
+strandness = {"fr-secondstrand": "--stranded_fr_secondstrand", "fr-firststrand": "--stranded"}
 
 
 rule all:

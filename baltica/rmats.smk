@@ -29,7 +29,6 @@ keys = config["samples"].keys()
 keys = [tuple(x.split("_")) for x in keys]
 
 temp_dir = tempfile.TemporaryDirectory()
-strand = {"reverse": "fr-secondstrand", "forward": "fr-firststrand"}
 
 d = defaultdict(list)
 for x in keys:
@@ -76,8 +75,8 @@ rule rmats_run:
         "rmats-turbo/4.1.1",
     params:
         gtf=config["ref"],
-        is_paired="-t single" if config.get("is_single_end") else "",
-        lib="--libType " + strand.get(config["strandness"], "fr-unstranded"),
+        is_paired="single" if config.get("is_single_end") else "paired",
+        lib=config.get("strandness", "fr-unstranded"),
         read_len=config["read_len"],
         allow_clipping=config.get("rmats_allow_clipping", "--allow-clipping"),
         variable_read_length=config.get(
@@ -93,10 +92,11 @@ rule rmats_run:
         "--gtf {params.gtf} "
         "--readLength {params.read_len} "
         "--nthread {threads} "
+        "-t {params.is_paired} "
+        "--libType {params.lib} "
         "{params.novel_ss} "
-        "{params.lib} "
-        "{params.rmats_allow_clipping} "
-        "{params.rmats_variable_read_length} "
+        "{params.allow_clipping} "
+        "{params.variable_read_length} "
         "--od {output} "
         "--tmp {params.tmp} "
         "{params.extra}"
