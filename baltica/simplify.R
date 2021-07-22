@@ -34,6 +34,7 @@ option_list <- list(
 opt <- parse_args(OptionParser(option_list = option_list))
 df <- suppressMessages(read_csv(opt$input))
 
+
 simplify <- function(x, remove = c()) {
   x %>%
     str_split(";") %>%
@@ -62,8 +63,13 @@ for (col in c(
   df[[col]] <- simplify(df[[col]])
 }
 
+# TODO html link
+
 openxlsx::write.xlsx(
-  df,
+  df %>% select(coordinates, everything()),
+  firstCol = T,
+  colNames = T,
+  asTable = T,
   file = opt$output,
-  sheetName = "Sheet1",
+  sheetName = "baltica_table",
 )
