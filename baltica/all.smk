@@ -2,7 +2,6 @@ comp = config["contrasts"].keys()
 workdir: config["path"]
 config_path = config["config_path"]
 
-# snakemake --dag -n | dot -Tsvg > dag.svg
 
 subworkflow qc:
     workdir:
@@ -73,4 +72,10 @@ rule final:
             expand("junctionseq/analysis/{comp}_sigGenes.results.txt.gz", comp=comp)),
         stringtie("stringtie/merged/merged.combined.gtf"),
         analysis(
-            "results/SJ_annotated_assigned_simple.xlsx"),    
+            expand(
+            "results/baltica_report{project_title}.html", 
+            project_title="_" + config.get("project_title", "").replace(' ', '_'))),
+        analysis(
+            expand(
+            "results/baltica_table{project_title}.xlsx", 
+            project_title="_" + config.get("project_title", "")replace(' ', '_'))),
