@@ -49,7 +49,8 @@ setup(name=_program,
           "baltica/parse_majiq_output.R",
           "baltica/assign_AS_type.R",
           "baltica/simplify.R",
-          "baltica/parse_rmats_output.R"
+          "baltica/parse_rmats_output.R",
+          "baltica/baltica_report.Rmd"
       ],
       keywords=['differential splicing', 'bioinformatics', 'rna-seq'],
       zip_safe=False,
