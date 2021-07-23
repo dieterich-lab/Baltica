@@ -146,7 +146,7 @@ def cli(workflow, config_file, verbose, snakemake_args):
                 "Baltica requires Singularity, which was not found", exc_info=True)
             sys.exit(1)
 
-    if '--singularity-prefix' not in snakemake_args:
+    if '--use-singularity' in snakemake_args and '--singularity-prefix' not in snakemake_args:
         # set $HOME/.baltica/singularity/ as download directory for the containers
         snakemake_args.extend(
             ['--singularity-prefix',

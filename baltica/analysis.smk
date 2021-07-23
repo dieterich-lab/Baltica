@@ -13,7 +13,7 @@ workdir: config.get("path", ".")
 
 name = config["samples"].keys()
 contrasts = config["contrasts"]
-script_path="homes/tbrittoborges/Baltica/scripts/"
+project_title = config.get("project_title", "").replace(' ', '_')
 
 container: "docker://tbrittoborges/baltica:latest"
 
@@ -21,13 +21,23 @@ container: "docker://tbrittoborges/baltica:latest"
 import sys
 import pathlib
 
+fastqc_file = "qc/multiqc/multiqc_data/multiqc_fastqc.txt"
+
 
 rule all:
     input:
         "results/SJ_annotated.csv",
         "results/SJ_annotated_assigned.csv",
-        "results/SJ_annotated_assigned_simple.xlsx",
         "results/gffcompare_stats.json",
+        expand(
+            "results/baltica_report{project_title}.html", 
+            project_title="_" + project_title),
+        expand(
+            "results/baltica_table{project_title}.xlsx", 
+            project_title="_" + project_title),
+
+
+
 
 rule parse_majiq:
     input:
@@ -94,8 +104,8 @@ rule parse_rmats:
     log:
         "logs/parse_rmats.log",
     params:
-        cutoff=1,   
-    log: 
+        cutoff=1,
+    log:
         "logs/parse_rmats.log",
     script:
         "parse_rmats_output.R"
@@ -110,6 +120,7 @@ rule annotate:
         ref="stringtie/merged/merged.combined.gtf",
     params:
         ref=config.get("ref"),
+        orthognal_result=config.get('orthognal_result')
     envmodules:
         "R/4.0.5_deb10",
     log:
@@ -137,10 +148,12 @@ rule assign_AS_type:
 rule simplify:
     input:
         "results/SJ_annotated_assigned.csv",
+    output:
+        expand(
+            "results/baltica_table{project_title}.xlsx", 
+            project_title="_" + project_title),
     envmodules:
         "R/4.0.5_deb10",
-    output:
-        "results/SJ_annotated_assigned_simple.xlsx",
     log:
         "logs/simplify.log",
     script:
@@ -156,3 +169,31 @@ rule parse_gffcompare:
         "logs/parse_ggfcompare.log",
     script:
         "parse_gffcompare_stats.py"
+
+
+rule baltica_report:
+    input:
+        "results/SJ_annotated_assigned.csv",
+        "results/gffcompare_stats.json",
+        "leafcutter/leafcutter_junctions.csv"
+    params:
+        fastqc=fastqc_file if os.path.isfile(fastqc_file) else "a",
+        config=config.get("config_path"),
+        # TODO streamline start_sj_file
+        star_sj=config.get("start_sj_file", "a"),
+        doc_title=config.get("project_title", "a"),
+        doc_authors=config.get("project_authors", "a"),
+    output:
+        expand(
+            "results/baltica_report{project_title}.html", 
+            project_title="_" + project_title),
+    log:
+        "logs/baltica_report.log",
+    # shell:
+    #     """
+    #     # cp rmd to outdir
+    #     Rscript --vanilla -e 'rmarkdown::render("baltica_report.Rmd", output_file="{output}", quiet=TRUE, params=list(fastqc="{params.fastqc}", config="{params.config}", star_sj="{params.star_sj}", doc_title="{params.doc_title}", doc_authors="{params.doc_authors}"))'
+    #     # delte rmd from outdir
+    #     """
+    script:
+        "baltica_report.Rmd"
