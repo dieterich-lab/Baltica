@@ -19,7 +19,10 @@ leafcutter_min_samples_per_intron: 5
 majiq_minreads: 5
 majiq_non_changing_threshold: 0.05
 majiq_threshold: 0.2
+orthognal_result: /home/tbrittoborges/Baltica/data/SIRV_changing_introns.gtf
 path: /home/tbrittoborges/sirv_test/
+project_authors: The authors
+project_title: sirv_test
 read_len: 101
 ref: /home/tbrittoborges/Baltica/data/SIRV.gtf
 ref_fa: /home/tbrittoborges/Baltica/data/SIRV.fa
