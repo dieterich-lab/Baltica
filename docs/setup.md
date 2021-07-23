@@ -1,138 +1,110 @@
-## Getting started
+# Getting started
 
-Baltica contains a collection of workflows and analysis scripts. Workflows are powered by [Snakemake](https://snakemake.readthedocs.io/en/stable/) [^1]. Analysis is done with the R using Bioconductor packages. 
-We developed and tested the workflows with the Debian Linux distribution (v8.11 Jesse) and conda (4.8.3).
-We use the module system to test the workflows, but conda usage is similar. 
-Below, we document how to install the Baltica dependencies. 
+## Quick example:
 
-## Install miniconda
-
+If Baltica dependencies, baltica configuration and cluster configuration are available, use:
 ```bash
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-bash Miniconda3-latest-Linux-x86_64.sh
+baltica <workflow> <config> --use-singularity --profile <cluster>
 ```
+- **<workflow>**: one of [analysis|qc|stringtie|all|baltica|rmats|majiq|denovo
+               _tx_abundance|leafcutter|symlink|junctionseq]
+- **<config>**: 
+- **<cluster>**: [Snakemake cluster profile](https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles) 
 
-Or get miniconda [here](https://docs.conda.io/en/latest/miniconda.html). 
+Or, read below.
 
-Follow the instructions to finish then installation, which by default is at `$HOME/miniconda3`.
+!!! warning
+    Snakemake is under active development. Please [contact us](https://github.com/dieterich-lab/Baltica/issues) if you have any issues with this documentation.
 
-Make sure you initialize conda with `conda init`.
-You can test whether your installation was successful or not by running `conda --version` and you may need to restart your shell instance. 
+Baltica framework is based on:
+- A python command-line interface
+- [Snakemake](https://snakemake.readthedocs.io/en/stable/) workflows
+- Docker containers used with [Singularity](https://sylabs.io/singularity/)
+- R scripts for processing, integrating, annotating, assigning biological features, and reporting
+- a Rmarkdown report
 
-## Clone and install Baltica
+We have developed it on the following computer environments:
+<!--  cat /proc/version -->
+- Linux version 4.19.0-16-amd64 Debian 4.19.181-1 (2021-03-19)
+- gcc version 8.3.0 
+- Python version 3.7.7
+- Singularity version 3.7.3
+- Snakemake^1 version 6.4.1
+- Git version 2.20.1
+
+These versions should not matter because the workflows are run within Docker containers, as long **Snakemake version > 6** and a **recent Singularity version**.
+
+Baltica depends on python3, Singulary, and Snakemake.
+- [How to install Singularity](https://sylabs.io/guides/3.0/user-guide/installation.html)
+- [How to install Snakemake](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) 
+
+## Installation
 
 ```bash
 git clone https://github.com/dieterich-lab/baltica
-cd baltica
-python setup.py install
+cd Baltica
+pip install .
 ```
+Will install Baltica and its python dependencies. You may want to create a [virtual environment](https://realpython.com/python-virtual-environments-a-primer/) before installing Baltica.  
+All other requirements are resolved with singularity containers.
 
-
-## Install Snakemake 
-```bash
-conda install -c bioconda snakemake">=5.2" --yes
-```
-
-!!! danger
-    Snakemake requires python versions between > 3.4 and < 3.6.
-
-Some of dependencies can be directly created with conda, go to `baltica/envs` directory and install with:  
-```
-conda env create -f stringtie.yml
-```
-
-and
-
-```
-conda env create -f qc.yml
-```
-
-In general, R packages do not play nicely with conda, but we still use it because it's flexibility and the ability to 
-create isolated software environments.
-
-Stringtie citation [^5].
-
-## Install Majiq 
+!!! note
+    We plan to submit Baltica to the Python Package Index.
 
 !!! warning
-    Majiq requires an Academic or Commercial license for use. Users are required to obtain their license. [Academic download](https://majiq.biociphers.org/app_download/).
+    Majiq requires an Academic or Commercial license for use. Users are required to obtain their licenses. [Academic download](https://majiq.biociphers.org/app_download/).
 
-Majiq[^2] can installation can be problematic, but the recipe below works for us:
-
+## Executing Baltica
+Use baltica `cli` for current help documentation:
 ```bash
-conda create --name majiq_env python=3.6 htslib "Cython==0.29.14" git pip --yes -c bioconda
-conda activate majiq_env
-
-ENV_PATH=$HOME/miniconda3/envs/majiq_env
-export HTSLIB_LIBRARY_DIR=$ENV_PATH/lib
-export HTSLIB_INCLUDE_DIR=$ENV_PATH/include
-pip install git+https://bitbucket.org/biociphers/majiq_academic.git#egg=majiq 
-```
-
-!!! danger
-    Confirm that `pip` used is the one from the `majiq_env` with `which pip`  
-
-Please inform us if you have issues with this recipe.
-
-## Installation Leafcutter
-
-Users can install Leafcutter[^3] with conda using the following recipe: 
-
-```bash
-conda create --name leafcutter python=2.7
-conda activate leafcutter
-conda install -c bioconda samtools r-base=3.6
-
-TAR='/bin/tar'
-Rscript -e "install.packages('devtools', repos='http://cran.us.r-project.org')"
-Rscript -e "devtools::install_github('stan-dev/rstantools')"
-```
-
-!!! warning
-    Only use `TAR='/bin/tar'` or `set TAR '/bin/tar'` if you have problems with devtools selecting `gtar` instead of `tar`.
-
-!!! warning
-    If you are experiencing the following the `ERROR: failed to create lock directory` error when trying to install R packages, add the following option to install.package `INSTALL_opts = c('--no-lock')`.
-
-## Install Junctionseq
-
-JunctionSeq[^4] should be installed directly from BioConductor:
-
-```bash
-conda env create -f envs/junctionseq.ym
-conda activate leafcutter
-Rscript -e "BiocManager::install('JunctionSeq')"
-```
-
-## Cloning or installing Baltica?
-Baltica can either installed as a python package or cloned from Github for each project.
-The installed version of Baltica is more convenient to be used with:  
-`baltica qc config.yml` (as long the dependencies are available).
-Users who intend to modify the workflows should clone the framework and keep the change under version. 
-See (workflows)[workflows.md] for details on each available workflow configuration and parameters.
-
-## Baltica command-line arguments
-
-Use the command below to list the command line arguments and their options: 
-```
 baltica --help
 ```
 
-## Executing a Baltica workflow
+Baltica executor takes a single optional argument `--verbose`, to detail it execution. Every other option is passed to Snakemake.
 
-* with the [modules system](https://modules.readthedocs.io/en/latest/index.html):
-    `baltica qc config.yml --use-envmodule`
-* with conda enviroments:
-    `baltica qc config.yml --use-conda`
-* using an external conda environment, like the one we used for Majiq installation:
-    set `majiq_env_prefix = conda activate majiq_env;` in the configuration file
+Supported  workflows:  
+| Command     |  Description  |  
+| ----------- | --------------|  
+| `qc`        |  |  
+| `rmats`     |  |  
+| `majiq`     |  |  
+| `analysis`  |  |  
+| `stringtie` |  |  
+| `leafcutter`|  |  
+| `all`       | Runs end-to-end wokflows |  
 
-There are alternatives to provide the software dependencies to Snakemake workflows, so feel free to contact them if you need an option.
+## Cluster profile
 
-[^1]: If you use Baltica, please also [cite Snakemake](https://bioinformatics.oxfordjournals.org/content/28/19/2520)
+Snakemake supports distributed workflow execution in many different high-performance computer clusters, as detailed [here](https://snakemake.readthedocs.io/en/stable/executing/cluster.html?highlight=profile#cluster-execution). We recommend using [cluster profiles](https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles) and using it like: 
+
+```bash
+baltica <workflow> <config> --use-singularity --profile <cluster> 
+```
+
+## (Advanced) Testing Baltica 
+Baltica's continuous integration testing suite is under development.
+
+## (Advanced) Baltica workflows directly from Snakemake
+
+Baltica workflows can be used directly with Snakemake without installation. However, there is limited support for it.
+
+## Contributing to the documentation
+For the docs, we use [MkDocs](https://www.mkdocs.org/) because of its flexibility. After cloning Baltica one can:
+
+```bash
+git checkout gh-pages
+vi docs/setup.md # change something
+# Make a pull request
+```
+
+## References
+
+[^1]: If you use Baltica, also please [cite Snakemake](https://bioinformatics.oxfordjournals.org/content/28/19/2520)
 [^2]: If you use Majiq results, please [cite it]( https://elifesciences.org/articles/11752)
 [^3]: If you use Leafcutter results, please [cite it](https://www.nature.com/articles/s41588-017-0004-9)
-[^4]: If you use Junctionseq results, please [cite it](http://nar.oxfordjournals.org/content/early/2016/06/07/nar.gkw501.full)
-[^5]: If you use the Baltica's analysis module, please also [cite Stringtie](https://www.nature.com/articles/nbt.3122)
+[^4]: If you use rMATS, please [cite it](https://www.pnas.org/content/111/51/E5593) 
+[^5]: If you use Junctionseq results, please [cite it](http://nar.oxfordjournals.org/content/early/2016/06/07/nar.gkw501.full)
+[^6]: If you use the Baltica's analysis module, please also [cite Stringtie](https://www.nature.com/articles/nbt.3122)
+
 
 \bibliography
