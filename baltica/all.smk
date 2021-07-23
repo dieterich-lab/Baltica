@@ -78,4 +78,4 @@ rule final:
         analysis(
             expand(
             "results/baltica_table{project_title}.xlsx", 
-            project_title="_" + config.get("project_title", "")replace(' ', '_'))),
+            project_title="_" + config.get("project_title", "").replace(' ', '_')))

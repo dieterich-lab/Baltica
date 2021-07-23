@@ -72,5 +72,5 @@ openxlsx::write.xlsx(
   colNames = T,
   asTable = T,
   file = opt$output,
-  sheetName = "baltica_table",
+  sheetName = "baltica_table"
 )
