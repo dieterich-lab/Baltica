@@ -109,6 +109,40 @@ get_exon_number <- function(ex_tx) {
   exon_number
 }
 
+#' Process a file with scores from orthogonal experiment
+#' Used to integrated third-generation sequencing results into baltica
+#'
+#' File formats should be readable by rtracklayer (BED, GTF)
+#' the score column is mandatory
+#' the comparison column is facultative
+#' @param .path file path
+#' @return a GRange object with a score metadata column
+#' @export
+process_ort_result <- function(.path) {
+  message("Processing orthognal result")
+
+  ort_result <- rtracklayer::import(.path)
+  if (!"score" %in% colnames(mcols(ort_result))) {
+    warn(
+      str_glue("score column is missing from {.path}
+      , so the file will not be used")
+    )
+  } else {
+    .score <- mcols(ort_result)$score
+    if ("comparison" %in% colnames(mcols(ort_result))) {
+      .comparison <- mcols(ort_result)$comparison
+    }
+    mcols(ort_result) <- NULL
+    mcols(ort_result)$score <- .score
+    if (exists(".comparison")) {
+      mcols(ort_result)$comparison <- .comparison
+    }
+    mcols(ort_result)$method <- "orthognal_result"
+  }
+  ort_result
+}
+
+
 default_input <- str_glue(
   "{method}/{method}_junctions.csv",
   method = c("junctionseq", "leafcutter", "majiq", "rmats")
@@ -141,6 +175,14 @@ option_list <- list(
     help = "Path to output",
     metavar = "character",
     default = "results/SJ_annotated.csv"
+  ),
+  make_option(
+    c("-n", "--orthognal_result"),
+    type = "character",
+    help = "Optionall, path to a file readable by rtracklayer (BED, GFF) with
+     a score column with results from a orthogonal method, such as
+     paired ONT Nanopore-seq from the same samples.",
+    metavar = "character",
   )
 )
 # enabling both baltica or snakemake input
@@ -157,7 +199,8 @@ if (exists("snakemake")) {
     ),
     reference = snakemake@params$ref,
     annotation = snakemake@input[[5]],
-    output = snakemake@output[[1]]
+    output = snakemake@output[[1]],
+    orthognal_result = snakemake@params$orthognal_result
   )
 } else {
   opt <- parse_args(OptionParser(option_list = option_list))
@@ -245,11 +288,15 @@ if (!is.null(opt$reference)) {
 
   reference <- rtracklayer::import.gff(opt$reference)
   ref_ex_tx <- filter_multi_exon(reference)
-
   ref_introns <- get_introns(ref_ex_tx)
   introns$is_novel <- !(introns %in% ref_introns)
 }
-message("preparing annotation")
+
+ort_result <- NULL
+if (!is.null(opt$orthognal_result)) {
+  ort_result <- process_ort_result(opt$orthognal_result)
+}
+
 message("preparing annotation")
 exon_number <- get_exon_number(ex_tx)
 txid_to_gene <- setNames(tx$gene_name, nm = tx$transcript_id)
@@ -273,7 +320,11 @@ mcols(introns) <- NULL
 names(introns) <- NULL
 mcols(introns)$metadata_group <- seq_along(introns)
 
-gr <- c(gr, introns)
+if (!is.null(ort_result)) {
+  gr <- c(gr, ort_result, introns)
+} else {
+  gr <- c(gr, introns)
+}
 
 ############################################
 message("Integration introns")
@@ -288,6 +339,7 @@ df_base <- as_tibble(mcols(gr)[hits$values, ])
 df_base$group <- hits$ind
 
 df <- df_base %>%
+  arrange(method) %>%
   group_by(
     group
   ) %>%
