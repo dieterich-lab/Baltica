@@ -83,7 +83,7 @@ def cli(workflow, config_file, verbose, snakemake_args):
     else:
         logger.setLevel(logging.ERROR)
     # Error if older version of snakemake is installed
-    min_snakemake_version = "5.2"
+    min_snakemake_version = "6"
     try:
         snakemake.utils.min_version(min_snakemake_version)
     except snakemake.exceptions.WorkflowError as e:
