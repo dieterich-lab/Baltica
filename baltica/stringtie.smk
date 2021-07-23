@@ -32,7 +32,7 @@ def extract_samples_replicates(samples, _pattern=re.compile("^(.+)_(.+)$")):
     return list(zip(*[re.match(_pattern, x).groups() for x in samples]))
 
 
-strand = {"reverse": "--fr", "foward": "--rf"}
+strand = {"fr-firststrand": "--fr", "fr-secondstrand": "--rf"}
 
 
 workdir: config.get("path", ".")
