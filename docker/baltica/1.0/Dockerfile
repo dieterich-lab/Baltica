@@ -1,6 +1,8 @@
 # syntax=docker/dockerfile:1
-FROM bioconductor/bioconductor_docker:latest
 
-ENV LANG en_US.utf8
+FROM mambaorg/micromamba:0.13.1
 
-RUN R -e "install.packages(c('GenomicRanges', 'tidyverse', 'openxlsx', 'optparse'), repos = 'https://cloud.r-project.org/', dependencies = T, ask=F)"
+COPY envs/baltica.yml /opt/env.yaml
+
+RUN micromamba install -y -n base -f /opt/env.yaml && \
+    micromamba clean --all --yes
