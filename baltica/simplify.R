@@ -67,6 +67,7 @@ for (col in c(
 
 openxlsx::write.xlsx(
   df %>% select(coordinates, everything()),
+  overwrite = T,
   firstCol = T,
   colNames = T,
   asTable = T,
