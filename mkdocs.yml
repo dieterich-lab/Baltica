@@ -6,8 +6,6 @@ edit_uri: tree/master/docs/
 site_description: Baltica - Integrated differential junction usage (DJU)
 copyright: Thiago Britto-Borges, Dieterichlab - MIT License
 use_directory_urls: false
-# <br><span class="md-footer-custom-text">  <a href="https://www.dieterichlab.org">www.dieterichlab.org</a> </span>
-#   <br><span class="md-footer-custom-text">  <a href="https://www.klinikum.uni-heidelberg.de/en/zentrum-fuer-innere-medizin-medizin-klinik/innere-medizin-iii-kardiologie-angiologie-und-pneumologie/forschung/forschung/klaus-tschira-institut-fuer-computational-cardiology/">Dieterich lab</a>  </span>
 docs_dir: docs/
 theme:
   name: material
@@ -15,22 +13,24 @@ theme:
   features:
     - instant
   palette:
-    primary: grey
-    accent: blue-grey
+    scheme: slate
   font:
     text: Roboto
     code: Roboto Mono
+  logo: img/baltica_logo.ico
 
 extra_css:
     - extra.css
 
 nav:
-  - 1 - Index: index.md
-  - 2 - Introduction: intro.md
-  - 3 - Getting started: setup.md 
-  - 4 - Methods: workflows.md 
-  - 5 - Benchmark with artificial transcripts: benchmark.md
-  - 6 - DJU methods result integration: integration.md 
+  - Index: index.md
+  - Introduction: intro.md
+  - Getting started: setup.md 
+  - Project configuration: proj-config.md
+  - Workflow implementation: workflows.md 
+  - DJU methods result integration: integration.md 
+  - Development guidelines: dev_guide.md
+  - Frequently asked questions: faq.md
   - Release notes: release-notes.md 
 
 markdown_extensions:
@@ -47,12 +47,8 @@ plugins:
   - bibtex:
       bib_file: "docs/bibliography.bib"
       cite_style: "pandoc"
-      csl_file: "natbio"
   - mkpdfs:
-      #design: "mkpdfs-design-sample/report.css"
-      design: "/home/tjakobi/repos/others/mkpdfs-design-sample/report.css"
-      # author: "Thiago Britto-Borges"
-      # company: "Dieterichlab - Heidelberg University Hospital"
+      design: "docs/report.css"
       output_path: "pdf/baltica_docs.pdf"
       toc_title: Table of Content
 

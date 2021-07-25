@@ -1,7 +1,8 @@
-# Baltica: integrated splice junction usage analysis
+# [Baltica: integrated splice junction usage analysis](https://github.com/dieterich-lab/Baltica)
+
 ## Features
-    - Snakemake workflows for DJU: JunctionSeq, Majiq, rMATS, and Leafcutter
-    - Snakemake workflow for de novo transcriptome annotation with Stringtie
+    - Snakemake workflows for DJU: `junctionseq`, `majiq`, `rmats`, and `leafcutter`
+    - Snakemake workflow for de novo transcriptome annotation with `stringtie`
     - Process, integrate and annotate the results from the methods
     - Summarise AS class of differently spliced junctions
     - DJU method benchmarks
