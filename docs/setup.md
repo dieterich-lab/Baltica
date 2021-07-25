@@ -51,7 +51,7 @@ Baltica depends on python3, Singulary, and Snakemake.
 
 ```bash
 git clone https://github.com/dieterich-lab/baltica
-cd Baltica
+cd baltica
 pip install .
 ```
 Will install Baltica and its python dependencies. You may want to create a [virtual environment](https://realpython.com/python-virtual-environments-a-primer/) before installing Baltica.  
