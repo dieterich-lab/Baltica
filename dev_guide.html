@@ -7,10 +7,10 @@
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
 <meta content="Baltica - Integrated differential junction usage (DJU)" name="description"/>
 <meta content="Thiago Britto-Borges" name="author"/>
-<link href="https://github.com/dieterich-lab/Baltica/tutorial.html" rel="canonical"/>
+<link href="https://github.com/dieterich-lab/Baltica/dev_guide.html" rel="canonical"/>
 <link href="assets/images/favicon.png" rel="icon"/>
 <meta content="mkdocs-1.2.2, mkdocs-material-7.2.0" name="generator"/>
-<title>Tutorial - Baltica Documentation</title>
+<title>Development guidelines - Baltica Documentation</title>
 <link href="assets/stylesheets/main.fe914879.min.css" rel="stylesheet"/>
 <link href="assets/stylesheets/palette.ba0d045b.min.css" rel="stylesheet"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -24,7 +24,7 @@
 <input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
 <label class="md-overlay" for="__drawer"></label>
 <div data-md-component="skip">
-<a class="md-skip" href="#step-by-step-tutorial-with-sample-data-set">
+<a class="md-skip" href="#development-guidelines">
           Skip to content
         </a>
 </div>
@@ -48,7 +48,7 @@
 <div class="md-header__topic" data-md-component="header-topic">
 <span class="md-ellipsis">
             
-              Tutorial
+              Development guidelines
             
           </span>
 </div>
@@ -150,10 +150,57 @@
         DJU methods result integration
       </a>
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="dev_guide.html">
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" data-md-toggle="toc" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+          Development guidelines
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="dev_guide.html">
         Development guidelines
       </a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#setting-up-mkdocs">
+    Setting up mkdocs
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#contributing-to-the-documentation">
+    Contributing to the documentation
+  </a>
+<nav aria-label="Contributing to the documentation" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#modify-any-of-the-doc-files">
+    Modify any of the doc files
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#test-the-changes-locally">
+    Test the changes locally
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#deploy-changes">
+    Deploy changes
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#testing-baltica">
+    Testing Baltica
+  </a>
+</li>
+</ul>
+</nav>
 </li>
 <li class="md-nav__item">
 <a class="md-nav__link" href="faq.html">
@@ -180,8 +227,37 @@
     </label>
 <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#step-by-step-tutorial-with-sample-data-set">
-    Step by step tutorial with sample data set
+<a class="md-nav__link" href="#setting-up-mkdocs">
+    Setting up mkdocs
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#contributing-to-the-documentation">
+    Contributing to the documentation
+  </a>
+<nav aria-label="Contributing to the documentation" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#modify-any-of-the-doc-files">
+    Modify any of the doc files
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#test-the-changes-locally">
+    Test the changes locally
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#deploy-changes">
+    Deploy changes
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#testing-baltica">
+    Testing Baltica
   </a>
 </li>
 </ul>
@@ -191,17 +267,74 @@
 </div>
 <div class="md-content" data-md-component="content">
 <article class="md-content__inner md-typeset"><a class="md-content__icon pdf-download-btn" download href="pdf/baltica_docs.pdf" title="Download"><i class="fa fas fa-download"></i><small> PDF</small></a>
-<a class="md-content__button md-icon" href="https://github.com/dieterich-lab/Baltica/tree/master/docs/tutorial.md" title="Edit this page">
+<a class="md-content__button md-icon" href="https://github.com/dieterich-lab/Baltica/tree/master/docs/dev_guide.md" title="Edit this page">
 <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"></path></svg>
 </a>
-<h1>Tutorial</h1>
-<h2 id="step-by-step-tutorial-with-sample-data-set">Step by step tutorial with sample data set<a class="headerlink" href="#step-by-step-tutorial-with-sample-data-set" title="Permanent link">¶</a></h2>
-<p>We developed and tested the workflows with the Debian Linux distribution (v8.11 Jesse). We use the module system to test the workflows, but conda usage is similar </p>
+<h1 id="development-guidelines">Development guidelines:<a class="headerlink" href="#development-guidelines" title="Permanent link">¶</a></h1>
+<p>For the docs, we use <a href="https://www.mkdocs.org/">MkDocs</a> because of its flexibility:<br/>
+- <a href="https://squidfunk.github.io/mkdocs-material/getting-started/">mkdocs-material</a>: look and feel<br/>
+- <a href="https://github.com/shyamd/mkdocs-bibtex">mkdocs-bibtex</a>: literature reference<br/>
+- <a href="https://comwes.github.io/mkpdfs-mkdocs-plugin/getting-started.html">MkPDFs</a>: PDF version  </p>
+<h2 id="setting-up-mkdocs">Setting up mkdocs<a class="headerlink" href="#setting-up-mkdocs" title="Permanent link">¶</a></h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># osx specific settings</span>
+conda install pango cairo
+
+pip install mkdocs
+pip install mkdocs-material
+pip install mkdocs-bibtex
+pip install -e git+https://github.com/jwaschkau/mkpdfs-mkdocs-plugin.git#egg<span class="o">=</span>mkpdfs-mkdocs-plugin
+
+<span class="c1"># osx specific settings</span>
+<span class="nb">export</span> <span class="nv">LC_ALL</span><span class="o">=</span>en_US.UTF-8
+<span class="nb">export</span> <span class="nv">LANG</span><span class="o">=</span>en_US.UTF-8
+</code></pre></div>
+<h2 id="contributing-to-the-documentation">Contributing to the documentation<a class="headerlink" href="#contributing-to-the-documentation" title="Permanent link">¶</a></h2>
+<h3 id="modify-any-of-the-doc-files">Modify any of the doc files<a class="headerlink" href="#modify-any-of-the-doc-files" title="Permanent link">¶</a></h3>
+<div class="codehilite"><pre><span></span><code>vi docs/setup.md 
+</code></pre></div>
+<h3 id="test-the-changes-locally">Test the changes locally<a class="headerlink" href="#test-the-changes-locally" title="Permanent link">¶</a></h3>
+<div class="codehilite"><pre><span></span><code>mkdocs serve
+</code></pre></div>
+<p>If everything looks fine you can submit a patch or pull-request.</p>
+<h3 id="deploy-changes">Deploy changes<a class="headerlink" href="#deploy-changes" title="Permanent link">¶</a></h3>
+<p>This requires permissions from the GitHub organization.</p>
+<div class="codehilite"><pre><span></span><code>mkdocs gh-deploy
+</code></pre></div>
+<h2 id="testing-baltica">Testing Baltica<a class="headerlink" href="#testing-baltica" title="Permanent link">¶</a></h2>
+<p>Baltica's continuous integration testing suite is under development.</p>
 </article>
 </div>
 </div>
 </main>
 <footer class="md-footer">
+<nav aria-label="Footer" class="md-footer__inner md-grid">
+<a aria-label="Previous: DJU methods result integration" class="md-footer__link md-footer__link--prev" href="integration.html" rel="prev">
+<div class="md-footer__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"></path></svg>
+</div>
+<div class="md-footer__title">
+<div class="md-ellipsis">
+<span class="md-footer__direction">
+                Previous
+              </span>
+              DJU methods result integration
+            </div>
+</div>
+</a>
+<a aria-label="Next: Frequently asked questions" class="md-footer__link md-footer__link--next" href="faq.html" rel="next">
+<div class="md-footer__title">
+<div class="md-ellipsis">
+<span class="md-footer__direction">
+                Next
+              </span>
+              Frequently asked questions
+            </div>
+</div>
+<div class="md-footer__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"></path></svg>
+</div>
+</a>
+</nav>
 <div class="md-footer-meta md-typeset">
 <div class="md-footer-meta__inner md-grid">
 <div class="md-footer-copyright">

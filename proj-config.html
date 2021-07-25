@@ -7,10 +7,10 @@
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
 <meta content="Baltica - Integrated differential junction usage (DJU)" name="description"/>
 <meta content="Thiago Britto-Borges" name="author"/>
-<link href="https://github.com/dieterich-lab/Baltica/tutorial.html" rel="canonical"/>
+<link href="https://github.com/dieterich-lab/Baltica/proj-config.html" rel="canonical"/>
 <link href="assets/images/favicon.png" rel="icon"/>
 <meta content="mkdocs-1.2.2, mkdocs-material-7.2.0" name="generator"/>
-<title>Tutorial - Baltica Documentation</title>
+<title>Project configuration - Baltica Documentation</title>
 <link href="assets/stylesheets/main.fe914879.min.css" rel="stylesheet"/>
 <link href="assets/stylesheets/palette.ba0d045b.min.css" rel="stylesheet"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -24,7 +24,7 @@
 <input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
 <label class="md-overlay" for="__drawer"></label>
 <div data-md-component="skip">
-<a class="md-skip" href="#step-by-step-tutorial-with-sample-data-set">
+<a class="md-skip" href="#baltica-project-configuration">
           Skip to content
         </a>
 </div>
@@ -48,7 +48,7 @@
 <div class="md-header__topic" data-md-component="header-topic">
 <span class="md-ellipsis">
             
-              Tutorial
+              Project configuration
             
           </span>
 </div>
@@ -135,10 +135,33 @@
         Getting started
       </a>
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="proj-config.html">
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" data-md-toggle="toc" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+          Project configuration
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="proj-config.html">
         Project configuration
       </a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#parameters-description">
+    Parameters description
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#pairwise-comparisons">
+    Pairwise comparisons
+  </a>
+</li>
+</ul>
+</nav>
 </li>
 <li class="md-nav__item">
 <a class="md-nav__link" href="workflows.html">
@@ -180,8 +203,13 @@
     </label>
 <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#step-by-step-tutorial-with-sample-data-set">
-    Step by step tutorial with sample data set
+<a class="md-nav__link" href="#parameters-description">
+    Parameters description
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#pairwise-comparisons">
+    Pairwise comparisons
   </a>
 </li>
 </ul>
@@ -191,17 +219,149 @@
 </div>
 <div class="md-content" data-md-component="content">
 <article class="md-content__inner md-typeset"><a class="md-content__icon pdf-download-btn" download href="pdf/baltica_docs.pdf" title="Download"><i class="fa fas fa-download"></i><small> PDF</small></a>
-<a class="md-content__button md-icon" href="https://github.com/dieterich-lab/Baltica/tree/master/docs/tutorial.md" title="Edit this page">
+<a class="md-content__button md-icon" href="https://github.com/dieterich-lab/Baltica/tree/master/docs/proj-config.md" title="Edit this page">
 <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"></path></svg>
 </a>
-<h1>Tutorial</h1>
-<h2 id="step-by-step-tutorial-with-sample-data-set">Step by step tutorial with sample data set<a class="headerlink" href="#step-by-step-tutorial-with-sample-data-set" title="Permanent link">¶</a></h2>
-<p>We developed and tested the workflows with the Debian Linux distribution (v8.11 Jesse). We use the module system to test the workflows, but conda usage is similar </p>
+<h1 id="baltica-project-configuration">Baltica project configuration:<a class="headerlink" href="#baltica-project-configuration" title="Permanent link">¶</a></h1>
+<p>Baltica requires a project configuration file as input. For a template see <a href="https://raw.githubusercontent.com/dieterich-lab/Baltica/master/baltica/config.yml">here</a>. For a programmatic solution to generate the configuration, use the script <a href="https://github.com/dieterich-lab/Baltica/blob/8bc5fe5f71e948b3971ea5db5f1456b2d9e2f838/baltica/write_new_config.R">baltica/write_new_config.R</a>. Method specific parameters are detailed in the <a href="workflows.html">Workflow implementation</a> page.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Baltica requires a full path to files.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>Required</code> column flags parameters without default.</p>
+</div>
+<h2 id="parameters-description">Parameters description<a class="headerlink" href="#parameters-description" title="Permanent link">¶</a></h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>path</td>
+<td>project path</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>sample_path</td>
+<td>path to the parent directory for aligment files</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>samples</td>
+<td>sample name and directory formated as "{sample_name}:   {path_to_sample)</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>contrasts</td>
+<td>list of contrasts names (<a href="proj-config.html#pairwise-comparisons">format</a>)</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>assembly</td>
+<td>assembly name on UCSC Browser</td>
+<td></td>
+</tr>
+<tr>
+<td>strandness</td>
+<td>one of fr-firststrand, fr-secondstrand or none (unstranded)</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>read_len</td>
+<td>maximun read length</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>ref</td>
+<td>path to reference annotation in the GTF format</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>ref_fa</td>
+<td>path to reference annotation in the FASTA format</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>project_authors</td>
+<td>project author name, used in the report</td>
+<td></td>
+</tr>
+<tr>
+<td>project_title</td>
+<td>project title name, used in file names and report</td>
+<td></td>
+</tr>
+<tr>
+<td>orthognal_result</td>
+<td>result from Nanopore-seq in GFF or   BED with a valida score column, and optionally a comparisons column with   contrasts</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<!-- | **majiq specific parameters** |  |  |
+| **junction specific parameters** |  |  |
+| **stringtie specific parameters** |  |  |
+| **leafcutter specific parameters** |  |  |
+| leafcutter_min_samples_per_group |  |  |
+| leafcutter_min_samples_per_intron |  |  |
+| leafcutter_min_coverage |  |  |
+| leafcutter_min_cluster_reads |  |  |
+| leafcutter_max_intron_length |  |  |
+| majiq_threshold |  |  |
+| **majiq specific parameters** |  |  |
+| majiq_minreads |  |  | -->
+<h2 id="pairwise-comparisons">Pairwise comparisons<a class="headerlink" href="#pairwise-comparisons" title="Permanent link">¶</a></h2>
+<div class="codehilite"><pre><span></span><code><span class="nt">contrasts</span><span class="p">:</span>
+  <span class="p p-Indicator">{</span><span class="nv">case1</span><span class="p p-Indicator">}</span><span class="l l-Scalar l-Scalar-Plain">-vs-{control}</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">case1</span><span class="p p-Indicator">}</span>
+    <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">control</span><span class="p p-Indicator">}</span> 
+  <span class="p p-Indicator">{</span><span class="nv">cas2</span><span class="p p-Indicator">}</span><span class="l l-Scalar l-Scalar-Plain">-vs-{control}</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">case2</span><span class="p p-Indicator">}</span>
+    <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">control</span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>junctionseq and leafcutter support more complex experimental designs, which were not yet implemented in Baltica.</p>
+</div>
 </article>
 </div>
 </div>
 </main>
 <footer class="md-footer">
+<nav aria-label="Footer" class="md-footer__inner md-grid">
+<a aria-label="Previous: Getting started" class="md-footer__link md-footer__link--prev" href="setup.html" rel="prev">
+<div class="md-footer__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"></path></svg>
+</div>
+<div class="md-footer__title">
+<div class="md-ellipsis">
+<span class="md-footer__direction">
+                Previous
+              </span>
+              Getting started
+            </div>
+</div>
+</a>
+<a aria-label="Next: Workflow implementation" class="md-footer__link md-footer__link--next" href="workflows.html" rel="next">
+<div class="md-footer__title">
+<div class="md-ellipsis">
+<span class="md-footer__direction">
+                Next
+              </span>
+              Workflow implementation
+            </div>
+</div>
+<div class="md-footer__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"></path></svg>
+</div>
+</a>
+</nav>
 <div class="md-footer-meta md-typeset">
 <div class="md-footer-meta__inner md-grid">
 <div class="md-footer-copyright">
