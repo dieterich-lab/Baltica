@@ -4,7 +4,7 @@
 
 If Baltica dependencies, baltica configuration and cluster configuration are available, use:
 ```bash
-baltica <workflow> <config> --use-singularity --profile <cluster>
+baltica <workflow> <config> --use-singularity
 ```
 - **workflow**:  
     - all: run end-to-end wokflows
@@ -16,12 +16,12 @@ baltica <workflow> <config> --use-singularity --profile <cluster>
     - leafcutter 
     - analysis: run scripts for integration, annotation and reporting
 - **config**: [project configuration file](proj-config.md)
-- **cluster**: [Snakemake cluster profile](https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles) 
 
-Or, read below.
+Use `--profile <cluster>` with a [Snakemake cluster profile](https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles) 
+or set the number of avaiable cores with `--cores`. For more Snakemake parameters, [check their documentation](https://snakemake.readthedocs.io/en/stable/executing/cli.html).
 
 !!! warning
-    Snakemake is under active development. Please [contact us](https://github.com/dieterich-lab/Baltica/issues) if you have any issues with this documentation.
+    Baltica is under active development. Please [contact us](https://github.com/dieterich-lab/Baltica/issues) if you have any issues with this documentation.
 
 ## Software environment:
 
@@ -69,7 +69,10 @@ Use baltica `cli` for current help documentation:
 baltica --help
 ```
 
-Baltica executor takes a single optional argument `--verbose`, to detail it execution. Every other option is passed to Snakemake.
+Baltica executor takes a single optional argument `--verbose`, to detail its execution. Every other option is passed to Snakemake.
+
+## Test dataset
+Baltica ships with a test dataset, located at the `data/` directory. **Users are required to update this configuration file**. Please see the [Baltica project configuration](proj-config.md) for further details.
 
 ## Cluster profile
 
