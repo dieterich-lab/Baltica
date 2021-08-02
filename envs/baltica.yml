@@ -19,6 +19,7 @@ dependencies:
   - conda-forge::r-knitr
   - conda-forge::r-scales
   - conda-forge::r-ggrepel
+  - conda-forge::r-pander 
   - conda-forge::r-base[version'>=4.0']
   - conda-forge::r-rmdformats
   - python=3.6
