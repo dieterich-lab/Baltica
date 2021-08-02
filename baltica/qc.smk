@@ -265,4 +265,4 @@ rule multiqc:
     log:
         "logs/multiqc.log",
     shell:
-        "multiqc -d --dirs-depth 1 qc/ -o qc/multiqc 2> {log}"
+        "multiqc -d --dirs-depth 1 qc/ -o qc/multiqc 2> {log} --force"
