@@ -1,11 +1,22 @@
 # syntax=docker/dockerfile:1
 
-FROM continuumio/miniconda3:4.10.3
+FROM bioconductor/bioconductor_docker:latest
 
-COPY envs/baltica.yml /opt/env.yaml
+RUN apt-get update \
+    && pip install ttp \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN conda env create -f /opt/env.yaml
-
-RUN conda init bash
-
-RUN echo "conda activate baltica" >> ~/.bashrc
+# Install R packages
+RUN install2.r --error \
+    tidyverse \
+    reshape2 \
+    rmarkdown \
+    openxlsx \
+    reactable \
+    knitr \
+    ggrepel \
+    scales \
+    yaml \
+    pander \
+    rmdformats
