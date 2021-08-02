@@ -13,8 +13,7 @@ import subprocess
 import snakemake
 import click
 
-_program = "baltica"
-__version__ = "1.0.1"
+from baltica.version import _program, __version__
 
 baltica_path = Path(__file__)
 

@@ -3,7 +3,7 @@ import pathlib
 from setuptools.command.install import install
 from setuptools import setup
 
-from baltica.command import __version__, _program
+from baltica.version import __version__, _program
 
 with open('requirements.txt') as f:
     required = [x for x in f.read().splitlines() if not x.startswith("#")]
