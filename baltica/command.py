@@ -113,8 +113,15 @@ def cli(workflow, config_file, verbose, snakemake_args):
 
     if verbose:
         snakemake_args.extend(['--printshellcmds', '--verbose', '--reason'])
-
-    if not any([x in snakemake_args for x in ['--cores', '-c', '--job', '-j']]):
+    else:
+        logger.warning(
+            "Starting Baltica run in a quiet mode. Use --verbose "
+            "to change this behavior.")
+    if not any([x in snakemake_args for x in ['--cores', '-c', '--job', '-j', '--profile']]):
+        logger.warning(
+            "Snakemake invoked with a single-core, use --cores N or "
+            "--jobs N, where N is the number of available cores to "
+            "change this parameter.")
         snakemake_args.append('-j1')
 
     # Singularity support
@@ -154,6 +161,7 @@ def cli(workflow, config_file, verbose, snakemake_args):
 
     if workflow == 'all':
         # append final rule name for end-to-end execution
+        logger.info("Running baltica in the end-to-end mode.")
         snakemake_args.append('final')
 
     logger.info(
