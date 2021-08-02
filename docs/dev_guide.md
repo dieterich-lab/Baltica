@@ -22,6 +22,23 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 ```
 
+## Updating docker containers
+
+The dockerfile for container are located at `docker/` directory. Some of the enviroments use conda recipes, which are located at the `envs/` directory. After updating one recipes, to build and upload the container one should use:
+
+```bash
+cd Baltica/
+docker build -f <dockerfile> --tag <tag> .
+docker push <tag>
+```
+
+For example,
+- of docker file: `docker/baltica/1.0/Dockerfile`
+- tag: `tbrittoborges/baltica:latest`
+
+The containers are hosted at the [docker hub](https://hub.docker.com/repository/docker/tbrittoborges/) and this location can be changed at the 
+*container* directive at the snakefiles.  
+
 ## Contributing to the documentation
 
 ### Modify any of the doc files
