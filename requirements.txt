@@ -1,3 +1,4 @@
 PyYAML
-snakemake >= 5.11
+snakemake >= 6
 ttp
+click
