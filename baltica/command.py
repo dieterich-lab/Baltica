@@ -9,7 +9,7 @@ import sys
 import yaml
 import logging
 import subprocess
-
+import tempfile
 import snakemake
 import click
 
@@ -130,7 +130,7 @@ def cli(workflow, config_file, verbose, snakemake_args):
                           str(Path(config['ref_fa']).parent),
                           str(Path(config['config_path']).parent),
                           str(relative_path),
-                          os.environ['TMPDIR']])
+                          tempfile.gettempdir()])
 
         # bind several paths that contain input data
         snakemake_args.extend(
