@@ -40,13 +40,12 @@ contrasts:
     - mix3
     - mix2
 
-# This parameters is not currently used in Baltica
 assembly:
-  GRCh38_90_SIRV
+  GRCh38_90
 # In case of doubt, please RSeQC infer_experiment result
 strandness:
-  reverse
-# If the read length is variable, use the maximum
+  fr-firststrand
+# If the read length is variable, use the maximum value
 read_len:
   101
 # full path to the reference transcriptome model

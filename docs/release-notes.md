@@ -1,8 +1,8 @@
 ## Change log
 
 ### Master July 23, 2021 (unreleased)
-* Add rMATs workflow
-* Add scrips for parsing for rMATS and updated analysis to support the method
+* Add rmats workflow
+* Add scrips for parsing for rmats and updated analysis to support the method
 * Create the benchmark with the ONT Nanopore-seq
 * Update benchmaks, included difference comparison for SIRV benchmark
 * Splite annotation and AS type assigment functions
@@ -14,12 +14,11 @@
 * Experiment with meta-score (gradient boosted trees) 
 * Add baltica report and improved on report summaries 
 * Add orthogonal dataset use-case, to integrate third generation sequencing to the baltica table
-* Change strand parameter to "fr-firststrand": "reverse", "fr-secondstrand": "forward" or unstranded, fix error in rMATS strand 
+* Change strand parameter to "fr-firststrand": "reverse", "fr-secondstrand": "forward" or unstranded, fix error in rmats strand 
 
 ### 1.1 <small> September 17, 2020</small>
 * Add `is_novel` column, indication introns not into the reference annotation
 * Remove unitended columns (X1, ...) from merge
 
 ### 1.0 <small>- July 23, 2020</small>
-
 * First public release comprises of DJU methods Leafcutter, Junctionseq and Majiq. Stringtie for *de novo* transcriptomics assembly. FastQC and MultiQC (#1).

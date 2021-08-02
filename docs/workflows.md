@@ -1,22 +1,30 @@
+# Workflow implementation
+
+!!! warning
+    This chapter is partially outdated.
+
 This chapter details the implementation and usage of each workflow in Baltica.
 
 Baltica comprises a collection of Snakemake workflows (in the SMK format). Each file determines a series of sub-tasks (rules). The sub-tasks run in a specific order; once the output of every rule is complete, the workflow is considered successful. We implemented the workflows following instructions and parameters suggested by the methods authors unless otherwise noted.
 
 ![](img/Baltica_overview.png){ .center }
-__Fig. 4.1 - Baltica overview__: As input (1), Baltica takes the alignment files in the BAM format, and transcriptome annotation and a configuration file that matches the sample names to the alignment file. The file also holds any workflow parameters. In the first optional step (2), Baltica produces a quality control report with MultiQC, which summarizes the results from FastQC and RSeQC. Next (3), Baltica computes the DJU methods and produces a _de novo_ transcriptome with Stringtie. The novel exons and transcripts are indispensable for the integration step (4). Finally, the framework parses and integrates the output of the DJU methods.
+__Fig. 1 - Baltica overview__: As input (1), Baltica takes the alignment files in the BAM format, and transcriptome annotation and a configuration file that matches the sample names to the alignment file. The file also holds any workflow parameters. In the first optional step (2), Baltica produces a quality control report with MultiQC, which summarizes the results from FastQC and RSeQC. Next (3), Baltica computes the DJU methods and produces a _de novo_ transcriptome with Stringtie. The novel exons and transcripts are indispensable for the integration step (4). Finally, the framework parses and integrates the output of the DJU methods.
 
 Which are achieved by successively calling: 
 
 1. Input
 1. Quality control:   
-`baltica qc config.yml`
+```bash
+baltica qc <config>
+```
+
 1. Differential Junction Usage (DJU) and _de novo_ transcriptomics:   
-`baltica junctionseq config.yml`  
-`baltica majiq config.yml`  
-`baltica leafcutter config.yml`  
-`baltica stringtie config.yml`  
+`baltica junctionseq <config>`  
+`baltica majiq <config>`  
+`baltica leafcutter <config>`  
+`baltica stringtie <config>`  
 1. Integration:   
-`baltica analysis config.yml`
+`baltica analysis <config>`
 
 !!! important
     The transcriptome annotation is critical, so make sure you use the same annotation during read alignment and Baltica.
@@ -38,34 +46,6 @@ There are a plethora of DJU methods, defined as methods that model SJ to identif
 
 We are aware of other methods, such as Suppa [@Trincado2018] and rMATs [@Shen_2014], also fit these criteria and aim to expand the catalog of supported methods in the future.
 
-## Baltica configuration
-
-The configuration file contains the parameters for workflows and file paths for input requirements and output destination. We use the JSON file format as a [configuration file](https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html). 
-Please see a minimal working example [here](https://github.com/dieterich-lab/Baltica/blob/master/baltica/config.yml). 
-
-The following parameters are mandatory:
-
-Parameter name | Description | Note     
--------------- | ----------- | ---- 
-`path` |  absolute path to the logs and results  |  
-`sample_path` | path to the parent directory to the alignment files |  
-`samples` | sample name to alignment files (BAM format) a condition name | [^1]
-`comparison` |  pair of groups to be tested |
-`ref` |  full path to the reference transcriptome annotation in the (GTF format) | 
-`ref_fa` | full path to the reference genome sequence in the FASTA format | [^2]  
-`*_env` | Used if the required dependency is __not__ available in the path | [^3]
-`strandedness` | choice between `reverse`, `forward` or None | [^4] 
-`read_len` | positive integer representing the maximum read length | [^5]
-
-[^1]: We use the following convention for the sample name: `{condition}_{replicate}`, where the condition is the experimental group name without spaces or underline character, and replicate a positive integer
-[^2]: Used by Majiq for GC content correction
-[^3]: User should prefer `--use-conda` or `--use-envmodules`; however if it's not possible to load the requirements, this hack may help 
-[^4]: Check RSeQC infer_experiment result 
-[^5]: Check FastQC Sequence Length Distribution report
-
-
-!!! note
-    Junctionseq and Leafcutter support more complex experimental designs, which were not yet implemented in Baltica.
 
 ## Quality control workflow
 
@@ -119,15 +99,15 @@ giving SJ within a cluster and compare this usage among conditions
 !!! info
     By default, Leafcutter clustering does not use the read strandedness information. In Baltica, we override this parameter and use the strand information for clustering.
 
-#### Software dependencies
+<!-- #### Software dependencies
 
 Name | Version    
 -----|---------
 python | 2.7 
 R | 3.5 
 samtools | 1.9 
-
-#### Parameters
+ -->
+<!-- #### Parameters
 
 Rule | Name | Default | Note
 -----|-----|---------|------
@@ -139,7 +119,7 @@ Rule | Name | Default | Note
 `differential_splicing` | `min_samples_per_group`  | 2 |
 `differential_splicing` | `min_samples_per_intron` | 2 | 
 `differential_splicing` | `fdr` | 0.05 |
-
+ -->
 #### Output
 
 The relevant output files from Leafcutter have the `_cluster_significance.txt` and `_effect_sizes.txt` suffix, which are computed for each comparison.
@@ -178,7 +158,7 @@ Name | Version
 python | 3.6 
 htslib | 1.9 
 
-### Parameters
+<!-- ### Parameters
 
 Rule | Name | Default | Note
 -----|------|---------|------
@@ -186,12 +166,12 @@ create_ini | `assembly` | | name of the assembly on the UCSC genome browser
 create_ini | `strandness` | reverse | RNA-Sequencing library type 
 create_ini | `read_len` |  100 | maximum read length
 voila tsv | `majiq_threshold` | 0.2 | DeltaPSI cutoff for probability calculation
-
+ -->
 ## Output
 
 Baltica parses the files `*_voila.tsv` (one per comparison). One can read regarding Majiq's output at [Majiq's online documentation](https://biociphers.bitbucket.io/majiq/VOILA_tsv.html)
 
-<!-- build |   |  -->
+<!-- <!-- build |   |  -->
 <!--  `--min-experiments`
     - Description:integer or proportion of the minimum number of experiments a LSV event is observed to be considered
   - Default: 0.5
@@ -223,7 +203,7 @@ Baltica parses the files `*_voila.tsv` (one per comparison). One can read regard
     `--m`
   - Description: Number of sampling steps using on bootstrap
   - Default: 30
-  - baltica: -->
+  - baltica: --> -->
 
 <!-- - For Majiq deltapsi:  
   
@@ -265,14 +245,14 @@ qorts | 1.1.8
 
 Qorts depends on Java. We currently use it with Java 11.0.6. JunctionSeq itself relies on a series of BioConductor packages.
 
-### Parameters
+<!-- ### Parameters
 
 Rule | Name | Default | Note
 -----|------|---------|------
 qc   | `strandness` | reverse | 
 qc   | `read_len`   | 100 |
 qc   | `is_single_end` | True | 
-
+ -->
 ### Output
 
 Baltica parses files with the `*_sigGenes.results.txt.gz` suffix (one per comparison). Detailed output information are in the [JunctionSeq Package User Manual](https://github.com/hartleys/JunctionSeq/blob/13a323dda5fae2d7e74b82230824affb747d938d/JunctionSeq/vignettes/JunctionSeq.Rnw#L514)
