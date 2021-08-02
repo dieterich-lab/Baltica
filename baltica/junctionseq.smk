@@ -134,7 +134,7 @@ rule junctionseq_merge:
         "junctionseq/mergedOutput/ 2> {log}"
 
 
-rule junctioseq_analysis:
+rule junctionseq_analysis:
     input:
         reads="junctionseq/mergedOutput/withNovel.forJunctionSeq.gff.gz",
         decoder="junctionseq/{comparison}_decoder.tab",
