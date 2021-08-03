@@ -24,7 +24,7 @@ Baltica requires a project configuration file as input. For a template see [here
 | ref_fa | path to reference annotation in the FASTA format | &#10003; |
 | project_authors | project author name, used in the report |  |
 | project_title | project title name, used in file names and report |  |
-| orthognal_result | result from Nanopore-seq in GFF or   BED with a valida score column, and optionally a comparisons column with   contrasts |  |
+| orthogonal_result | result from Nanopore-seq in GFF or   BED with a valida score column, and optionally a comparisons column with   contrasts |  |
 
 
 <!-- | **majiq specific parameters** |  |  |
