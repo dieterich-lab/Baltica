@@ -31,9 +31,16 @@ option_list <- list(
   )
 )
 
-opt <- parse_args(OptionParser(option_list = option_list))
-df <- suppressMessages(read_csv(opt$input))
+if (exists("snakemake")) {
+  opt <- list(
+    input = snakemake@input[[1]],
+    output = snakemake@output[[1]]
+  )
+} else {
+  opt <- parse_args(OptionParser(option_list = option_list))
+}
 
+df <- suppressMessages(read_csv(opt$input))
 
 simplify <- function(x, remove = c()) {
   x %>%
@@ -65,12 +72,12 @@ for (col in c(
 
 # TODO html link
 
-openxlsx::write.xlsx(
+write.xlsx(
   df %>% select(coordinates, everything()),
   overwrite = T,
   firstCol = T,
   colNames = T,
   asTable = T,
-  file = opt$output,
+  file = as.character(opt$output),
   sheetName = "baltica_table"
 )
