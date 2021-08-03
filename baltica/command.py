@@ -97,6 +97,7 @@ def cli(workflow, config_file, verbose, snakemake_args):
         config = yaml.safe_load(fin)
 
     config['config_path'] = str(Path(config_file).resolve())
+    config['baltica_path'] = str(baltica_path.resolve())
 
     logger.debug(f"Config file is {config['config_path']}")
     with open(config_file, 'w') as fou:
