@@ -108,7 +108,7 @@ if (!file.exists(opt$input)) {
 }
 
 gtf <- rtracklayer::import.gff2(opt$annotation)
-df <- read.csv(opt$input)
+df <- read_csv(opt$input)
 
 message("Assigning AS type")
 gr <- GRanges(df$coordinates)
