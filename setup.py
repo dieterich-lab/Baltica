@@ -13,8 +13,12 @@ README = (HERE / "README.md").read_text()
 
 test_required = ['pytest', 'pyfakefs']
 # use a custom install https://blog.niteo.co/setuptools-run-custom-code-in-setup-py/
+
+
 class CustomInstallCommand(install):
-    """"""
+    """
+    Custom tasks executed on Baltica install
+    """
 
     def run(self):
         install.run(self)
