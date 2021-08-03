@@ -119,7 +119,7 @@ get_exon_number <- function(ex_tx) {
 #' @return a GRange object with a score metadata column
 #' @export
 process_ort_result <- function(.path) {
-  message("Processing orthognal result")
+  message("Processing orthogonal result")
 
   ort_result <- rtracklayer::import(.path)
   if (!"score" %in% colnames(mcols(ort_result))) {
@@ -137,7 +137,7 @@ process_ort_result <- function(.path) {
     if (exists(".comparison")) {
       mcols(ort_result)$comparison <- .comparison
     }
-    mcols(ort_result)$method <- "orthognal_result"
+    mcols(ort_result)$method <- "orthogonal"
   }
   ort_result
 }
@@ -177,7 +177,7 @@ option_list <- list(
     default = "results/SJ_annotated.csv"
   ),
   make_option(
-    c("-n", "--orthognal_result"),
+    c("-n", "--orthogonal_result"),
     type = "character",
     help = "Optionall, path to a file readable by rtracklayer (BED, GFF) with
      a score column with results from a orthogonal method, such as
@@ -200,7 +200,7 @@ if (exists("snakemake")) {
     reference = snakemake@params$ref,
     annotation = snakemake@input[[5]],
     output = snakemake@output[[1]],
-    orthognal_result = snakemake@params$orthognal_result
+    orthogonal_result = snakemake@params$orthogonal_result
   )
 } else {
   opt <- parse_args(OptionParser(option_list = option_list))
@@ -293,8 +293,8 @@ if (!is.null(opt$reference)) {
 }
 
 ort_result <- NULL
-if (!is.null(opt$orthognal_result)) {
-  ort_result <- process_ort_result(opt$orthognal_result)
+if (!is.null(opt$orthogonal_result)) {
+  ort_result <- process_ort_result(opt$orthogonal_result)
 }
 
 message("preparing annotation")

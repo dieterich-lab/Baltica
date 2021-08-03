@@ -15,7 +15,7 @@ name = config["samples"].keys()
 contrasts = config["contrasts"]
 project_title = config.get("project_title", "").replace(' ', '_')
 
-container: "docker://tbrittoborges/baltica:latest"
+container: "docker://tbrittoborges/baltica_analysis:1.0"
 
 
 import sys
@@ -120,7 +120,7 @@ rule annotate:
         ref="stringtie/merged/merged.combined.gtf",
     params:
         ref=config.get("ref"),
-        orthognal_result=config.get('orthognal_result')
+        orthogonal_result=config.get('orthogonal_result')
     envmodules:
         "R/4.0.5_deb10",
     log:
@@ -173,27 +173,21 @@ rule parse_gffcompare:
 
 rule baltica_report:
     input:
-        "results/SJ_annotated_assigned.csv",
+        "results/SJ_annotated.csv",
         "results/gffcompare_stats.json",
         "leafcutter/leafcutter_junctions.csv"
     params:
-        fastqc=fastqc_file if os.path.isfile(fastqc_file) else "a",
-        config=config.get("config_path"),
+        fastqc=fastqc_file if os.path.isfile(fastqc_file) else None,
+        config=config["config_path"],
         # TODO streamline start_sj_file
-        star_sj=config.get("start_sj_file", "a"),
-        doc_title=config.get("project_title", "a"),
-        doc_authors=config.get("project_authors", "a"),
+        # star_sj=config.get("star_sj_file"),
+        doc_title=config.get("project_title", ""),
+        doc_authors=config.get("project_authors", ""),
     output:
         expand(
             "results/baltica_report{project_title}.html", 
             project_title="_" + project_title),
     log:
-        "logs/baltica_report.log",
-    # shell:
-    #     """
-    #     # cp rmd to outdir
-    #     Rscript --vanilla -e 'rmarkdown::render("baltica_report.Rmd", output_file="{output}", quiet=TRUE, params=list(fastqc="{params.fastqc}", config="{params.config}", star_sj="{params.star_sj}", doc_title="{params.doc_title}", doc_authors="{params.doc_authors}"))'
-    #     # delte rmd from outdir
-    #     """
+        "logs/baltica_report.log",    
     script:
         "baltica_report.Rmd"

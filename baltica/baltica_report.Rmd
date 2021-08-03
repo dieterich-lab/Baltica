@@ -1,6 +1,5 @@
 ---
-title: "Baltica report: `r params$doc_title`"
-author: "`r params$doc_authors`"
+title: "Baltica report"
 date: "`r Sys.Date()`"
 # css: "custom.css"
 output:
@@ -8,22 +7,10 @@ output:
     self_contained: true
     lightbox: true
     gallery: false
-# bibliography: 
-#   "references.bib"
-# nocite: '@*'
 params:
   rmd: baltica_report.Rmd
-  SJ_annotated: snakemake@input[[1]]
-  gffcompare: snakemake@input[[2]]
-  leafcutter: snakemake@input[[3]]
-  config: snakemake@params$config
-  fastqc: 
-  star_sj: snakemake@params$start_sj
-  doc_title: snakemake@params$doc_title
-  doc_authors: snakemake@params$authors
-  # doc_title: Baltica report
-  # doc_authors: The authors
 ---
+
 
 ```{r libs, include = FALSE}
 library(tidyverse)
@@ -45,11 +32,15 @@ opts_chunk$set(
   message = FALSE,
   warning = FALSE
 )
-is_fastqc <- F # file.exists(params$fastqc)
-is_gffcompare <- file.exists(params$gffcompare)
-is_sj_annotate <- file.exists(params$SJ_annotated)
-is_leafcutter <- file.exists(params$leafcutter)
-is_star_sj <- file.exists(params$star_sj)
+# bibliography <- file.path(snakemake@scriptdir, "references.bib")
+# is_fastqc <- F # file.exists(snakemake@params$fastqc)
+# is_gffcompare <- file.exists((snakemake@params$gffcompare))
+sj_annotated_file <- as.character(snakemake@input[[1]])
+is_sj_annotate <- file.exists(sj_annotated_file)
+leafcutter_file <- as.character(snakemake@input[[3]])
+is_leafcutter <- file.exists(leafcutter_file)
+config <- yaml::read_yaml(snakemake@params$config)
+
 
 knitr::knit_hooks$set(
   error = function(x, options) {
@@ -80,174 +71,6 @@ knitr::knit_hooks$set(
 
 This is a report for the Baltica framework. Please see https://github.com/dieterich-lab/Baltica and https://dieterich-lab.github.io/Baltica/ for details.
 
-## Summary on quality control:
-```{r eval=is_fastqc}
-
-read_multiqc_data <- function(.path) {
-  read_delim(
-    .path,
-    col_types = cols(
-      .default = col_character(),
-      `Sequences flagged as poor quality` = col_double(),
-      avg_sequence_length = col_double(),
-      `Total Sequences` = col_double(),
-      `%GC` = col_double(),
-      total_deduplicated_percentage = col_double()
-    ),
-    delim = "\t"
-  )
-}
-if (exists(params.fastqc)) {
-  multiqc_fastqc <- read_multiqc_data(params.fastqc)
-}
-```
-
-
-## Summary on exon-exon junction reads:  {.tabset .tabset-fade .tabset-pills}
-
-```{r message=TRUE, warning=TRUE}
-
-if (!is_star_sj) {
-  warning("STAR splice junction files not found.")
-} else {
-  message("See plots related to STAR splice junction distribution:")
-}
-```
-
-
-```{r plots_hist_total, eval=is_star_sj}
-
-knitr::asis_output(
-  "### Distribuition of total counts\\nDistribution of total (
-    unique + multi-mapping) exon-exon junctions reads per sample."
-)
-
-mean_ <- summarise(
-  group_by(sj_out, sample),
-  mean = mean(uniq_map_read_count + multi_map_read_count)
-) %>%
-  mutate(label = substr(as.character(format_power10(mean)), 1, 7))
-
-sj_out %>%
-  ggplot(aes(x = uniq_map_read_count + multi_map_read_count)) +
-  geom_histogram(alpha = .3) +
-  facet_wrap(~sample, ncol = 4) +
-  geom_vline(data = mean_, aes(xintercept = mean), linetype = "longdash") +
-  geom_text(
-    data = mean_, aes(x = mean + 200, label = label, y = 55000), parse = T
-  ) +
-  scale_x_log10(labels = trans_format("log10", label_math())) +
-  xlab(expression(log[10](unique ~ reads + multimapping ~ reads))) +
-  ylab("Frequency") +
-  theme_bw(16)
-```
-
-
-```{r plots_hist_per_annotation, eval=is_star_sj}
-
-knitr::asis_output("### Stacked distribution of reads per annotation status
-Distribution of uniquely mapped reads per sample. Annotated and unannotated
-reads distributions are shown in different colors.")
-
-summary_ <- sj_out %>%
-  filter(uniq_map_read_count != 0) %>%
-  group_by(sample, annotation) %>%
-  summarise(mean = mean(uniq_map_read_count)) %>%
-  mutate(label = substr(as.character(format_power10(mean)), 1, 7))
-
-sj_out %>%
-  filter(uniq_map_read_count != 0) %>%
-  ggplot(aes(x = uniq_map_read_count, fill = annotation)) +
-  geom_histogram(alpha = .6, bins = 50, position = "stack") +
-  facet_wrap(~sample, ncol = 4) +
-  geom_vline(
-    data = summary_, aes(
-      xintercept = mean, color = annotation
-    ), linetype = "longdash"
-  ) +
-  geom_text(
-    data = summary_, aes(
-      x = mean + 10, label = label, y = 55000
-    ), size = 3, parse = T
-  ) +
-  scale_x_log10(labels = trans_format("log10", label_math())) +
-  xlab(expression(log[10](unique ~ reads))) +
-  ylab("Frequency") +
-  theme_bw(16)
-```
-
-
-```{r plots_hist_unannotated, eval=is_star_sj}
-
-knitr::asis_output("### Distribution of unannotated reads:\\n
-Distribution of uniquely mapped reads per sample, showing only
- unannotated reads.")
-
-summary_ <- sj_out %>%
-  filter(
-    uniq_map_read_count != 0 & annotation == "unannotated"
-  ) %>%
-  group_by(sample) %>%
-  summarise(
-    mean = mean(uniq_map_read_count),
-    annotation = first(annotation)
-  ) %>%
-  mutate(
-    label = substr(as.character(format_power10(mean)), 1, 7)
-  )
-
-sj_out %>%
-  filter(uniq_map_read_count != 0 & annotation == "unannotated") %>%
-  ggplot(
-    aes(
-      x = uniq_map_read_count, fill = annotation
-    )
-  ) +
-  geom_histogram(
-    alpha = .6, bins = 50, position = "stack"
-  ) +
-  facet_wrap(
-    ~sample,
-    ncol = 4
-  ) +
-  geom_vline(
-    data = summary_, aes(xintercept = mean), linetype = "longdash"
-  ) +
-  geom_text(
-    data = summary_, aes(
-      x = mean + 1, label = label, y = 650
-    ), size = 3, parse = T
-  ) +
-  scale_x_log10(
-    labels = trans_format("log10", label_math())
-  ) +
-  xlab(
-    expression(log[10](unique ~ reads))
-  ) +
-  ylab(
-    "Frequency"
-  ) +
-  theme_bw(16)
-```
-
-
-```{r plots_hist_intron_motif, eval=is_star_sj}
-
-knitr::asis_output("### Distribution of reads by splice-site motif:\\n
-Distribution of reads by intron motif.\\n")
-
-sj_out %>%
-  filter(uniq_map_read_count != 0) %>%
-  ggplot(aes(x = uniq_map_read_count, fill = intron_motif)) +
-  facet_wrap(~sample, ncol = 4) +
-  geom_histogram(alpha = .6, bins = 50, position = "stack") +
-  scale_fill_brewer(palette = "Spectral") +
-  scale_x_log10(labels = trans_format("log10", label_math())) +
-  xlab(expression(log[10](unique ~ reads))) +
-  ylab("Frequency") +
-  theme_bw(16)
-```
-
 ## Summary on Leafcutter results: {.tabset .tabset-fade .tabset-pills}
 ```{r message=TRUE, warning=TRUE}
 if (!is_leafcutter) {
@@ -261,7 +84,26 @@ if (!is_leafcutter) {
 
 knitr::asis_output("### P-adjust distribution.\\n")
 
-leafcutter_complete <- read_csv(params$leafcutter)
+leafcutter_complete <- read_csv(leafcutter_file, col_types = cols(
+  comparison = col_character(),
+  intron = col_character(),
+  logef = col_double(),
+  ref_psi = col_double(),
+  alt_psi = col_double(),
+  deltapsi = col_double(),
+  chr = col_character(),
+  start = col_double(),
+  end = col_double(),
+  strand = col_character(),
+  cluster = col_character(),
+  status = col_character(),
+  loglr = col_double(),
+  df = col_double(),
+  p = col_double(),
+  p.adjust = col_double(),
+  method = col_character()
+))
+
 leafcutter_complete <- leafcutter_complete %>%
   mutate(is_sig = abs(deltapsi) > 0.1 & p.adjust < 0.05)
 
@@ -303,27 +145,10 @@ p <- leafcutter_complete %>%
 p
 ```
 
-## Summary on *de novo* transcriptome assembly:
-
-```{r message=TRUE, warning=TRUE}
-if (!is_gffcompare) {
-  warning("Stringtie results files not found.")
-  show_ggcompare <- F
-} else {
-  message("See bellow the tables relates to the
-  *de novo* transcriptome assembly:")
-  show_ggcompare <- T
-}
-```
-
-```{r eval=show_ggcompare}
-table("a")
-```
-
-
-
 ## Baltica table:
 ```{r warning=TRUE, message=TRUE}
+
+
 if (!is_sj_annotate) {
   warning("Baltica table file not found.")
 }
@@ -333,14 +158,25 @@ if (!is_sj_annotate) {
 ```{r echo=FALSE, eval=is_sj_annotate}
 knitr::asis_output("### Common splice junctions \\n\\n")
 
+df <- readr::read_csv(sj_annotated_file, col_types = cols(
+  .default = col_double(),
+  is_novel = col_logical(),
+  gene_name = col_character(),
+  transcript_name = col_character(),
+  class_code = col_character(),
+  exon_number = col_character(),
+  coordinates = col_character(),
+  as_type = col_character()
+))
 
-df <- readr::read_csv(params$SJ_annotated)
-
-library(ComplexHeatmap)
+saveRDS(file = "~/debug.rdf", df)
+suppressPackageStartupMessages(library(ComplexHeatmap))
 library(RColorBrewer)
 
-comparisons <- c("mix3-vs-mix1", "mix2-vs-mix1", "mix3-vs-mix2")
-methods <- c("rmats", "junctionseq", "majiq", "leafcutter")
+methods <- c("rmats", "junctionseq", "majiq", "leafcutter", "orthogonal")
+comparisons <- unique(
+  gsub(x=colnames(mat), str_c(c(methods, '_'), collapse = "|"), '')
+
 
 mat <- df %>%
   dplyr::select(matches("-vs-")) %>%
@@ -351,6 +187,7 @@ mat[mat < 0.95] <- 0
 mat[is.na(mat)] <- 0
 mat <- mat[rowSums(mat) >= 1, ]
 
+
 comb_mat <- make_comb_mat(mat)
 
 group <- str_extract(colnames(mat), str_c(comparisons, collapse = "|"))
@@ -359,7 +196,8 @@ method <- str_extract(colnames(mat), str_c(methods, collapse = "|"))
 UpSet(
   comb_mat,
   comb_order = order(rev(comb_degree(comb_mat))),
-  pt_size = unit(4, "mm"), lwd = 2,
+  pt_size = unit(1.5, "mm"),
+  lwd = 0.5,
   right_annotation = rowAnnotation(
     "Set size" = anno_barplot(
       set_size(comb_mat),
@@ -391,15 +229,15 @@ intron annotation. Multi columns are sortable by holding <kbd>SHIFT</kbd>.")
 
 library(reactable)
 
-simplify <- function(x, remove = c("JS", "JE")) {
-  x %>%
-    str_split(";") %>%
-    lapply(., function(x) {
-      setdiff(x, remove)
-    }) %>%
-    lapply(., paste0, collapse = ";") %>%
-    unlist()
-}
+# simplify <- function(x, remove = c("JS", "JE")) {
+#   x %>%
+#     str_split(";") %>%
+#     lapply(., function(x) {
+#       setdiff(x, remove)
+#     }) %>%
+#     lapply(., paste0, collapse = ";") %>%
+#     unlist()
+# }
 
 df <- df %>%
   mutate_if(is.numeric, round, 3) %>%
@@ -414,6 +252,7 @@ df <- df %>%
     is_novel,
     everything()
   )
+
 sticky_style <- list(
   position = "sticky",
   left = 0,
@@ -446,7 +285,7 @@ html <- function(x, inline = FALSE) {
 
 
 target_url <- "http://genome.ucsc.edu/cgi-bin/hgTracks?db=
-{params$assembly}&position={new_value}"
+{config$assembly}&position={new_value}"
 # <p><strong>as_type: </strong>{as_type}</p>"
 
 df %>%
@@ -504,6 +343,7 @@ df %>%
   )
 ```
 
+
 ## Reproducibility: {.tabset .tabset-fade .tabset-pills}
 
 ### Parameters used in the analysis:  
@@ -514,7 +354,7 @@ df %>%
 
 ### Configuration:  
 ```{r}
-pander::pander(yaml::read_yaml(params$config), compact = FALSE)
+pander::pander(config, compact = FALSE)
 ```
 
 ### Session information:    
