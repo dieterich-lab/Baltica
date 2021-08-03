@@ -1,4 +1,5 @@
 assembly: GRCh38_90_SIRV
+baltica_path: /beegfs/homes/tbrittoborges/miniconda3/lib/python3.7/site-packages/baltica/command.py
 config_path: /beegfs/homes/tbrittoborges/Baltica/data/config.yml
 contrasts:
   mix2-vs-mix1:
@@ -19,7 +20,7 @@ leafcutter_min_samples_per_intron: 5
 majiq_minreads: 5
 majiq_non_changing_threshold: 0.05
 majiq_threshold: 0.2
-orthognal_result: /home/tbrittoborges/Baltica/data/SIRV_changing_introns.gtf
+orthogonal_result: /home/tbrittoborges/Baltica/data/SIRV_changing_introns.gtf
 path: /home/tbrittoborges/sirv_test/
 project_authors: The authors
 project_title: sirv_test
