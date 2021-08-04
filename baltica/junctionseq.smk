@@ -143,6 +143,8 @@ rule junctionseq_analysis:
     log:
         "logs/junctioseq_analysis/{comparison}.log",
     threads: 10
+    resources:
+        mem_mb=64000
     envmodules:
         "R/3.6.3_deb10 junctionseq/1.16.0_deb10",
     shadow:

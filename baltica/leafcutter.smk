@@ -73,9 +73,9 @@ rule leafcutter_bam2junc:
         "logs/leafcutter/leafcutter_bam2junc/{name}.log",
     params:
         # defaults as suggested by leafcutter
-        minimum_anchor_length=config.get("minimum_anchor_length", 8),
-        minimum_intron_size=config.get("minimum_intron_size", 50),
-        maximum_intron_size=config.get("maximum_intron_size", 5e5),
+        minimum_anchor_length=config.get("leafcutter_minimum_anchor_length", 8),
+        minimum_intron_size=config.get("leafcutter_minimum_intron_size", 50),
+        maximum_intron_size=config.get("leafcutter_maximum_intron_size", 5e5),
         # Strand specificity of RNA library preparation, 
         # where 0 = unstranded/XS, 
         # 1 = first-strand/RF, 
@@ -201,4 +201,7 @@ rule leafcutter_differential_splicing:
         """
 
 onsuccess:
-    shell("rm *.sorted.gz")
+    try:
+        shell("rm *.sorted.gz")
+    except CalledProcessError:
+        pass
