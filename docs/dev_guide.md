@@ -1,9 +1,28 @@
 # Development guidelines:
 
+## Contributing to the documentation
 For the docs, we use [MkDocs](https://www.mkdocs.org/) because of its flexibility:  
 - [mkdocs-material](https://squidfunk.github.io/mkdocs-material/getting-started/): look and feel  
 - [mkdocs-bibtex](https://github.com/shyamd/mkdocs-bibtex): literature reference  
 - [MkPDFs](https://comwes.github.io/mkpdfs-mkdocs-plugin/getting-started.html): PDF version  
+
+### Modify any of the doc files
+```bash
+vi docs/setup.md 
+```
+
+### Test the changes locally
+```bash
+mkdocs serve
+```
+
+If everything looks fine you can submit a patch or pull-request.
+
+### Deploy changes
+This requires permissions from the GitHub organization.
+```bash
+mkdocs gh-deploy
+```
 
 
 ## Setting up mkdocs 
@@ -35,29 +54,12 @@ docker push <tag>
 For example,
 - dockerfile: `docker/baltica/1.0/Dockerfile`
 - name: `tbrittoborges/baltica`
-- tag: `latest`
+- tag: `1.0`
+
+Once the container is updated, its tag version (tag) should be updated as well as it the container directive in the snakemake workflows. 
 
 [docker hub](https://hub.docker.com/repository/docker/tbrittoborges/) hosts the container and can change this location at the *container* directive at the snakefiles. 
 
-## Contributing to the documentation
-
-### Modify any of the doc files
-```bash
-vi docs/setup.md 
-```
-
-### Test the changes locally
-```bash
-mkdocs serve
-```
-
-If everything looks fine you can submit a patch or pull-request.
-
-### Deploy changes
-This requires permissions from the GitHub organization.
-```bash
-mkdocs gh-deploy
-```
 
 
 ## Testing Baltica 

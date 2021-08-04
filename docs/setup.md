@@ -24,7 +24,6 @@ or set the number of avaiable cores with `--cores`. For more Snakemake parameter
     Baltica is under active development. Please [contact us](https://github.com/dieterich-lab/Baltica/issues) if you have any issues with this documentation.
 
 ## Software environment:
-
 Baltica framework is based on:  
 - A python command-line interface  
 - [Snakemake](https://snakemake.readthedocs.io/en/stable/) workflows  
@@ -47,15 +46,15 @@ Baltica depends on python3, Singulary, and Snakemake.
 - [How to install Singularity](https://sylabs.io/guides/3.0/user-guide/installation.html)  
 - [How to install Snakemake](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)  
 
-## Installation
 
+## Installation
 ```bash
 git clone https://github.com/dieterich-lab/baltica
 cd baltica
 pip install .
 ```
 Will install Baltica and its python dependencies. You may want to create a [virtual environment](https://realpython.com/python-virtual-environments-a-primer/) before installing Baltica.  
-All other requirements are resolved with singularity containers.
+All other requirements are resolved with singularity containers. Baltica store its singularity containers at `$HOME/.baltica/singularity/`.
 
 !!! note
     We plan to submit Baltica to the Python Package Index.
@@ -72,10 +71,9 @@ baltica --help
 Baltica executor takes a single optional argument `--verbose`, to detail its execution. Every other option is passed to Snakemake.
 
 ## Test dataset
-Baltica ships with a test dataset, located at the `data/` directory. **Users are required to update this configuration file**. Please see the [Baltica project configuration](proj-config.md) for further details.
+Baltica ships with a test dataset, located at the `data/` directory. There is a configuration file for the test dataset. **Users are required to update this configuration file**. Please see the [Baltica project configuration](proj-config.md) for further details.
 
 ## Cluster profile
-
 Snakemake supports distributed workflow execution in many different high-performance computer clusters, as detailed [here](https://snakemake.readthedocs.io/en/stable/executing/cluster.html?highlight=profile#cluster-execution). We recommend using [cluster profiles](https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles) and using it like: 
 
 ```bash
@@ -83,11 +81,9 @@ baltica <workflow> <config> --use-singularity --profile <cluster>
 ```
 
 ## (Advanced) Baltica workflows directly from Snakemake
-
 Baltica workflows can be used directly with Snakemake without installation. However, there is limited support for it.
 
 ## References
-
 [^1]: If you use Baltica, also please [cite Snakemake](https://bioinformatics.oxfordjournals.org/content/28/19/2520)
 [^2]: If you use majiq results, please [cite it]( https://elifesciences.org/articles/11752)
 [^3]: If you use leafcutter results, please [cite it](https://www.nature.com/articles/s41588-017-0004-9)

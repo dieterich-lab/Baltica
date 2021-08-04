@@ -5,6 +5,10 @@ There are many specificities to the DJU methods, and while running one method is
 This error happens when there is an error or failure during the workflow execution, and Snakemake's process does not have the opportunity to unlock the directory.
 Use `baltica <workflow> <config> --unlock` to resolve it. See more [here](https://snakemake.readthedocs.io/en/stable/project_info/faq.html#how-does-snakemake-lock-the-working-directory)
 
+### ERROR lines in majiq_gtf_to_gff:
+Most of the errors in this rules are not fatal. See [here](https://manpages.debian.org/unstable/gbrowse/gtf2gff3.1p.en.html) for the diagnostics. 
+
+
 ### rmats empty or mostly empty outputs 
 This error can be either issue with:
 - [The read length parameter](https://github.com/Xinglab/rmats-turbo/issues/95). To resolve it, increase the read length parameter or use `--variable-read-length` in Baltica configuration.

@@ -1,4 +1,4 @@
-site_name: Baltica Documentation
+site_name: Baltica
 site_url: https://github.com/dieterich-lab/Baltica
 site_author: Thiago Britto-Borges
 repo_url: https://github.com/dieterich-lab/Baltica
@@ -13,12 +13,16 @@ theme:
   features:
     - instant
   palette:
-    scheme: slate
-  font:
-    text: Roboto
-    code: Roboto Mono
+    - scheme: default
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/lightbulb
+        name: Switch to light mode
   logo: img/baltica_logo.ico
-
+  favicon: img/baltica_logo.ico
 extra_css:
     - extra.css
 
@@ -31,6 +35,8 @@ nav:
   - DJU methods result integration: integration.md 
   - Development guidelines: dev_guide.md
   - Frequently asked questions: faq.md
+  - Tutorial: tutorial.md
+  - References: bibliography.md
   - Release notes: release-notes.md 
 
 markdown_extensions:
@@ -51,5 +57,6 @@ plugins:
       design: "docs/report.css"
       output_path: "pdf/baltica_docs.pdf"
       toc_title: Table of Content
+# https://squidfunk.github.io/mkdocs-material/reference/admonitions/#details
 
 
