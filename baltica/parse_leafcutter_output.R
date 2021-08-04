@@ -38,7 +38,7 @@ if (exists("snakemake")) {
     output = snakemake@output[[1]],
     cutoff = snakemake@params[["cutoff"]]
   )
-  files <- opt$input
+  files <- as.character(opt$input)
 } else {
   opt <- parse_args(OptionParser(option_list = option_list))
   files <- Sys.glob(opt$input)
@@ -69,6 +69,7 @@ names(cluster_sig) <- file_names
 cluster_sig <- bind_rows(cluster_sig, .id = "comparison")
 
 message("Loading the effect sizes files")
+
 effec_size_files <- gsub(
   x = files,
   pattern = "cluster_significance",
@@ -92,13 +93,12 @@ es <- bind_rows(es, .id = "comparison")
 # parse the intron column for merging
 es$intron <- str_replace_all(es$intron, "_", ":")
 
-intron <- read_delim(
-  es$intron,
-  delim = ":",
-  col_names = c(
-    "chr", "start", "end", "clu", "clu_number", "strand"
-  )
+intron <- str_split(es$intron, pattern = ":", simplify = T)
+colnames(intron) <- c(
+  "chr", "start", "end", "clu", "clu_number", "strand"
 )
+intron <- as_tibble(intron)
+
 es <- bind_cols(es, intron)
 # cluster will be the pivot for merging
 es$cluster <- as.character(

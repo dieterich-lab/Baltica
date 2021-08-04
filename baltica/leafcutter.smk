@@ -199,3 +199,6 @@ rule leafcutter_differential_splicing:
         {input.b} {input.c} --num_threads {threads} --output_prefix={params.prefix} \
         -i {params.min_samples_per_intron} -g {params.min_samples_per_group} 2> {log}
         """
+
+onsuccess:
+    shell("rm *.sorted.gz")

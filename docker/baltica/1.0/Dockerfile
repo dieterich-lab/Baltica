@@ -3,7 +3,7 @@
 FROM bioconductor/bioconductor_docker:latest
 
 RUN apt-get update \
-    && pip install ttp \
+    && pip3 install ttp \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -19,4 +19,10 @@ RUN install2.r --error \
     scales \
     yaml \
     pander \
-    rmdformats
+    rmdformats \
+    optparse \
+    Rcpp \
+    RColorBrewer \ 
+    igraph
+
+RUN R -e 'BiocManager::install(c("GenomicRanges", "GenomicFeatures", "ComplexHeatmap"))'

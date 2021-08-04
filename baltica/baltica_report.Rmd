@@ -37,7 +37,7 @@ opts_chunk$set(
 # is_gffcompare <- file.exists((snakemake@params$gffcompare))
 sj_annotated_file <- as.character(snakemake@input[[1]])
 is_sj_annotate <- file.exists(sj_annotated_file)
-leafcutter_file <- as.character(snakemake@input[[3]])
+leafcutter_file <- as.character(snakemake@input[[2]])
 is_leafcutter <- file.exists(leafcutter_file)
 config <- yaml::read_yaml(snakemake@params$config)
 
@@ -169,18 +169,18 @@ df <- readr::read_csv(sj_annotated_file, col_types = cols(
   as_type = col_character()
 ))
 
-saveRDS(file = "~/debug.rdf", df)
 suppressPackageStartupMessages(library(ComplexHeatmap))
 library(RColorBrewer)
 
 methods <- c("rmats", "junctionseq", "majiq", "leafcutter", "orthogonal")
-comparisons <- unique(
-  gsub(x=colnames(mat), str_c(c(methods, '_'), collapse = "|"), '')
-
 
 mat <- df %>%
   dplyr::select(matches("-vs-")) %>%
   as.matrix(.)
+
+comparisons <- unique(
+  gsub(x = colnames(mat), str_c(c(methods, "_"), collapse = "|"), "")
+)
 
 mat[mat > 0.95] <- 1
 mat[mat < 0.95] <- 0

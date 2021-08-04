@@ -28,7 +28,6 @@ rule all:
     input:
         "results/SJ_annotated.csv",
         "results/SJ_annotated_assigned.csv",
-        "results/gffcompare_stats.json",
         expand(
             "results/baltica_report{project_title}.html", 
             project_title="_" + project_title),
@@ -160,21 +159,9 @@ rule simplify:
         "simplify.R"
 
 
-rule parse_gffcompare:
-    input:
-        "stringtie/merged/merged.stats",
-    output:
-        "results/gffcompare_stats.json",
-    log:
-        "logs/parse_ggfcompare.log",
-    script:
-        "parse_gffcompare_stats.py"
-
-
 rule baltica_report:
     input:
         "results/SJ_annotated.csv",
-        "results/gffcompare_stats.json",
         "leafcutter/leafcutter_junctions.csv"
     params:
         fastqc=fastqc_file if os.path.isfile(fastqc_file) else None,

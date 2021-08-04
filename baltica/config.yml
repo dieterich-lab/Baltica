@@ -77,4 +77,3 @@ majiq_minreads:
 # adjusted p-value threshold for LeafCutter and JunctionSeq
 fdr:
   0.05
-
