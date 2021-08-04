@@ -1,4 +1,3 @@
 PyYAML
 snakemake >= 6
-ttp
 click
