@@ -116,7 +116,7 @@ rule junctionseq_merge:
         "junctionseq/mergedOutput/withNovel.forJunctionSeq.gff.gz",
     params:
         gtf=config["ref"],
-        min_count=config.get("mincount", 6),
+        min_count=config.get("junctionseq_mincount", 6),
         strandness=strandness.get(config.get("strandness"), ""),
     envmodules:
         "java qorts",
