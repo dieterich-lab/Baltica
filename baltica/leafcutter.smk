@@ -17,7 +17,7 @@ __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
 from pathlib import Path
-
+from subprocess import CalledProcessError
 
 def basename(path, suffix=None):
     if suffix:

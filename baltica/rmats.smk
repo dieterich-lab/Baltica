@@ -3,14 +3,14 @@
 Created on 17:07 27/07/2018
 Snakemake workflow for rMATS
 
-If you use Majiq, please cite
+If you use rMATs, please cite
 
 Shen, Shihao, et al. "rMATS: robust and flexible detection of differential 
 alternative splicing from replicate RNA-Seq data." Proceedings of the 
 National Academy of Sciences 111.51 (2014): E5593-E5601.
 """
 __author__ = "Thiago Britto Borges"
-__copyright__ = "Copyright 2020, Dieterichlab"
+__copyright__ = "Copyright 2021, Dieterichlab"
 __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
