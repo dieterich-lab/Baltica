@@ -17,9 +17,9 @@ You should expect a `results/` directory containing the most relevant files by t
 ## Important snakemake parameters
 - __--cores__: only required if you are not using a cluster scheduler. Use `baltica ... --cores all` to specify the maximum number of cores available.  
 - __--profile__: setup a cluster configuration [profile](https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles). 
-- __--dry__`-run: only computes the DAG, does not execute rules. But execution order may not reflect the actual order of execution.  
+- __--dry-run__: only computes the DAG, does not execute rules. But execution order may not reflect the actual order of execution.  
 - __--unlock__: unlock the directory if a previous run had problems.  
-- __--list__`-untracked: list files that are not tracked by workflows, useful if you want to clean up the directory to save disk space after a successful run.
+- __--list-untracked__: list files that are not tracked by workflows, useful if you want to clean up the directory to save disk space after a successful run.
 - __--quiet__: less verbose output. 
 - __--reason__, __--printshellcmds__, __--verbose__: verbose output. `Simple use baltica ... --verbose` to get maximum debug information (you may want to redirect it to a file).
 

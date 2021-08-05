@@ -32,20 +32,18 @@ Baltica framework is based on:
 - a Rmarkdown report  
 
 We have developed it on the following computer environments:
-<!--  cat /proc/version -->
-- Linux version 4.19.0-16-amd64 Debian 4.19.181-1 (2021-03-19)
-- gcc version 8.3.0 
-- Python version 3.7.7
-- Singularity version 3.7.3
-- Snakemake version 6.4.1
-- Git version 2.20.1
+- Linux version 4.19.0-16-amd64 Debian 4.19.181-1 (2021-03-19)  
+- gcc version 8.3.0  
+- Python version 3.7.7  
+- Singularity version 3.7.3  
+- Snakemake version 6.4.1  
+- Git version 2.20.1  
 
 These versions should not matter because the workflows are run within Docker containers, as long **Snakemake version > 6** and a **recent Singularity version**.
 
-Baltica depends on python3, Singulary, and Snakemake.
+Baltica depends on python3, Singulary, and Snakemake:  
 - [How to install Singularity](https://sylabs.io/guides/3.0/user-guide/installation.html)  
 - [How to install Snakemake](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)  
-
 
 ## Installation
 ```bash
@@ -82,14 +80,3 @@ baltica <workflow> <config> --use-singularity --profile <cluster>
 
 ## (Advanced) Baltica workflows directly from Snakemake
 Baltica workflows can be used directly with Snakemake without installation. However, there is limited support for it.
-
-## References
-[^1]: If you use Baltica, also please [cite Snakemake](https://bioinformatics.oxfordjournals.org/content/28/19/2520)
-[^2]: If you use majiq results, please [cite it]( https://elifesciences.org/articles/11752)
-[^3]: If you use leafcutter results, please [cite it](https://www.nature.com/articles/s41588-017-0004-9)
-[^4]: If you use rmats, please [cite it](https://www.pnas.org/content/111/51/E5593) 
-[^5]: If you use junctionseq results, please [cite it](http://nar.oxfordjournals.org/content/early/2016/06/07/nar.gkw501.full)
-[^6]: If you use the Baltica's analysis module, please also [cite Stringtie](https://www.nature.com/articles/nbt.3122)
-
-
-\bibliography

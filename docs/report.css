@@ -729,7 +729,6 @@ article .task-list-control [type="checkbox"] {
     content: none; } }
 
 @page :first {
-  background: url(cover.jpg) no-repeat center;
   margin: 0;
   background-size: 50% 50%;
   counter-reset: page -1; }
