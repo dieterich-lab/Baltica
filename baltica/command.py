@@ -132,13 +132,18 @@ def cli(workflow, config_file, verbose, snakemake_args):
     # the baltica directory, which contains the analysis scripts
     if '--use-singularity' in snakemake_args and "--singularity-args" not in snakemake_args:
         relative_path = Path(baltica_path).parent.resolve()
-        bound_path = set([config["path"],
-                          str(config["sample_path"]),
-                          str(Path(config['ref']).parent),
-                          str(Path(config['ref_fa']).parent),
-                          str(Path(config['config_path']).parent),
-                          str(relative_path),
-                          tempfile.gettempdir()])
+        bound_path = [
+            config["path"],
+            str(config["sample_path"]),
+            str(Path(config['ref']).parent),
+            str(Path(config['ref_fa']).parent),
+            str(Path(config['config_path']).parent),
+            str(relative_path),
+            tempfile.gettempdir()]
+
+        if 'orthogonal_result' in config:
+            bound_path.append(str(Path(config['orthogonal_result']).parent))
+        bound_path = set(bound_path)
 
         # bind several paths that contain input data
         snakemake_args.extend(
