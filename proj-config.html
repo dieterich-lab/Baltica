@@ -8,9 +8,9 @@
 <meta content="Baltica - Integrated differential junction usage (DJU)" name="description"/>
 <meta content="Thiago Britto-Borges" name="author"/>
 <link href="https://github.com/dieterich-lab/Baltica/proj-config.html" rel="canonical"/>
-<link href="assets/images/favicon.png" rel="icon"/>
+<link href="img/baltica_logo.ico" rel="icon"/>
 <meta content="mkdocs-1.2.2, mkdocs-material-7.2.0" name="generator"/>
-<title>Project configuration - Baltica Documentation</title>
+<title>Project configuration - Baltica</title>
 <link href="assets/stylesheets/main.fe914879.min.css" rel="stylesheet"/>
 <link href="assets/stylesheets/palette.ba0d045b.min.css" rel="stylesheet"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -18,8 +18,9 @@
 <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
 <link href="extra.css" rel="stylesheet"/>
 </head>
-<body data-md-color-accent="" data-md-color-primary="" data-md-color-scheme="slate" dir="ltr">
+<body data-md-color-accent="" data-md-color-primary="" data-md-color-scheme="default" dir="ltr">
 <script>function __prefix(e){return new URL(".",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+<script>var palette=__get("__palette");if(null!==palette&&"object"==typeof palette.color)for(var key in palette.color)document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
 <input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
 <input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
 <label class="md-overlay" for="__drawer"></label>
@@ -32,7 +33,7 @@
 </div>
 <header class="md-header" data-md-component="header">
 <nav aria-label="Header" class="md-header__inner md-grid">
-<a aria-label="Baltica Documentation" class="md-header__button md-logo" data-md-component="logo" href="index.html" title="Baltica Documentation">
+<a aria-label="Baltica" class="md-header__button md-logo" data-md-component="logo" href="index.html" title="Baltica">
 <img alt="logo" src="img/baltica_logo.ico"/>
 </a>
 <label class="md-header__button md-icon" for="__drawer">
@@ -42,7 +43,7 @@
 <div class="md-header__ellipsis">
 <div class="md-header__topic">
 <span class="md-ellipsis">
-            Baltica Documentation
+            Baltica
           </span>
 </div>
 <div class="md-header__topic" data-md-component="header-topic">
@@ -54,6 +55,16 @@
 </div>
 </div>
 </div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="" data-md-color-media="" data-md-color-primary="" data-md-color-scheme="default" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_2" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5z"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="" data-md-color-media="" data-md-color-primary="" data-md-color-scheme="slate" id="__palette_2" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1z"></path></svg>
+</label>
+</form>
 <label class="md-header__button md-icon" for="__search">
 <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"></path></svg>
 </label>
@@ -104,10 +115,10 @@
 <div class="md-sidebar__inner">
 <nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
 <label class="md-nav__title" for="__drawer">
-<a aria-label="Baltica Documentation" class="md-nav__button md-logo" data-md-component="logo" href="index.html" title="Baltica Documentation">
+<a aria-label="Baltica" class="md-nav__button md-logo" data-md-component="logo" href="index.html" title="Baltica">
 <img alt="logo" src="img/baltica_logo.ico"/>
 </a>
-    Baltica Documentation
+    Baltica
   </label>
 <div class="md-nav__source">
 <a class="md-source" data-md-component="source" href="https://github.com/dieterich-lab/Baltica/" title="Go to repository">
@@ -151,13 +162,33 @@
     </label>
 <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#parameters-description">
-    Parameters description
+<a class="md-nav__link" href="#general-parameters-description">
+    General parameters description
   </a>
 </li>
 <li class="md-nav__item">
 <a class="md-nav__link" href="#pairwise-comparisons">
     Pairwise comparisons
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#majiq-specific-paramers">
+    majiq specific paramers
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#junctionseq-specific-paramers">
+    junctionseq specific paramers
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#leafcutter-specific-paramers">
+    leafcutter specific paramers
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#rmats-specific-paramers">
+    rmats specific paramers
   </a>
 </li>
 </ul>
@@ -184,6 +215,16 @@
       </a>
 </li>
 <li class="md-nav__item">
+<a class="md-nav__link" href="tutorial.html">
+        Tutorial
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="bibliography.html">
+        References
+      </a>
+</li>
+<li class="md-nav__item">
 <a class="md-nav__link" href="release-notes.html">
         Release notes
       </a>
@@ -203,13 +244,33 @@
     </label>
 <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#parameters-description">
-    Parameters description
+<a class="md-nav__link" href="#general-parameters-description">
+    General parameters description
   </a>
 </li>
 <li class="md-nav__item">
 <a class="md-nav__link" href="#pairwise-comparisons">
     Pairwise comparisons
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#majiq-specific-paramers">
+    majiq specific paramers
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#junctionseq-specific-paramers">
+    junctionseq specific paramers
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#leafcutter-specific-paramers">
+    leafcutter specific paramers
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#rmats-specific-paramers">
+    rmats specific paramers
   </a>
 </li>
 </ul>
@@ -226,13 +287,13 @@
 <p>Baltica requires a project configuration file as input. For a template see <a href="https://raw.githubusercontent.com/dieterich-lab/Baltica/master/baltica/config.yml">here</a>. For a programmatic solution to generate the configuration, use the script <a href="https://github.com/dieterich-lab/Baltica/blob/8bc5fe5f71e948b3971ea5db5f1456b2d9e2f838/baltica/write_new_config.R">baltica/write_new_config.R</a>. Method specific parameters are detailed in the <a href="workflows.html">Workflow implementation</a> page.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Baltica requires a full path to files.</p>
+<p>You are required to update the configuration. Use the full path to files.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The <code>Required</code> column flags parameters without default.</p>
 </div>
-<h2 id="parameters-description">Parameters description<a class="headerlink" href="#parameters-description" title="Permanent link">¶</a></h2>
+<h2 id="general-parameters-description">General parameters description<a class="headerlink" href="#general-parameters-description" title="Permanent link">¶</a></h2>
 <table>
 <thead>
 <tr>
@@ -298,24 +359,12 @@
 <td></td>
 </tr>
 <tr>
-<td>orthognal_result</td>
-<td>result from Nanopore-seq in GFF or   BED with a valida score column, and optionally a comparisons column with   contrasts</td>
+<td>orthogonal_result</td>
+<td>result from Nanopore-seq in GFF or BED with a valid score column, and optionally a comparisons column with   contrasts</td>
 <td></td>
 </tr>
 </tbody>
 </table>
-<!-- | **majiq specific parameters** |  |  |
-| **junction specific parameters** |  |  |
-| **stringtie specific parameters** |  |  |
-| **leafcutter specific parameters** |  |  |
-| leafcutter_min_samples_per_group |  |  |
-| leafcutter_min_samples_per_intron |  |  |
-| leafcutter_min_coverage |  |  |
-| leafcutter_min_cluster_reads |  |  |
-| leafcutter_max_intron_length |  |  |
-| majiq_threshold |  |  |
-| **majiq specific parameters** |  |  |
-| majiq_minreads |  |  | -->
 <h2 id="pairwise-comparisons">Pairwise comparisons<a class="headerlink" href="#pairwise-comparisons" title="Permanent link">¶</a></h2>
 <div class="codehilite"><pre><span></span><code><span class="nt">contrasts</span><span class="p">:</span>
   <span class="p p-Indicator">{</span><span class="nv">case1</span><span class="p p-Indicator">}</span><span class="l l-Scalar l-Scalar-Plain">-vs-{control}</span><span class="p p-Indicator">:</span>
@@ -327,8 +376,192 @@
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>junctionseq and leafcutter support more complex experimental designs, which were not yet implemented in Baltica.</p>
+<p>junctionseq and leafcutter support more complex experimental designs, which were not implemented in Baltica.</p>
 </div>
+<h2 id="majiq-specific-paramers">majiq specific paramers<a class="headerlink" href="#majiq-specific-paramers" title="Permanent link">¶</a></h2>
+<p><a href="https://biociphers.bitbucket.io/majiq/MAJIQ.html#builder">majiq manual</a></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Original parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>rule majiq_build:</strong> (<code>majiq deltapsi</code>)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>majiq_min_experiments</td>
+<td>--min-experiments</td>
+<td>minimum number of experiments to filter with --minreads (default 1.0 - all experiments)</td>
+</tr>
+<tr>
+<td>majiq_minreads</td>
+<td>--minreads</td>
+<td>Discard SJ with less than <code>--minreads</code> reads</td>
+</tr>
+<tr>
+<td>majiq_min_denovo</td>
+<td>--min-denovo</td>
+<td>Discard novel SJ with less than <code>--min-denovo</code> reads</td>
+</tr>
+<tr>
+<td><strong>rule majiq_deltapsi</strong> (<code>majiq deltapsi</code>)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>majiq_minreads</td>
+<td>--minreads</td>
+<td>same as above</td>
+</tr>
+<tr>
+<td><strong>rule majiq_voila</strong> (<code>voila tsv</code>)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>majiq_non_changing_threshold</td>
+<td>--non-changing-threshold</td>
+<td></td>
+</tr>
+<tr>
+<td>majiq_threshold</td>
+<td>--threshold</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="junctionseq-specific-paramers">junctionseq specific paramers<a class="headerlink" href="#junctionseq-specific-paramers" title="Permanent link">¶</a></h2>
+<p><a href="https://hartleys.github.io/QoRTs/doc/QoRTs-vignette.pdf">qorts manual</a>
+<a href="http://hartleys.github.io/JunctionSeq/doc/JunctionSeq.pdf">junctionseq manual</a></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Original parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>rule junctionseq_qc</strong> (<code>qorts QC</code>)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>is_single_end</td>
+<td>--singleEnded</td>
+<td>Flag single end libraries</td>
+</tr>
+<tr>
+<td><strong>rule junctionseq_merge</strong> (<code>qorts mergeNovelSplices</code>)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>junctionseq_mincount</td>
+<td>--minCount</td>
+<td>Discard SJ with less than <code>--minCount</code> reads</td>
+</tr>
+</tbody>
+</table>
+<h2 id="leafcutter-specific-paramers">leafcutter specific paramers<a class="headerlink" href="#leafcutter-specific-paramers" title="Permanent link">¶</a></h2>
+<p><a href="https://regtools.readthedocs.io/en/latest/">regtools manual</a>
+<a href="http://davidaknowles.github.io/leafcutter/articles/Usage.html">leafcutter manual</a></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Original parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>rule leafcutter_bam2junc</strong> (<code>regtools junctions extract</code>)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>leafcutter_minimum_anchor_length</td>
+<td>-a</td>
+<td>Discard reads with overanging length lower than <code>-a</code></td>
+</tr>
+<tr>
+<td>leafcutter_minimum_intron_size</td>
+<td>-i</td>
+<td>Minimum intron size</td>
+</tr>
+<tr>
+<td>leafcutter_maximum_intron_size</td>
+<td>-I</td>
+<td>Maximum intron size</td>
+</tr>
+<tr>
+<td><strong>rule leafcutter_differential_splicing</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>leafcutter_min_coverage</td>
+<td>--min_coverage</td>
+<td>desc</td>
+</tr>
+<tr>
+<td>leafcutter_min_samples_per_group</td>
+<td>-g</td>
+<td>Discard SJ used in less than <code>-g</code> samples</td>
+</tr>
+<tr>
+<td>leafcutter_min_samples_per_intron</td>
+<td>-i</td>
+<td>Discard SJ with less than <code>--min_coverage</code> in <code>-i</code> samples in each group</td>
+</tr>
+</tbody>
+</table>
+<h2 id="rmats-specific-paramers">rmats specific paramers<a class="headerlink" href="#rmats-specific-paramers" title="Permanent link">¶</a></h2>
+<p><a href="https://github.com/Xinglab/rmats-turbo#all-arguments">rmats manual</a></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>original parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>rule rmats_run</strong> (<code>rmats.py</code>)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>rmats_allow_clipping</td>
+<td>--allow-clipping</td>
+<td>Allow clipped reads</td>
+</tr>
+<tr>
+<td>rmats_variable_read_length</td>
+<td>--variable-read-length</td>
+<td>Allow reads with variable-length</td>
+</tr>
+<tr>
+<td>rmats_novel_ss</td>
+<td>--novelSS</td>
+<td>Allow the detecting unannotated SJ</td>
+</tr>
+<tr>
+<td>rmats_extra</td>
+<td>none</td>
+<td>Pass extra arguments to <code>rmats.py</code></td>
+</tr>
+</tbody>
+</table>
 </article>
 </div>
 </div>

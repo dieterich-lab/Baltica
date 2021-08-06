@@ -8,9 +8,9 @@
 <meta content="Baltica - Integrated differential junction usage (DJU)" name="description"/>
 <meta content="Thiago Britto-Borges" name="author"/>
 <link href="https://github.com/dieterich-lab/Baltica/tutorial.html" rel="canonical"/>
-<link href="assets/images/favicon.png" rel="icon"/>
+<link href="img/baltica_logo.ico" rel="icon"/>
 <meta content="mkdocs-1.2.2, mkdocs-material-7.2.0" name="generator"/>
-<title>Tutorial - Baltica Documentation</title>
+<title>Tutorial - Baltica</title>
 <link href="assets/stylesheets/main.fe914879.min.css" rel="stylesheet"/>
 <link href="assets/stylesheets/palette.ba0d045b.min.css" rel="stylesheet"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -18,13 +18,14 @@
 <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
 <link href="extra.css" rel="stylesheet"/>
 </head>
-<body data-md-color-accent="" data-md-color-primary="" data-md-color-scheme="slate" dir="ltr">
+<body data-md-color-accent="" data-md-color-primary="" data-md-color-scheme="default" dir="ltr">
 <script>function __prefix(e){return new URL(".",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+<script>var palette=__get("__palette");if(null!==palette&&"object"==typeof palette.color)for(var key in palette.color)document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
 <input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
 <input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
 <label class="md-overlay" for="__drawer"></label>
 <div data-md-component="skip">
-<a class="md-skip" href="#step-by-step-tutorial-with-sample-data-set">
+<a class="md-skip" href="#step-by-step-tutorial-with-the-sample-data-set">
           Skip to content
         </a>
 </div>
@@ -32,7 +33,7 @@
 </div>
 <header class="md-header" data-md-component="header">
 <nav aria-label="Header" class="md-header__inner md-grid">
-<a aria-label="Baltica Documentation" class="md-header__button md-logo" data-md-component="logo" href="index.html" title="Baltica Documentation">
+<a aria-label="Baltica" class="md-header__button md-logo" data-md-component="logo" href="index.html" title="Baltica">
 <img alt="logo" src="img/baltica_logo.ico"/>
 </a>
 <label class="md-header__button md-icon" for="__drawer">
@@ -42,7 +43,7 @@
 <div class="md-header__ellipsis">
 <div class="md-header__topic">
 <span class="md-ellipsis">
-            Baltica Documentation
+            Baltica
           </span>
 </div>
 <div class="md-header__topic" data-md-component="header-topic">
@@ -54,6 +55,16 @@
 </div>
 </div>
 </div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="" data-md-color-media="" data-md-color-primary="" data-md-color-scheme="default" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_2" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5z"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="" data-md-color-media="" data-md-color-primary="" data-md-color-scheme="slate" id="__palette_2" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1z"></path></svg>
+</label>
+</form>
 <label class="md-header__button md-icon" for="__search">
 <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"></path></svg>
 </label>
@@ -104,10 +115,10 @@
 <div class="md-sidebar__inner">
 <nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
 <label class="md-nav__title" for="__drawer">
-<a aria-label="Baltica Documentation" class="md-nav__button md-logo" data-md-component="logo" href="index.html" title="Baltica Documentation">
+<a aria-label="Baltica" class="md-nav__button md-logo" data-md-component="logo" href="index.html" title="Baltica">
 <img alt="logo" src="img/baltica_logo.ico"/>
 </a>
-    Baltica Documentation
+    Baltica
   </label>
 <div class="md-nav__source">
 <a class="md-source" data-md-component="source" href="https://github.com/dieterich-lab/Baltica/" title="Go to repository">
@@ -160,6 +171,54 @@
         Frequently asked questions
       </a>
 </li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" data-md-toggle="toc" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+          Tutorial
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="tutorial.html">
+        Tutorial
+      </a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#setup">
+    Setup
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#installation">
+    Installation
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#configuration">
+    Configuration
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#execution">
+    Execution
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#important-snakemake-parameters">
+    Important snakemake parameters
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="bibliography.html">
+        References
+      </a>
+</li>
 <li class="md-nav__item">
 <a class="md-nav__link" href="release-notes.html">
         Release notes
@@ -180,8 +239,28 @@
     </label>
 <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#step-by-step-tutorial-with-sample-data-set">
-    Step by step tutorial with sample data set
+<a class="md-nav__link" href="#setup">
+    Setup
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#installation">
+    Installation
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#configuration">
+    Configuration
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#execution">
+    Execution
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#important-snakemake-parameters">
+    Important snakemake parameters
   </a>
 </li>
 </ul>
@@ -194,14 +273,60 @@
 <a class="md-content__button md-icon" href="https://github.com/dieterich-lab/Baltica/tree/master/docs/tutorial.md" title="Edit this page">
 <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"></path></svg>
 </a>
-<h1>Tutorial</h1>
-<h2 id="step-by-step-tutorial-with-sample-data-set">Step by step tutorial with sample data set<a class="headerlink" href="#step-by-step-tutorial-with-sample-data-set" title="Permanent link">¶</a></h2>
-<p>We developed and tested the workflows with the Debian Linux distribution (v8.11 Jesse). We use the module system to test the workflows, but conda usage is similar </p>
+<h1 id="step-by-step-tutorial-with-the-sample-data-set">Step by step tutorial with the sample data set<a class="headerlink" href="#step-by-step-tutorial-with-the-sample-data-set" title="Permanent link">¶</a></h1>
+<h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">¶</a></h2>
+<p>Make sure you have Singularity and Snakemake up and running. We have experienced problems with <code>singularity pull</code> and docker images when using a temporary directory (TMPDIR) in the shared file system. Setting <code>TMPDIR=/tmp/</code> resolves this issue. </p>
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">¶</a></h2>
+<p>Follow <a href="setup.html#installation">Installation guide</a></p>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">¶</a></h2>
+<p>Open <code>Baltica/data/config.yml</code> and replace <code>/beegfs/homes/tbrittoborges/</code> or <code>/home/tbrittoborges</code> to your desired path. The <strong>path</strong> parameter specifies where the project will be located. There is no needs to change <strong>baltica_path</strong>, as Baltica resolves it.</p>
+<h2 id="execution">Execution<a class="headerlink" href="#execution" title="Permanent link">¶</a></h2>
+<p>Execute Baltica with <code>baltica all /Baltica/config.yml --use-singularity</code>. Add  <strong>--quiet</strong> to reduce the logging level or <strong>--verbose</strong> to increase it. Use a cluster profile (<strong>--profile</strong>) to take advantage of the cluster scheduler. See more useful parameters for snakemake below.</p>
+<p>You should expect a <code>results/</code> directory containing the most relevant files by the end of the run. The report and excel table, <code>results/baltica_report{project_title}.html</code> and <code>results/baltica_table{project_title}.xlsx</code>, are the most relevant files. Intermediate files are kept in directories for each method (named for the methods), and can be used or deleted.</p>
+<h2 id="important-snakemake-parameters">Important snakemake parameters<a class="headerlink" href="#important-snakemake-parameters" title="Permanent link">¶</a></h2>
+<ul>
+<li><strong>--cores</strong>: only required if you are not using a cluster scheduler. Use <code>baltica ... --cores all</code> to specify the maximum number of cores available.  </li>
+<li><strong>--profile</strong>: setup a cluster configuration <a href="https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles">profile</a>. </li>
+<li><strong>--dry-run</strong>: only computes the DAG, does not execute rules. But execution order may not reflect the actual order of execution.  </li>
+<li><strong>--unlock</strong>: unlock the directory if a previous run had problems.  </li>
+<li><strong>--list-untracked</strong>: list files that are not tracked by workflows, useful if you want to clean up the directory to save disk space after a successful run.</li>
+<li><strong>--quiet</strong>: less verbose output. </li>
+<li><strong>--reason</strong>, <strong>--printshellcmds</strong>, <strong>--verbose</strong>: verbose output. <code>Simple use baltica ... --verbose</code> to get maximum debug information (you may want to redirect it to a file).</li>
+</ul>
+<p>See more detail at the Snakemake <a href="https://snakemake.readthedocs.io/en/stable/executing/cli.html#useful-command-line-arguments">docs</a>.</p>
 </article>
 </div>
 </div>
 </main>
 <footer class="md-footer">
+<nav aria-label="Footer" class="md-footer__inner md-grid">
+<a aria-label="Previous: Frequently asked questions" class="md-footer__link md-footer__link--prev" href="faq.html" rel="prev">
+<div class="md-footer__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"></path></svg>
+</div>
+<div class="md-footer__title">
+<div class="md-ellipsis">
+<span class="md-footer__direction">
+                Previous
+              </span>
+              Frequently asked questions
+            </div>
+</div>
+</a>
+<a aria-label="Next: References" class="md-footer__link md-footer__link--next" href="bibliography.html" rel="next">
+<div class="md-footer__title">
+<div class="md-ellipsis">
+<span class="md-footer__direction">
+                Next
+              </span>
+              References
+            </div>
+</div>
+<div class="md-footer__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"></path></svg>
+</div>
+</a>
+</nav>
 <div class="md-footer-meta md-typeset">
 <div class="md-footer-meta__inner md-grid">
 <div class="md-footer-copyright">

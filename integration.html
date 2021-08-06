@@ -8,9 +8,9 @@
 <meta content="Baltica - Integrated differential junction usage (DJU)" name="description"/>
 <meta content="Thiago Britto-Borges" name="author"/>
 <link href="https://github.com/dieterich-lab/Baltica/integration.html" rel="canonical"/>
-<link href="assets/images/favicon.png" rel="icon"/>
+<link href="img/baltica_logo.ico" rel="icon"/>
 <meta content="mkdocs-1.2.2, mkdocs-material-7.2.0" name="generator"/>
-<title>DJU methods result integration - Baltica Documentation</title>
+<title>DJU methods result integration - Baltica</title>
 <link href="assets/stylesheets/main.fe914879.min.css" rel="stylesheet"/>
 <link href="assets/stylesheets/palette.ba0d045b.min.css" rel="stylesheet"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -18,8 +18,9 @@
 <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
 <link href="extra.css" rel="stylesheet"/>
 </head>
-<body data-md-color-accent="" data-md-color-primary="" data-md-color-scheme="slate" dir="ltr">
+<body data-md-color-accent="" data-md-color-primary="" data-md-color-scheme="default" dir="ltr">
 <script>function __prefix(e){return new URL(".",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+<script>var palette=__get("__palette");if(null!==palette&&"object"==typeof palette.color)for(var key in palette.color)document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
 <input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
 <input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
 <label class="md-overlay" for="__drawer"></label>
@@ -32,7 +33,7 @@
 </div>
 <header class="md-header" data-md-component="header">
 <nav aria-label="Header" class="md-header__inner md-grid">
-<a aria-label="Baltica Documentation" class="md-header__button md-logo" data-md-component="logo" href="index.html" title="Baltica Documentation">
+<a aria-label="Baltica" class="md-header__button md-logo" data-md-component="logo" href="index.html" title="Baltica">
 <img alt="logo" src="img/baltica_logo.ico"/>
 </a>
 <label class="md-header__button md-icon" for="__drawer">
@@ -42,7 +43,7 @@
 <div class="md-header__ellipsis">
 <div class="md-header__topic">
 <span class="md-ellipsis">
-            Baltica Documentation
+            Baltica
           </span>
 </div>
 <div class="md-header__topic" data-md-component="header-topic">
@@ -54,6 +55,16 @@
 </div>
 </div>
 </div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="" data-md-color-media="" data-md-color-primary="" data-md-color-scheme="default" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_2" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5z"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="" data-md-color-media="" data-md-color-primary="" data-md-color-scheme="slate" id="__palette_2" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1z"></path></svg>
+</label>
+</form>
 <label class="md-header__button md-icon" for="__search">
 <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"></path></svg>
 </label>
@@ -104,10 +115,10 @@
 <div class="md-sidebar__inner">
 <nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
 <label class="md-nav__title" for="__drawer">
-<a aria-label="Baltica Documentation" class="md-nav__button md-logo" data-md-component="logo" href="index.html" title="Baltica Documentation">
+<a aria-label="Baltica" class="md-nav__button md-logo" data-md-component="logo" href="index.html" title="Baltica">
 <img alt="logo" src="img/baltica_logo.ico"/>
 </a>
-    Baltica Documentation
+    Baltica
   </label>
 <div class="md-nav__source">
 <a class="md-source" data-md-component="source" href="https://github.com/dieterich-lab/Baltica/" title="Go to repository">
@@ -166,6 +177,11 @@
   </a>
 </li>
 <li class="md-nav__item">
+<a class="md-nav__link" href="#result-integration">
+    Result integration
+  </a>
+</li>
+<li class="md-nav__item">
 <a class="md-nav__link" href="#annotating-the-results">
     Annotating the results
   </a>
@@ -182,8 +198,8 @@
 <nav aria-label="Assigning AS type" class="md-nav">
 <ul class="md-nav__list">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#biolofical-motivation">
-    Biolofical motivation
+<a class="md-nav__link" href="#biological-motivation">
+    Biological motivation
   </a>
 </li>
 <li class="md-nav__item">
@@ -199,6 +215,11 @@
     Simplify the AS event
   </a>
 </li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#references">
+    References
+  </a>
+</li>
 </ul>
 </nav>
 </li>
@@ -210,6 +231,16 @@
 <li class="md-nav__item">
 <a class="md-nav__link" href="faq.html">
         Frequently asked questions
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="tutorial.html">
+        Tutorial
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="bibliography.html">
+        References
       </a>
 </li>
 <li class="md-nav__item">
@@ -237,6 +268,11 @@
   </a>
 </li>
 <li class="md-nav__item">
+<a class="md-nav__link" href="#result-integration">
+    Result integration
+  </a>
+</li>
+<li class="md-nav__item">
 <a class="md-nav__link" href="#annotating-the-results">
     Annotating the results
   </a>
@@ -253,8 +289,8 @@
 <nav aria-label="Assigning AS type" class="md-nav">
 <ul class="md-nav__list">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#biolofical-motivation">
-    Biolofical motivation
+<a class="md-nav__link" href="#biological-motivation">
+    Biological motivation
   </a>
 </li>
 <li class="md-nav__item">
@@ -268,6 +304,11 @@
 <li class="md-nav__item">
 <a class="md-nav__link" href="#simplify-the-as-event">
     Simplify the AS event
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#references">
+    References
   </a>
 </li>
 </ul>
@@ -289,156 +330,64 @@
 </ol>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>rmats, majiq, and leafcutter use AS events to test for DJU, so metrics are associated with a group and not the SJ. In Baltica, we split these groups in SJ, and multiple SJ may have the same metric, for example, test statistics.</p>
+<p>RMATs, Majiq, and Leafcutter use AS events to test for DJU, so metrics are associated with a group and not the SJ. In Baltica, we split these groups in SJ, and multiple SJ may have the same metric, for example, test statistics.</p>
 </div>
+<!-- !!! warning
+    majiq and rmats may be assigned multiple scores to an SJ to different AS types. For these, Baltica selects the maximum score as the representative.  
+ -->
+<h2 id="result-integration">Result integration<a class="headerlink" href="#result-integration" title="Permanent link">¶</a></h2>
+<p>One challenge for the integration of DJU results is that the methods use different genomic coordinate systems. 
+The coordinates system's differences are due to the method implementation: methods can be 0-indexed (BED format) versus 1-indexed (GTF format) or use the exonic versus intronic coordinates to represent the SJ genomic position. <br/>
+We propose a <code>filter_hits_by_diff</code> function to find overlapping features and then discard any overlaps with more than two bp differences to account for the multiple genomic coordinates system.
+The multiple hits form a graph, which is then partitioned into the clusters, and each cluster represents an intron. 
+This feature enables the reconciliation of the multiple DJU results.</p>
+<h2 id="annotating-the-results">Annotating the results<a class="headerlink" href="#annotating-the-results" title="Permanent link">¶</a></h2>
+<p>We annotate the results with information from genes and transcripts hosting the SJ. 
+For this, we use the <em>de novo</em> transcript annotation at <code>stringtie/merged/merged.combined.gtf</code>. 
+Commonly, multiple transcripts share an intron so that a single intron may be annotated with multiple transcripts.</p>
+<p>These are the columns assigned after the annotation:</p>
+<p><strong>Table 1: Annotation description</strong>
+Column name | Description |
+------------|-------------|
+comparison | pairwise comparison as <code>{case}_vs_{control}</code> |
+chr | seqname or genomic contig |
+start | intron start position for the SJ | 
+end |  intron end position | 
+strand | RNA strand that encodes that gene |
+gene | the gene symbol | 
+e2 - e1| acceptor and donor exons number, if in + strand else the inverse | 
+tx_id | transcript identifier from the combined annotation |
+transcript_name | transcript name | 
+class_code | association between reference transcript and novel transcript (<a href="https://doi.org/10.12688/f1000research.23297.1">seq fig1 for details</a>) |</p>
+<h2 id="selecting-optimal-parameters-for-de-novo-transcriptome-assembly">Selecting optimal parameters for <em>de novo</em> transcriptome assembly<a class="headerlink" href="#selecting-optimal-parameters-for-de-novo-transcriptome-assembly" title="Permanent link">¶</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>majiq and rmats may be assigned multiple scores to an SJ to different AS types. For these, Baltica selects the maximum score as the representative.  </p>
+<p>The section below was obtained in a previous Baltica release, using stringtie v1.2.X, but we don't expect major changes in current version.</p>
 </div>
-<h2 id="annotating-the-results">Annotating the results<a class="headerlink" href="#annotating-the-results" title="Permanent link">¶</a></h2>
-<p>We annotate the results with information from the gene and transcript hosting the SJ. For this, we use the <em>de novo</em> transcript annotation at <code>stringtie/merged/merged.combined.gtf</code>. It's common the multiple transcripts share an intron, and so a single intron may be annotated with multiple transcripts.</p>
-<p>One challenge for the integration of DJU methods' results is the different genomic coordinates system. The coordinates system's differences are due to the method implementation design: methods can be 0-indexed (BED format) versus 1-indexed (GTF format) or use the exonic versus intronic coordinates to represent the SJ genomic position. <br/>
-We propose a <code>filter_hits_by_diff</code> that discards any hits with more than two bp differences from overlapping features between the reference (query) and the SJ (subject). Then, using introns obtained in that annotation as a reference and <code>filter_hits_by_diff</code>, Baltica enables the reconciliation of the multiple DJU results.</p>
-<p>These are the columns assigned after the annotation:</p>
-<table>
-<thead>
-<tr>
-<th>Column name</th>
-<th>Description</th>
-<th>Note</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>comparison</td>
-<td>pairwise comparison as <code>{case}_vs_{control}</code></td>
-<td></td>
-</tr>
-<tr>
-<td>chr</td>
-<td>seqname or genomic contig</td>
-<td></td>
-</tr>
-<tr>
-<td>start</td>
-<td>intron start position for the SJ</td>
-<td>1-index</td>
-</tr>
-<tr>
-<td>end</td>
-<td>intron end position</td>
-<td>1-index</td>
-</tr>
-<tr>
-<td>strand</td>
-<td>RNA strand that encodes that gene</td>
-<td></td>
-</tr>
-<tr>
-<td>gene</td>
-<td>the gene symbol</td>
-<td></td>
-</tr>
-<tr>
-<td>e2</td>
-<td>acceptor exon number, if in + strand otherwise donor exon</td>
-<td></td>
-</tr>
-<tr>
-<td>e1</td>
-<td>donor exon number, if in the + strand otherwise acceptor exon</td>
-<td></td>
-</tr>
-<tr>
-<td>tx_id</td>
-<td>transcript identifier from the combined annotation</td>
-<td></td>
-</tr>
-<tr>
-<td>transcript_name</td>
-<td>transcript name</td>
-<td></td>
-</tr>
-<tr>
-<td>class_code</td>
-<td>association between reference transcript and novel transcript</td>
-<td><a href="https://doi.org/10.12688/f1000research.23297.1">see fig 1 from this paper for details</a></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Table 1: Columns added after annotation</strong></p>
-<h2 id="selecting-optimal-parameters-for-de-novo-transcriptome-assembly">Selecting optimal parameters for <em>de novo</em> transcriptome assembly<a class="headerlink" href="#selecting-optimal-parameters-for-de-novo-transcriptome-assembly" title="Permanent link">¶</a></h2>
-<p>We found that the parameters used to obtain the <em>de novo</em> transcriptome are critical for maximum integration between the GTF and the SJ from DJU methods. <strong>Fig 1</strong> shows a parameter scan where we vary the group, <code>-j</code> (minimum junction coverage), <code>-c</code> (minimum coverage), and <code>-f</code> (minimum isoform proportion) and compute the number of transcripts that match with SJ called significantly. As expected, the merged annotation and not the group-specific annotation have the highest rate of annotated introns. The crucial result here is the dependency of the <code>-f</code> parameter, which is also associated with an increased number of annotated introns. As we confirmed this behavior in other datasets, we decided to use <code>-c 3 -j 3 -f 0.01</code> as default values in Baltica. The higher coverage (<code>-c</code> and <code>-j</code>) values counter the potential noise of transcripts with low abundance.</p>
-<p><img alt="" src="img/stringtie_parameter_scan_heatmap.png"> </img></p>
-<p><strong> Fig. 6.1: Parameters scan to maximize the number of introns annotated </strong> We have run Stringtie with multiple for group annotations and merged annotation. We use a series of parameters: junction coverage of 1, 2, or 3; coverage of 1, 2, 3, and minimum isoform fraction of 0.1, 0.01, or 0.001.  </p>
+<p>We found that the parameters used to obtain the <em>de novo</em> transcriptome are critical for maximum integration between the GTF and the SJ from DJU methods.
+<strong>Fig 1</strong> shows a parameter scan where we vary the group, <code>-j</code> (minimum junction coverage), <code>-c</code> (minimum coverage), and <code>-f</code> (minimum isoform proportion) and compute the number of transcripts that match with SJ called significantly. 
+As expected, the merged annotation and not the group-specific annotation have the highest rate of annotated introns. 
+The crucial result here is the dependency of the <code>-f</code> parameter, which is also associated with an increased number of annotated introns. 
+As we confirmed this behavior in other datasets, we decided to use <code>-c 3 -j 3 -f 0.01</code> as default values in Baltica. 
+The higher coverage (<code>-c</code> and <code>-j</code>) values counter the potential noise of transcripts with low abundance.</p>
+<p><img alt="" src="img/stringtie_parameter_scan_heatmap.png"><br/>
+<strong>Fig 1</strong>:Parameter scan to maximize the number of introns annotated.
+We have run Stringtie with multipleparameters of merged annotation or group annotation; junction coverage of 1, 2, or 3; coverage of 1, 2, 3, and minimum isoform fraction of 0.1, 0.01, or 0.001. 
+The result shows a dependency of the minimum isoform fraction parameter, which needs to be minimized to increase the proportion of annotated SJ, as expected.</img></p>
 <h2 id="assigning-as-type">Assigning AS type<a class="headerlink" href="#assigning-as-type" title="Permanent link">¶</a></h2>
-<h3 id="biolofical-motivation">Biolofical motivation<a class="headerlink" href="#biolofical-motivation" title="Permanent link">¶</a></h3>
-<p>Identifying the type of AS is critical to understand a potential molecular mechanism for AS events. Many factors influence splicing. Splicing factors are probably the most well-studied and can have a specific function in splicing regulation. <a href="https://www.uniprot.org/uniprot/Q01130">SRSF2</a> is a relevant example in this context. SRSF2 is splicing factors from the SR family that are known for auto-regulation. In certain conditions, the SRSF2 transcript can activate the nonsense-mediated decay by either including a new exon containing a premature stop codon or an intron in  3' UTR. These changes lead to transcript degradation and overall reduction of gene expression. Thus, the reduction of SRSF2 protein level leads to widespread exon skipping. Identifying such patterns is critical to understanding which splicing regulators are driving the observed splicing changes.</p>
+<h3 id="biological-motivation">Biological motivation<a class="headerlink" href="#biological-motivation" title="Permanent link">¶</a></h3>
+<p>Identifying the type of AS is critical to understand a potential molecular mechanism for AS events. <a href="https://www.uniprot.org/uniprot/Q01130">SRSF2</a> is a relevant example in this context. SRSF2 is splicing factors from the SR family that are known for auto-regulation. In certain conditions, the SRSF2 transcript can activate the nonsense-mediated decay by either including a new exon containing a premature stop codon or an intron in  3' UTR. These changes lead to transcript degradation and overall reduction of gene expression. Thus, the reduction of SRSF2 protein level leads to widespread exon skipping. Identifying such patterns is critical to understanding which splicing regulators are driving the observed splicing changes.</p>
 <h3 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">¶</a></h3>
 <p>In Baltica, we use a geometric approach to define AS in three classes:
 - ES, for exon skipping
 - A3SS, for alternative 3' splice-site
 - A5SS, for alternative 5' splice-site</p>
 <p>Figure 2 details how we use the distance between features start and end to determine the AS type.</p>
-<p><img alt="" src="img/Baltica_as_type.png"> </img></p>
-<p><strong> Fig. 2: AS type assignment in Baltica. </strong> Baltica uses the genomic coordinates from the SJ and its overlapping exons to assigning AS type to SJ and its overlapping exons. Because many exons may be affected, multiple assignments are output. For example, donor and acceptor exons are assigned as JS and JE, respectively. </p>
+<p><img :=":" alt="" class="center" src="img/Baltica_as_type.png" width="70%"><br/>
+<strong>Fig 2</strong>: AS type assignment in Baltica. Baltica uses the genomic coordinates from the SJ and its overlapping exons to assigning AS type to SJ and its overlapping exons. Because many exons may be affected, multiple assignments are output. For example, donor and acceptor exons are assigned as JS and JE, respectively. </img></p>
 <h2 id="simplify-the-as-event">Simplify the AS event<a class="headerlink" href="#simplify-the-as-event" title="Permanent link">¶</a></h2>
 <p>Because most of the final users are only interested in the list of genomic ranges, gene names, or event types, we offer a simplified output that removes redundant information. This step helps generate a final report. </p>
-<!-- Below the `{r} sessionInfo()` output for packages loaded for the analysis workflow.
- -->
-<!-- ```
-R version 3.6.0 (2019-04-26)
-Platform: x86_64-pc-linux-gnu (64-bit)
-Running under: Debian GNU/Linux 8 (jessie)
-
-Matrix products: default
-BLAS:   /beegfs/biosw/R/3.6.0/lib/R/lib/libRblas.so
-LAPACK: /beegfs/biosw/R/3.6.0/lib/R/lib/libRlapack.so
-
-locale:
- [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
- [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8
- [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8
- [7] LC_PAPER=en_US.UTF-8       LC_NAME=C
- [9] LC_ADDRESS=C               LC_TELEPHONE=C
-[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
-
-attached base packages:
-[1] parallel  stats4    stats     graphics  grDevices utils     datasets
-[8] methods   base
-
-other attached packages:
- [1] openxlsx_4.1.5       reshape2_1.4.4       rtracklayer_1.46.0
- [4] GenomicRanges_1.38.0 GenomeInfoDb_1.22.1  IRanges_2.20.2
- [7] S4Vectors_0.24.4     BiocGenerics_0.32.0  optparse_1.6.6
-[10] dplyr_0.8.5          readr_1.3.1          stringr_1.4.0
-[13] tidyr_1.0.3
-
-loaded via a namespace (and not attached):
- [1] zip_2.0.4                   Rcpp_1.0.4.6
- [3] plyr_1.8.6                  pillar_1.4.3
- [5] compiler_3.6.0              XVector_0.26.0
- [7] bitops_1.0-6                tools_3.6.0
- [9] zlibbioc_1.32.0             lattice_0.20-38
-[11] lifecycle_0.2.0             tibble_3.0.1
-[13] pkgconfig_2.0.3             rlang_0.4.6
-[15] Matrix_1.2-17               DelayedArray_0.12.3
-[17] cli_2.0.2                   GenomeInfoDbData_1.2.2
-[19] Biostrings_2.54.0           vctrs_0.2.4
-[21] hms_0.5.3                   grid_3.6.0
-[23] getopt_1.20.3               tidyselect_1.0.0
-[25] Biobase_2.46.0              glue_1.4.0
-[27] R6_2.4.1                    fansi_0.4.1
-[29] BiocParallel_1.20.1         XML_3.99-0.3
-[31] purrr_0.3.4                 magrittr_1.5
-[33] matrixStats_0.56.0          GenomicAlignments_1.22.1
-[35] Rsamtools_2.2.3             ellipsis_0.3.0
-[37] SummarizedExperiment_1.16.1 assertthat_0.2.1
-[39] stringi_1.4.6               RCurl_1.98-1.2
-[41] crayon_1.3.4
-
-```
- -->
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">¶</a></h2>
 </article>
 </div>
 </div>

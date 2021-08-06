@@ -8,9 +8,9 @@
 <meta content="Baltica - Integrated differential junction usage (DJU)" name="description"/>
 <meta content="Thiago Britto-Borges" name="author"/>
 <link href="https://github.com/dieterich-lab/Baltica/setup.html" rel="canonical"/>
-<link href="assets/images/favicon.png" rel="icon"/>
+<link href="img/baltica_logo.ico" rel="icon"/>
 <meta content="mkdocs-1.2.2, mkdocs-material-7.2.0" name="generator"/>
-<title>Getting started - Baltica Documentation</title>
+<title>Getting started - Baltica</title>
 <link href="assets/stylesheets/main.fe914879.min.css" rel="stylesheet"/>
 <link href="assets/stylesheets/palette.ba0d045b.min.css" rel="stylesheet"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -18,8 +18,9 @@
 <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
 <link href="extra.css" rel="stylesheet"/>
 </head>
-<body data-md-color-accent="" data-md-color-primary="" data-md-color-scheme="slate" dir="ltr">
+<body data-md-color-accent="" data-md-color-primary="" data-md-color-scheme="default" dir="ltr">
 <script>function __prefix(e){return new URL(".",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+<script>var palette=__get("__palette");if(null!==palette&&"object"==typeof palette.color)for(var key in palette.color)document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
 <input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
 <input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
 <label class="md-overlay" for="__drawer"></label>
@@ -32,7 +33,7 @@
 </div>
 <header class="md-header" data-md-component="header">
 <nav aria-label="Header" class="md-header__inner md-grid">
-<a aria-label="Baltica Documentation" class="md-header__button md-logo" data-md-component="logo" href="index.html" title="Baltica Documentation">
+<a aria-label="Baltica" class="md-header__button md-logo" data-md-component="logo" href="index.html" title="Baltica">
 <img alt="logo" src="img/baltica_logo.ico"/>
 </a>
 <label class="md-header__button md-icon" for="__drawer">
@@ -42,7 +43,7 @@
 <div class="md-header__ellipsis">
 <div class="md-header__topic">
 <span class="md-ellipsis">
-            Baltica Documentation
+            Baltica
           </span>
 </div>
 <div class="md-header__topic" data-md-component="header-topic">
@@ -54,6 +55,16 @@
 </div>
 </div>
 </div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="" data-md-color-media="" data-md-color-primary="" data-md-color-scheme="default" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_2" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5z"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="" data-md-color-media="" data-md-color-primary="" data-md-color-scheme="slate" id="__palette_2" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1z"></path></svg>
+</label>
+</form>
 <label class="md-header__button md-icon" for="__search">
 <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"></path></svg>
 </label>
@@ -104,10 +115,10 @@
 <div class="md-sidebar__inner">
 <nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
 <label class="md-nav__title" for="__drawer">
-<a aria-label="Baltica Documentation" class="md-nav__button md-logo" data-md-component="logo" href="index.html" title="Baltica Documentation">
+<a aria-label="Baltica" class="md-nav__button md-logo" data-md-component="logo" href="index.html" title="Baltica">
 <img alt="logo" src="img/baltica_logo.ico"/>
 </a>
-    Baltica Documentation
+    Baltica
   </label>
 <div class="md-nav__source">
 <a class="md-source" data-md-component="source" href="https://github.com/dieterich-lab/Baltica/" title="Go to repository">
@@ -166,6 +177,11 @@
   </a>
 </li>
 <li class="md-nav__item">
+<a class="md-nav__link" href="#test-dataset">
+    Test dataset
+  </a>
+</li>
+<li class="md-nav__item">
 <a class="md-nav__link" href="#cluster-profile">
     Cluster profile
   </a>
@@ -173,11 +189,6 @@
 <li class="md-nav__item">
 <a class="md-nav__link" href="#advanced-baltica-workflows-directly-from-snakemake">
     (Advanced) Baltica workflows directly from Snakemake
-  </a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#references">
-    References
   </a>
 </li>
 </ul>
@@ -206,6 +217,16 @@
 <li class="md-nav__item">
 <a class="md-nav__link" href="faq.html">
         Frequently asked questions
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="tutorial.html">
+        Tutorial
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="bibliography.html">
+        References
       </a>
 </li>
 <li class="md-nav__item">
@@ -248,6 +269,11 @@
   </a>
 </li>
 <li class="md-nav__item">
+<a class="md-nav__link" href="#test-dataset">
+    Test dataset
+  </a>
+</li>
+<li class="md-nav__item">
 <a class="md-nav__link" href="#cluster-profile">
     Cluster profile
   </a>
@@ -255,11 +281,6 @@
 <li class="md-nav__item">
 <a class="md-nav__link" href="#advanced-baltica-workflows-directly-from-snakemake">
     (Advanced) Baltica workflows directly from Snakemake
-  </a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#references">
-    References
   </a>
 </li>
 </ul>
@@ -275,7 +296,7 @@
 <h1 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">¶</a></h1>
 <h2 id="quick-example">Quick example:<a class="headerlink" href="#quick-example" title="Permanent link">¶</a></h2>
 <p>If Baltica dependencies, baltica configuration and cluster configuration are available, use:</p>
-<div class="codehilite"><pre><span></span><code>baltica &lt;workflow&gt; &lt;config&gt; --use-singularity --profile &lt;cluster&gt;
+<div class="codehilite"><pre><span></span><code>baltica &lt;workflow&gt; &lt;config&gt; --use-singularity
 </code></pre></div>
 <ul>
 <li><strong>workflow</strong>:  <ul>
@@ -290,12 +311,12 @@
 </ul>
 </li>
 <li><strong>config</strong>: <a href="proj-config.html">project configuration file</a></li>
-<li><strong>cluster</strong>: <a href="https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles">Snakemake cluster profile</a> </li>
 </ul>
-<p>Or, read below.</p>
+<p>Use <code>--profile &lt;cluster&gt;</code> with a <a href="https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles">Snakemake cluster profile</a> 
+or set the number of avaiable cores with <code>--cores</code>. For more Snakemake parameters, <a href="https://snakemake.readthedocs.io/en/stable/executing/cli.html">check their documentation</a>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Snakemake is under active development. Please <a href="https://github.com/dieterich-lab/Baltica/issues">contact us</a> if you have any issues with this documentation.</p>
+<p>Baltica is under active development. Please <a href="https://github.com/dieterich-lab/Baltica/issues">contact us</a> if you have any issues with this documentation.</p>
 </div>
 <h2 id="software-environment">Software environment:<a class="headerlink" href="#software-environment" title="Permanent link">¶</a></h2>
 <p>Baltica framework is based on:<br/>
@@ -304,18 +325,15 @@
 - Docker containers used with <a href="https://sylabs.io/singularity/">Singularity</a><br/>
 - R scripts for processing, integrating, annotating, assigning biological features, and reporting<br/>
 - a Rmarkdown report  </p>
-<p>We have developed it on the following computer environments:</p>
-<!--  cat /proc/version -->
-<ul>
-<li>Linux version 4.19.0-16-amd64 Debian 4.19.181-1 (2021-03-19)</li>
-<li>gcc version 8.3.0 </li>
-<li>Python version 3.7.7</li>
-<li>Singularity version 3.7.3</li>
-<li>Snakemake version 6.4.1</li>
-<li>Git version 2.20.1</li>
-</ul>
+<p>We have developed it on the following computer environments:
+- Linux version 4.19.0-16-amd64 Debian 4.19.181-1 (2021-03-19)<br/>
+- gcc version 8.3.0<br/>
+- Python version 3.7.7<br/>
+- Singularity version 3.7.3<br/>
+- Snakemake version 6.4.1<br/>
+- Git version 2.20.1  </p>
 <p>These versions should not matter because the workflows are run within Docker containers, as long <strong>Snakemake version &gt; 6</strong> and a <strong>recent Singularity version</strong>.</p>
-<p>Baltica depends on python3, Singulary, and Snakemake.
+<p>Baltica depends on python3, Singulary, and Snakemake:<br/>
 - <a href="https://sylabs.io/guides/3.0/user-guide/installation.html">How to install Singularity</a><br/>
 - <a href="https://snakemake.readthedocs.io/en/stable/getting_started/installation.html">How to install Snakemake</a> </p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">¶</a></h2>
@@ -324,7 +342,7 @@
 pip install .
 </code></pre></div>
 <p>Will install Baltica and its python dependencies. You may want to create a <a href="https://realpython.com/python-virtual-environments-a-primer/">virtual environment</a> before installing Baltica.<br/>
-All other requirements are resolved with singularity containers.</p>
+All other requirements are resolved with singularity containers. Baltica store its singularity containers at <code>$HOME/.baltica/singularity/</code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>We plan to submit Baltica to the Python Package Index.</p>
@@ -337,37 +355,15 @@ All other requirements are resolved with singularity containers.</p>
 <p>Use baltica <code>cli</code> for current help documentation:</p>
 <div class="codehilite"><pre><span></span><code>baltica --help
 </code></pre></div>
-<p>Baltica executor takes a single optional argument <code>--verbose</code>, to detail it execution. Every other option is passed to Snakemake.</p>
+<p>Baltica executor takes a single optional argument <code>--verbose</code>, to detail its execution. Every other option is passed to Snakemake.</p>
+<h2 id="test-dataset">Test dataset<a class="headerlink" href="#test-dataset" title="Permanent link">¶</a></h2>
+<p>Baltica ships with a test dataset, located at the <code>data/</code> directory. There is a configuration file for the test dataset. <strong>Users are required to update this configuration file</strong>. Please see the <a href="proj-config.html">Baltica project configuration</a> for further details.</p>
 <h2 id="cluster-profile">Cluster profile<a class="headerlink" href="#cluster-profile" title="Permanent link">¶</a></h2>
 <p>Snakemake supports distributed workflow execution in many different high-performance computer clusters, as detailed <a href="https://snakemake.readthedocs.io/en/stable/executing/cluster.html?highlight=profile#cluster-execution">here</a>. We recommend using <a href="https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles">cluster profiles</a> and using it like: </p>
 <div class="codehilite"><pre><span></span><code>baltica &lt;workflow&gt; &lt;config&gt; --use-singularity --profile &lt;cluster&gt; 
 </code></pre></div>
 <h2 id="advanced-baltica-workflows-directly-from-snakemake">(Advanced) Baltica workflows directly from Snakemake<a class="headerlink" href="#advanced-baltica-workflows-directly-from-snakemake" title="Permanent link">¶</a></h2>
 <p>Baltica workflows can be used directly with Snakemake without installation. However, there is limited support for it.</p>
-<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">¶</a></h2>
-<div class="footnote">
-<hr/>
-<ol>
-<li id="fn:1">
-<p>If you use Baltica, also please <a href="https://bioinformatics.oxfordjournals.org/content/28/19/2520">cite Snakemake</a> <a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">↩</a></p>
-</li>
-<li id="fn:2">
-<p>If you use majiq results, please <a href="https://elifesciences.org/articles/11752">cite it</a> <a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">↩</a></p>
-</li>
-<li id="fn:3">
-<p>If you use leafcutter results, please <a href="https://www.nature.com/articles/s41588-017-0004-9">cite it</a> <a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">↩</a></p>
-</li>
-<li id="fn:4">
-<p>If you use rmats, please <a href="https://www.pnas.org/content/111/51/E5593">cite it</a> <a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">↩</a></p>
-</li>
-<li id="fn:5">
-<p>If you use junctionseq results, please <a href="http://nar.oxfordjournals.org/content/early/2016/06/07/nar.gkw501.full">cite it</a> <a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">↩</a></p>
-</li>
-<li id="fn:6">
-<p>If you use the Baltica's analysis module, please also <a href="https://www.nature.com/articles/nbt.3122">cite Stringtie</a> <a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">↩</a></p>
-</li>
-</ol>
-</div>
 </article>
 </div>
 </div>
