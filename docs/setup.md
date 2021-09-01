@@ -6,6 +6,10 @@ If Baltica dependencies, baltica configuration and cluster configuration are ava
 ```bash
 baltica <workflow> <config> --use-singularity
 ```
+
+!!! note
+    Singularity requires a mountable temp directory, we recommend setting /tmp with `export TMPDIR=/tmp/`
+
 - **workflow**:  
     - all: run end-to-end wokflows
     - qc: run quality control 
@@ -32,12 +36,13 @@ Baltica framework is based on:
 - a Rmarkdown report  
 
 We have developed it on the following computer environments:
-- Linux version 4.19.0-16-amd64 Debian 4.19.181-1 (2021-03-19)  
-- gcc version 8.3.0  
-- Python version 3.7.7  
-- Singularity version 3.7.3  
-- Snakemake version 6.4.1  
-- Git version 2.20.1  
+- Distribution: Debian 10
+- Kernel: 4.19.0-16-amd64
+- gcc version: 8.3.0  
+- Python version: 3.7.7  
+- Singularity version: 3.7.3  
+- Snakemake version: 6.4.1  
+- Git version: 2.20.1  
 
 These versions should not matter because the workflows are run within Docker containers, as long **Snakemake version > 6** and a **recent Singularity version**.
 
