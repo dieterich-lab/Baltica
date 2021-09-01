@@ -4,6 +4,7 @@ date: "`r Sys.Date()`"
 # css: "custom.css"
 output:
   rmdformats::downcute:
+    css: "`snakemake@scriptdir`/custom.css" 
     self_contained: true
     lightbox: true
     gallery: false
@@ -19,6 +20,10 @@ library(rmdformats)
 library(scales)
 library(ggrepel)
 library(pander)
+library(ComplexHeatmap)
+library(reactable)
+
+
 
 ## Global options
 format_power10 <- scales::trans_format("log10", scales::label_math())
@@ -32,9 +37,6 @@ opts_chunk$set(
   message = FALSE,
   warning = FALSE
 )
-# bibliography <- file.path(snakemake@scriptdir, "references.bib")
-# is_fastqc <- F # file.exists(snakemake@params$fastqc)
-# is_gffcompare <- file.exists((snakemake@params$gffcompare))
 sj_annotated_file <- as.character(snakemake@input[[1]])
 is_sj_annotate <- file.exists(sj_annotated_file)
 leafcutter_file <- as.character(snakemake@input[[2]])
@@ -169,10 +171,10 @@ df <- readr::read_csv(sj_annotated_file, col_types = cols(
   as_type = col_character()
 ))
 
-suppressPackageStartupMessages(library(ComplexHeatmap))
-library(RColorBrewer)
 
 methods <- c("rmats", "junctionseq", "majiq", "leafcutter", "orthogonal")
+methods <- str_extract(colnames(df), str_c(methods, collapse = "|"))
+methods <- methods[!is.na(methods)]
 
 mat <- df %>%
   dplyr::select(matches("-vs-")) %>%
@@ -193,6 +195,17 @@ comb_mat <- make_comb_mat(mat)
 group <- str_extract(colnames(mat), str_c(comparisons, collapse = "|"))
 method <- str_extract(colnames(mat), str_c(methods, collapse = "|"))
 
+color_list <- list(
+  group = setNames(
+    scales::brewer_pal(palette = "Set1")(length(comparisons)),
+    comparisons
+  ),
+  method = setNames(
+    scales::brewer_pal(palette = "Set2")(length(methods)),
+    methods
+  )
+)
+
 UpSet(
   comb_mat,
   comb_order = order(rev(comb_degree(comb_mat))),
@@ -208,14 +221,7 @@ UpSet(
     # https://stackoverflow.com/a/47268265/1694714
     group = group,
     method = method,
-    col = list(
-      group = setNames(
-        brewer.pal(n = length(comparisons), name = "Set2"), comparisons
-      ),
-      method = setNames(
-        brewer.pal(n = length(methods), name = "Set1"), methods
-      )
-    )
+    col = color_list
   )
 )
 ```
@@ -225,21 +231,27 @@ UpSet(
 ```{r echo=FALSE, eval=is_sj_annotate}
 knitr::asis_output("### Baltica Table \\n
 Click on coordinates to go to the UCSC Genome Browser; on the ▼ to see
-intron annotation. Multi columns are sortable by holding <kbd>SHIFT</kbd>.")
-
-library(reactable)
-
-# simplify <- function(x, remove = c("JS", "JE")) {
-#   x %>%
-#     str_split(";") %>%
-#     lapply(., function(x) {
-#       setdiff(x, remove)
-#     }) %>%
-#     lapply(., paste0, collapse = ";") %>%
-#     unlist()
-# }
+intron annotation. Multi columns are sortable by holding <kbd>SHIFT</kbd>.
+Note that the output is limited to the top 1,000 (or `baltica_max_table`)
+rows, ranked by row sum.")
 
 df <- df %>%
+  arrange(
+    desc(
+      rowSums(
+        across(
+          contains("-vs-")
+        )
+      )
+    )
+  ) %>%
+  head(
+    ifelse(
+      "baltica_max_table" %in% names(config),
+      config[["baltica_max_table"]],
+      1000
+    )
+  ) %>%
   mutate_if(is.numeric, round, 3) %>%
   # mutate(as_type = simplify(as_type)) %>%
   dplyr::select(
@@ -362,4 +374,5 @@ pander::pander(config, compact = FALSE)
 pander::pander(sessionInfo(), compact = FALSE)
 ```
 
-### References:  
+### References:
+If you use Baltica, [please cite it and its the underlying methods](https://dieterich-lab.github.io/Baltica/bibliography.html)
