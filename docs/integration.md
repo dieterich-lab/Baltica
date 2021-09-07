@@ -62,7 +62,7 @@ The result shows a dependency of the minimum isoform fraction parameter, which n
 ## Assigning AS type
 
 ### Biological motivation
-Identifying the type of AS is critical to understand a potential molecular mechanism for AS events. [SRSF2](https://www.uniprot.org/uniprot/Q01130) is a relevant example in this context. SRSF2 is splicing factors from the SR family that are known for auto-regulation. In certain conditions, the SRSF2 transcript can activate the nonsense-mediated decay by either including a new exon containing a premature stop codon or an intron in  3' UTR. These changes lead to transcript degradation and overall reduction of gene expression. Thus, the reduction of SRSF2 protein level leads to widespread exon skipping. Identifying such patterns is critical to understanding which splicing regulators are driving the observed splicing changes.
+Identifying the type of AS is critical to understand a potential molecular mechanism for AS events. [SRSF2](https://www.uniprot.org/uniprot/Q01130) is a relevant example in this context. SRSF2 is splicing factors from the SR family that are known for auto-regulation. In certain conditions, the SRSF2 transcript can activate the nonsense-mediated decay by either including a new exon containing a premature stop codon or an intron in  3' UTR. These changes lead to transcript degradation and overall reduction of gene expression. Thus, the reduction of SRSF2 protein level leads to widespread exon skipping. Identifying such patterns is critical to understanding which splicing regulators are driving the observed splicing changes, and it enables further analysis of AS events of a specific type.
 
 ### Implementation
 In Baltica, we use a geometric approach to define AS in three classes:
