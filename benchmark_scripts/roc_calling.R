@@ -1,10 +1,5 @@
 library(tidyverse)
 
-# input
-# output
-# method = c("majiq", "leafcutter", "rmats", "junctionseq"),
-# group = c("mix2-vs-mix1", "mix3-vs-mix1", "mix3-vs-mix2")
-
 df <- readr::read_csv(
   "../sirv_benchmark/results/SJ_annotated.csv",
   col_types = cols(
@@ -16,18 +11,21 @@ df <- readr::read_csv(
     exon_number = col_character(),
     coordinates = col_character()
   )
-)
+) %>%
+  dplyr::select(matches("-vs-")) %>% 
+  # NA are not called
+  mutate( 
+    across(everything(), ~ replace_na(.x, 0))
+  ) %>% # calling task
+  mutate_all( 
+    list(~ if_else(. > 0.05, T, F))
+  ) %>%
+  pivot_longer(everything(),
+               names_to = c(".value", 'comparison'),
+               names_pattern = "(.+)_(.+)"
+  ) 
 
-df <- df %>%
-  dplyr::select(matches("-vs-"), "coordinates", "gene_name")
-
-coordinates <- df$coordinates
-gene_name <- df$gene_name
-df$coordinates <- NULL
-df$gene_name <- NULL
-df <- df %>% mutate(
-  across(everything(), ~ replace_na(.x, 0))
-)
+df$comparison <- NULL
 
 compute_cm <- function(col, ref) {
   case_when(
@@ -39,20 +37,13 @@ compute_cm <- function(col, ref) {
   )
 }
 
-pars <- expand_grid(
-  method = c("majiq", "leafcutter", "rmats", "junctionseq"),
-  group = c("mix2-vs-mix1", "mix3-vs-mix1", "mix3-vs-mix2")
-)
-pars <- pars %>%
-  mutate(col = str_glue("{method}_{group}"))
-pars <- pars %>%
-  mutate(ref = str_glue("orthogonal_{group}"))
-pars$method <- NULL
-pars$group <- NULL
+pars <- tibble(
+  col = c("majiq", "leafcutter", "rmats", "junctionseq"),
+  ref = rep("orthogonal", 4) 
+) 
 
 cm_result <- purrr::pmap(pars, compute_cm)
 names(cm_result) <- pars$col
-table(cm_result$`majiq_mix2-vs-mix1`)
 
 cm_result %>%
   purrr::map(~ table(.)) %>%
@@ -63,6 +54,7 @@ cm_result %>%
 library(ROCR)
 library(ggplot2)
 library(cowplot)
+
 compute_prediction <- function(col, ref) {
   .x <- df[, c(col, ref)]
   .x <- filter_all(.x, any_vars(. != 0))
