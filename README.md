@@ -1,4 +1,6 @@
 # Baltica
+
+[![DOI](https://zenodo.org/badge/118789305.svg)](https://zenodo.org/badge/latestdoi/118789305)
 ___
 
  <img align="right" src="https://gist.githubusercontent.com/tbrittoborges/3c86ffbaa62e671771f443c65cb04fdc/raw/7ae0ea4a76e8f5464139ef34164c67de7a297ce8/baltica_logo.png" height="300"> *Baltica*: integrated splice junction usage analysis
