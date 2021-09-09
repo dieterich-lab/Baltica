@@ -14,7 +14,7 @@ df <- df %>%
 compute_prediction <- function(col, ref) {
   .x <- df[, c(col, ref)]
   .x <- filter_all(.x, any_vars(. != 0))
-  prediction(.x[[col]], ifelse(1-.x[[ref]] > .95, 0, 1))
+  prediction(.x[[col]], ifelse(.x[[ref]] > .95, 1, 0))
 }
 
 
@@ -33,16 +33,17 @@ auc <- lapply(auc, function(x) round(slot(x, "y.values")[[1]][[1]], 2))
 roc_data <- tibble(
   FPR = unlist(lapply(tpr_fpr, function(x) slot(x, "x.values")[[1]])),
   TPR = unlist(lapply(tpr_fpr, function(x) slot(x, "y.values")[[1]])),
-  Method = rep(paste0(names(method), " (AUC=", auc[names(method)], ")"), method)
+  Method = rep(names(method), method)
 )
 
 p <- ggplot(roc_data, aes(x = FPR, y = TPR, color = Method)) +
   geom_line() +
   geom_abline(aes(slope = 1, intercept = 0), linetype = "dashed") +
   theme_cowplot(14) +
-  labs(title = "SIRV benchmark - calling task") +
   theme(legend.position = c(0.60, 0.3)) +
-  scale_fill_manual(values = color_list$method)
+  scale_color_manual(
+    labels = setNames(nm=names(auc), paste(names(auc), '(AUC ROC=', auc, ')', sep=" ")),
+    values = color_list$method[1:4])
 p
 
 ggsave("../nanopore_benchmark/results/roc_calling.pdf")
