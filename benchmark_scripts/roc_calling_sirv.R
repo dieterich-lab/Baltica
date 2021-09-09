@@ -4,17 +4,14 @@ library(ROCR)
 library(ggplot2)
 library(cowplot)
 
-# NA are not called
 df <- df %>% 
-  mutate( 
-    across(everything(), ~ replace_na(.x, 0)),
-    comparison = NULL
-  )
+  replace(is.na(.), 0) %>% 
+  mutate_all(~ifelse(. < 0.95, 0, 1))
 
 compute_prediction <- function(col, ref) {
   .x <- df[, c(col, ref)]
-  .x <- filter_all(.x, any_vars(. != 0))
-  prediction(.x[[col]], 1 -.x[[ref]])
+  # .x <- filter_all(.x, any_vars(. != 0))
+  prediction(.x[[col]], .x[[ref]])
 }
 
 pars <- tibble(
@@ -48,6 +45,6 @@ p <- ggplot(roc_data, aes(x = FPR, y = TPR, color = Method)) +
 p
 
 ggsave(
-  "../sirv_benchmark/results/roc_calling.pdf")
+  "../sirv_benchmark/results/roc_calling_new.pdf")
 
 
