@@ -2,7 +2,6 @@
 suppressPackageStartupMessages({
   library(tidyr)
   library(stringr)
-  library(readr)
   library(dplyr)
   library(optparse)
   library(GenomicRanges)
@@ -58,52 +57,11 @@ if (exists("snakemake")) {
 message("Loading JunctionSeq result")
 
 read_junctionseq_out <- function(x) {
-  col_names <- "featureID
-geneID
-countbinID
-testable
-status
-allZero
-baseMean
-baseVar
-dispBeforeSharing
-dispFitted
-dispersion
-pvalue
-padjust
-chr
-start
-end
-strand
-transcripts
-featureType
-padjust_noFilter
-log2FC_alt_vs_ref
-log2FCvst_alt_vs_ref
-expr_ref
-expr_alt
-geneWisePadj"
-
-  tmp <- read_table2(
+  tmp <- read.table(
     x,
-    col_names = strsplit(col_names, "\n")[[1]],
-    skip = 1,
-    col_types = cols(
-      .default = col_double(),
-      chr = col_character(),
-      featureID = col_character(),
-      geneID = col_character(),
-      countbinID = col_character(),
-      testable = col_logical(),
-      status = col_character(),
-      allZero = col_logical(),
-      strand = col_character(),
-      transcripts = col_character(),
-      featureType = col_character()
-    )
-  )
-
-  tmp %>% filter(tmp$testable == T)
+    header = 1
+  ) %>%
+    filter(tmp$testable == T)
 }
 
 message("Loading processing the table")

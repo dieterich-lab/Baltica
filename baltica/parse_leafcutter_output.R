@@ -53,15 +53,11 @@ cluster_sig_file <- files
 
 cluster_sig <- lapply(
   cluster_sig_file,
-  read_tsv,
-  col_types = c(
-    cluster = col_character(),
-    status = col_character(),
-    loglr = col_double(),
-    df = col_double(),
-    p = col_double(),
-    p.adjust = col_double(),
-    genes = col_character()
+  read.table,
+  sep = "\t",
+  header = TRUE,
+  colClasses = c(
+    "character", "double", "integer", "double", "character", "double"
   )
 )
 
@@ -75,18 +71,15 @@ effec_size_files <- gsub(
   pattern = "cluster_significance",
   replacement = "effect_sizes"
 )
+
 es <- lapply(
   effec_size_files,
-  read_tsv,
-  col_names = c("intron", "logef", "ref_psi", "alt_psi", "deltapsi"),
-  skip = 1,
-  col_types = c(
-    .default = col_double(),
-    intron = col_character(),
-    logef = col_double(),
-    deltapsi = col_double()
-  )
+  read.table,
+  sep = "\t",
+  header = T,
+  colClasses = c("character", "double", "double", "double", "double")
 )
+
 names(es) <- file_names
 es <- bind_rows(es, .id = "comparison")
 
@@ -111,8 +104,7 @@ res$chr <- gsub("chr", "", res$chr)
 
 res <- select(res, -c("clu", "clu_number"))
 # create a unique junction column for each row
-message("Number of junctions output by Leafcutter ", nrow(res))
-
+f
 res <- res %>%
   filter(p.adjust < opt$cutoff) %>%
   mutate(method = "Leafcutter")

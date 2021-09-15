@@ -55,16 +55,51 @@ if (exists("snakemake")) {
 
 # rename column names from majiq result due to the presence of spaces
 read_majiq_out <- function(x) {
-  col_names <- "gene_name gene_id lsv_id mean_dpsi_per_lsv_junction probability_changing probability_non_changing ref_mean_psi alt_mean_psi lsv_type num_junctions num_exons de_novo_junctions chr strand junctions_coords exons_coords ir_coords ucsc_lsv_link"
-  tmp <- read_tsv(
+  read.table(
     x,
-    col_names = strsplit(col_names, " ")[[1]],
-    comment = "#",
-    cols(
-      .default = col_character()
+    sep = "\t",
+    header = TRUE,
+    col.names = c(
+      "gene_name",
+      "gene_id",
+      "lsv_id",
+      "mean_dpsi_per_lsv_junction",
+      "probability_changing",
+      "probability_non_changing",
+      "ref_mean_psi",
+      "alt_mean_psi",
+      "lsv_type",
+      "num_junctions",
+      "num_exons",
+      "de_novo_junctions",
+      "chr",
+      "strand",
+      "junctions_coords",
+      "exons_coords",
+      "ir_coords",
+      "ucsc_lsv_link"
+    ),
+    colClasses = c(
+      "character",
+      "character",
+      "character",
+      "character",
+      "character",
+      "character",
+      "character",
+      "character",
+      "character",
+      "integer",
+      "integer",
+      "character",
+      "character",
+      "character",
+      "character",
+      "character",
+      "character",
+      "character"
     )
   )
-  tmp[-1, ] # the skip parameter is not been registed in read_tsv
 }
 
 res <- lapply(files, read_majiq_out)
