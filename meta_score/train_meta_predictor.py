@@ -151,6 +151,7 @@ grid = GridSearchCV(pipe, param_grid, cv=10, n_jobs=-1, scoring='roc_auc')
 
 
 # In[ ]:
+print('Starting GCB grid search')
 
 
 grid.fit(X_train, y_train)
@@ -177,9 +178,12 @@ df_grid_results_1
 
 
 # In[ ]:
+print('Saving GCB grid search')
 
-print('Starting GCB grid search')
-df_grid_results_1.to_csv('sklearn_result.csv')
+df_grid_results_1.to_csv('gcb_grid_search_result.csv')
+
+
+df_grid_results_1.groupby('param_select__cols').first().to_csv('gcb_grid_search_result_grouped.csv')
 
 
 # In[ ]:
@@ -255,7 +259,7 @@ grid2 = GridSearchCV(pipe2, param_grid2, cv=10, n_jobs=-1, scoring='roc_auc')
 
 # In[ ]:
 
-print("Saving LR grid search")
+print("FItting LR grid search")
 grid2.fit(X_train, y_train)
 print('Best parameters:', grid2.best_params_)
 print('Best performance:', grid2.best_score_)
@@ -269,6 +273,10 @@ df_grid2_results = pd.DataFrame(grid2.cv_results_)
 
 # In[ ]:
 
+dump(grid2.best_estimator_, 'lr_meta_best_estimator.joblib')
+dump(grid2, 'lr_grid_object.joblib')
+df_grid2_results.to_csv('lr_grid_search_result.csv')
+
 
 df_grid2_results  = df_grid2_results.sort_values('rank_test_score')
 
@@ -276,7 +284,8 @@ df_grid2_results  = df_grid2_results.sort_values('rank_test_score')
 # In[ ]:
 
 
-df_grid2_results.groupby('param_select__cols').first()
+df_grid2_results.groupby('param_select__cols').first().to_csv('lr_grid_search_result_grouped.csv')
+
 
 
 # In[ ]:
