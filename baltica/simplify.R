@@ -40,7 +40,7 @@ if (exists("snakemake")) {
   opt <- parse_args(OptionParser(option_list = option_list))
 }
 
-df <- suppressMessages(read_csv(opt$input))
+df <- read.csv(opt$input)
 
 simplify <- function(x, remove = c()) {
   x %>%

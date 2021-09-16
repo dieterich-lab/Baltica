@@ -216,12 +216,7 @@ if (!all(as.logical(lapply(files, file.exists)))) {
 
 gtf <- rtracklayer::import.gff2(opt$annotation)
 .read_csv <- function(x) {
-  suppressWarnings(
-    readr::read_csv(x, col_types = readr::cols(
-      chr = readr::col_character(),
-      seqnames = readr::col_character()
-    ))
-  )
+  read.csv(x)
 }
 majiq_idx <- grep("majiq", files)
 leafcutter_idx <- grep("leafcutter", files)
@@ -247,12 +242,12 @@ try_grange <- function(x) {
   )
 }
 
-gr <- suppressWarnings(c(
+gr <- c(
   try_grange(df$junctionseq),
   try_grange(df$leafcutter),
   try_grange(df$majiq),
   try_grange(df$rmats)
-))
+)
 
 mcols(gr) <- NULL
 mcols(gr)$method <- c(
