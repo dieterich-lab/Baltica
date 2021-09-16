@@ -4,7 +4,6 @@ date: "`r Sys.Date()`"
 # css: "custom.css"
 output:
   rmdformats::downcute:
-    css: "`snakemake@scriptdir`/custom.css" 
     self_contained: true
     lightbox: true
     gallery: false
