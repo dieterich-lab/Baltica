@@ -27,8 +27,9 @@ option_list <- list(
   make_option(
     c("-c", "--cutoff"),
     type = "double",
-    default = 0.05,
-    help = "Discard junction with p.adjust < than --cutoff [default %default]"
+    default = 1.1,
+    help = "Discard junction with p.adjust < than --cutoff
+    [default %default, i.e. no filter]"
   )
 )
 # enabling both baltica or snakemake input
@@ -104,10 +105,13 @@ res$chr <- gsub("chr", "", res$chr)
 
 res <- select(res, -c("clu", "clu_number"))
 # create a unique junction column for each row
-f
+message("Number of junctions output by Leafcutter ", nrow(res))
 res <- res %>%
   filter(p.adjust < opt$cutoff) %>%
-  mutate(method = "Leafcutter")
+  mutate(method = "Leafcutter") %>%
+  arrange(p.adjust) %>%
+  distinct(comparison, chr, start, end, strand, .keep_all = TRUE)
+
 
 message("Number of junctions after filtering ", nrow(res))
 write_csv(res, opt$output)
