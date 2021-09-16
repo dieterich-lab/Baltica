@@ -48,7 +48,7 @@ rule parse_majiq:
     log:
         "logs/parse_majiq.log",
     params:
-        cutoff=1,
+        cutoff=1.1,
     script:
         "parse_majiq_output.R"
 
@@ -66,7 +66,7 @@ rule parse_leafcutter:
     log:
         "logs/parse_leafcutter.log",
     params:
-        cutoff=1,
+        cutoff=1.1,
     script:
         "parse_leafcutter_output.R"
 
@@ -84,7 +84,7 @@ rule parse_junctionseq:
     log:
         "logs/parse_junctionseq.log",
     params:
-        cutoff=1,
+        cutoff=1.1,
     script:
         "parse_junctionseq_output.R"
 
@@ -103,7 +103,7 @@ rule parse_rmats:
     log:
         "logs/parse_rmats.log",
     params:
-        cutoff=1,
+        cutoff=1.1,
     log:
         "logs/parse_rmats.log",
     script:
