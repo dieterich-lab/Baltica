@@ -4,6 +4,7 @@ suppressPackageStartupMessages({
   library(stringr)
   library(dplyr)
   library(optparse)
+  library(readr)
   library(GenomicRanges)
 })
 
@@ -26,8 +27,9 @@ option_list <- list(
   make_option(
     c("-c", "--cutoff"),
     type = "double",
-    default = 0.05,
-    help = "Discard junctions not called at the cutoff of [default %default]"
+    default = 1.1,
+    help = "Discard junctions not called at the cutoff
+    of [default %default, i.e. no filter]"
   )
 )
 
@@ -57,11 +59,10 @@ if (exists("snakemake")) {
 message("Loading JunctionSeq result")
 
 read_junctionseq_out <- function(x) {
-  tmp <- read.table(
+  read.table(
     x,
     header = 1
-  ) %>%
-    filter(tmp$testable == T)
+  )
 }
 
 message("Loading processing the table")
@@ -69,7 +70,6 @@ res <- lapply(files, read_junctionseq_out)
 names(res) <- file_names
 
 res <- bind_rows(res, .id = "comparison")
-message("Computing SJ ranks")
 
 message(
   "Number of junctions output by JunctionSeq ",
@@ -87,9 +87,11 @@ res <- res %>%
     contains("log2FC"),
     geneID,
     featureType,
-    expr_ref,
-    expr_alt
+    contains("expr")
   ) %>%
-  mutate(method = "JunctionSeq")
+  mutate(method = "JunctionSeq") %>%
+  arrange(padjust) %>%
+  distinct(comparison, chr, start, end, strand, .keep_all = TRUE)
+
 message("Number of junctions after filtering ", nrow(res))
 write_csv(res, opt$output)

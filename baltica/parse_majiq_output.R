@@ -24,10 +24,10 @@ option_list <- list(
   ),
   make_option(
     c("-c", "--cutoff"),
-    default = 0.05,
+    default = 1.1,
     type = "double",
     help = "Discard junction with probability_non_changing < than
-    --cutoff [default %default]"
+    --cutoff [default %default, i.e. no filter]"
   )
 )
 # enabling both baltica or snakemake input
@@ -141,7 +141,10 @@ res <- dplyr::select(res, c(
   alt_mean_psi
 )) %>%
   filter(probability_non_changing < opt$cutoff) %>%
-  mutate(method = "majiq")
+  mutate(method = "majiq") %>%
+  arrange(probability_non_changing) %>%
+  distinct(comparison, chr, start, end, strand, .keep_all = TRUE)
+
 
 message("Number of junctions after filtering ", nrow(res))
 
