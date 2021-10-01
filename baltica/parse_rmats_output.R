@@ -38,10 +38,7 @@ if (exists("snakemake")) {
     output = snakemake@output[[1]],
     cutoff = snakemake@params[["cutoff"]]
   )
-  message(opt$input)
-  message(class(opt$input))
   files <- as.character(opt$input)
-  message(class(files))
 } else {
   opt <- parse_args(OptionParser(option_list = option_list))
   files <- Sys.glob(opt$input)
@@ -102,9 +99,8 @@ res <- split(files, comparison)
 
 get_rmats_coord <- function(.files, .comparison) {
   message("Processing files for ", .comparison)
-  x <- suppressWarnings(
-    lapply(.files, read.delim, "\t", header = TRUE)
-  )
+  x <- lapply(.files, read.delim, "\t", header = TRUE)
+
   lapply(seq_along(.files), function(i) {
     message(.files[[i]], ": has ", nrow(x[[i]]), " entries")
   })
