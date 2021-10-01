@@ -5,15 +5,9 @@ library(RColorBrewer)
 
 set.seed(123)
 
-methods <- c("rmats", "junctionseq", "majiq", "leafcutter", "orthogonal")
-methods <- str_extract(colnames(df), str_c(methods, collapse = "|"))
-methods <- methods[!is.na(methods)]
 
 mat <- df %>% 
-  mutate( 
-    across(everything(), ~ replace_na(.x, 0)),
-    comparison = NULL
-  ) %>% 
+  replace(is.na(.), 0) %>% 
   as.matrix(df)
 
 idx <- data.frame(

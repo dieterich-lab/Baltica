@@ -4,19 +4,15 @@ library(ROCR)
 library(ggplot2)
 library(cowplot)
 
-# NA are not called
 df <- df %>% 
-  mutate( 
-    across(everything(), ~ replace_na(.x, 0)),
-    comparison = NULL
-)
+  replace(is.na(.), 0) %>% 
+  # mutate_all(~ifelse(. < 0.95, 0, 1))
+  mutate_at(vars("orthogonal"), ~ifelse(. < 0.95, 0, 1))
 
 compute_prediction <- function(col, ref) {
   .x <- df[, c(col, ref)]
-  .x <- filter_all(.x, any_vars(. != 0))
-  prediction(.x[[col]], ifelse(.x[[ref]] > .95, 1, 0))
+  prediction(.x[[col]], .x[[ref]])
 }
-
 
 pars <- tibble(
   col = c("majiq", "leafcutter", "rmats", "junctionseq"),
@@ -46,5 +42,5 @@ p <- ggplot(roc_data, aes(x = FPR, y = TPR, color = Method)) +
     values = color_list$method[1:4])
 p
 
-ggsave("../nanopore_benchmark/results/roc_calling.pdf")
+# ggsave("../nanopore_benchmark/results/roc_calling.pdf")
 

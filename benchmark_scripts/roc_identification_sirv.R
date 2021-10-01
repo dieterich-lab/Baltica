@@ -4,16 +4,11 @@ library(ROCR)
 library(ggplot2)
 library(cowplot)
 
-# NA are not called
 df <- df %>% 
-  mutate( 
-    across(everything(), ~ifelse(is.na(.), 0, 1)),
-    comparison = NULL
-  ) 
+  mutate_all(~ifelse(is.na(.), yes=0, 1))
 
 compute_prediction <- function(col, ref) {
   .x <- df[, c(col, ref)]
-  .x <- filter_all(.x, any_vars(. != 0))
   prediction(.x[[col]], .x[[ref]])
 }
 

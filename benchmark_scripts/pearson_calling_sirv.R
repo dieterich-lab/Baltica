@@ -1,37 +1,20 @@
-library(tidyverse)
 library(reshape2)
 
-df <- readr::read_csv(
-  "../sirv_benchmark/results/SJ_annotated.csv",
-  col_types = cols(
-    .default = col_double(),
-    is_novel = col_logical(),
-    gene_name = col_character(),
-    transcript_name = col_character(),
-    class_code = col_character(),
-    exon_number = col_character(),
-    coordinates = col_character()
-  )
-)
+source("load_sirv_data.R")
 
-df <- df %>%
-  dplyr::select(matches("-vs-"), "coordinates", "gene_name")
+df <- df %>% 
+  replace(is.na(.), 0) 
 
-coordinates <- df$coordinates
-gene_name <- df$gene_name
-df$coordinates <- NULL
-df$gene_name <- NULL
-df <- df %>% mutate(
-  across(everything(), ~ replace_na(.x, 0))
-)
-
+colnames(df) <- gsub(x=colnames(df), "orthogonal", 'SIRV') 
 cormat <- apply(df, 2, function(x){ -log10(x+1e-10) })
+cormat <- as.matrix(df)
 cormat <- round(
   cor(cormat, method='pearson',  use="pairwise.complete.obs"),
   2)
 cormat[lower.tri(cormat)]=NA
 cormat=melt(cormat)
 cormat=cormat[!is.na(cormat$value),]
+
 ggplot(cormat, aes(Var2, Var1, fill = value))+
   geom_tile(color = "white")+
   scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
@@ -52,8 +35,8 @@ ggplot(cormat, aes(Var2, Var1, fill = value))+
     panel.background = element_blank(),
     axis.ticks = element_blank(),
     legend.justification = c(1, 0),
-    legend.position = c(0.7, 0.7),
+    legend.position = c(0.7, 0.78),
     legend.direction = "horizontal")+
   guides(fill = guide_colorbar(barwidth = 7, barheight = 1,
                                title.position = "top", title.hjust = 0.5))
-ggsave('../sirv_benchmark/results/heatmap_pearson.png')
+ggsave('../sirv_benchmark/results/heatmap_pearson.pdf')

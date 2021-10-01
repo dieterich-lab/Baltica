@@ -1,16 +1,13 @@
-source("load_sirv_data.R")
-
 library(ROCR)
 library(ggplot2)
 library(cowplot)
 
-df <- df %>% 
-  replace(is.na(.), 0) %>% 
-  mutate_all(~ifelse(. < 0.95, 0, 1))
-
+source("load_sirv_data.R")
+  
 compute_prediction <- function(col, ref) {
   .x <- df[, c(col, ref)]
-  # .x <- filter_all(.x, any_vars(. != 0))
+  .x <- .x[rowSums(is.na(.x)) !=2, ]
+  .x <- replace(.x, is.na(.x), 0)
   prediction(.x[[col]], .x[[ref]])
 }
 
@@ -37,14 +34,13 @@ p <- ggplot(roc_data, aes(x = FPR, y = TPR, color = Method)) +
   geom_point(size=0.5) +
   geom_abline(aes(slope = 1, intercept = 0), linetype = "dashed") +
   theme_cowplot(14) +
-  theme(legend.position = c(0.60, 0.20)) +
+  theme(legend.position="bottom") +
   scale_color_manual(
-    labels = setNames(nm=names(auc), paste(names(auc), '(AUC ROC=', auc, ')', sep=" ")),
+    name = NULL,
+    labels = setNames(nm=names(auc), paste(names(auc), ' AUCROC=', auc, sep="")),
     values = color_list$method[1:4])
 
 p
 
 ggsave(
-  "../sirv_benchmark/results/roc_calling_new.pdf")
-
-
+  "../sirv_benchmark/results/roc_calling.pdf")

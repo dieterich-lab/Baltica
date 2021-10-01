@@ -47,22 +47,24 @@ draw(us)
 dev.off()
 
 
-comb_mat2 <- make_comb_mat(mat[, 1:4])
-comb_mat2 <- comb_mat2[comb_degree(comb_mat2) > 1]
-us2 <- UpSet(
-  comb_mat2,
-  comb_order = order(rev(comb_degree(comb_mat2))),
-  top_annotation=upset_top_annotation(comb_mat2, add_numbers = T),
-  right_annotation = upset_right_annotation(
-    comb_mat2, add_numbers = T),
-  lwd = 0.8,
-  pt_size = unit(2, "mm"))
+# comb_mat2 <- make_comb_mat(mat[, 1:4])
+# comb_mat2 <- comb_mat2[comb_degree(comb_mat2) > 1]
+# us2 <- UpSet(
+#   comb_mat2,
+#   comb_order = order(rev(comb_degree(comb_mat2))),
+#   top_annotation=upset_top_annotation(comb_mat2, add_numbers = T),
+#   right_annotation = upset_right_annotation(
+#     comb_mat2, add_numbers = T),
+#   lwd = 0.8,
+#   pt_size = unit(2, "mm"))
+# 
+# pdf(
+#   "../sirv_benchmark/results/upset_calling_sirv_noortho.pdf",
+#   width = 6,
+#   height = 4,
+#   useDingbats = FALSE
+# )
+# draw(us2)
+# dev.off()
 
-pdf(
-  "../sirv_benchmark/results/upset_calling_sirv_noortho.pdf",
-  width = 6,
-  height = 4,
-  useDingbats = FALSE
-)
-draw(us2)
-dev.off()
+draw(us)

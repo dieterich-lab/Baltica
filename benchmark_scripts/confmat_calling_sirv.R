@@ -1,16 +1,17 @@
 source("load_sirv_data.R")
 
-df <- df %>% 
-  replace(is.na(.), 0) %>% 
-  mutate_all(~ifelse(. < 0.95, 0, 1))
-
 cm <- lapply(
   seq_along(df),
   function(x) {
+    
+    .x <- df[, c(x, 5)]
+    .x <- .x[rowSums(is.na(.x)) !=2, ]
+    .x <- replace(.x, is.na(.x), 0)
+    
     caret::confusionMatrix(
-      as.factor(df[[x]]),
-      as.factor(df$orthogonal),
-      positive = "1"
+      factor(.x[[1]] > 0.95),
+      factor(.x[[2]] > 0.95),
+      positive = "TRUE"
     )
   }
 )

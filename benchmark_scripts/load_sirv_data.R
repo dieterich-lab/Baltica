@@ -22,7 +22,7 @@ df <- df %>%
 
 gene_name <- df$gene_name
 coordinates <- df$coordinates
-is_novel <- df$is_novel
+# is_novel <- df$is_novel
 
 methods <- c("rmats", "junctionseq", "majiq", "leafcutter", "orthogonal")
 

@@ -5,7 +5,8 @@ library(RColorBrewer)
 
 set.seed(123)
 
-methods <- c("rmats", "junctionseq", "majiq", "leafcutter", "orthogonal")
+colnames(df) <- gsub(x=colnames(df), "orthogonal", 'SIRV') 
+methods <- c("rmats", "junctionseq", "majiq", "leafcutter", "SIRV")
 methods <- str_extract(colnames(df), str_c(methods, collapse = "|"))
 methods <- methods[!is.na(methods)]
 
@@ -30,6 +31,9 @@ method <- str_extract(colnames(mat), str_c(methods, collapse = "|"))
 method_cols <- setNames(brewer.pal(n = length(methods), name = "Set2"), methods)
 
 mat <- mat[idx$n, ]
+new_idx <- order(mat[, 5])
+mat <- mat[new_idx, ]
+
 ca=HeatmapAnnotation(
   method_names=anno_block(
     gp = gpar(fill = method_cols[method]),
@@ -66,7 +70,7 @@ hm=Heatmap(
   column_title = NULL,
   show_column_names=F)
 
-png("~/Baltica/sirv_benchmark/results/heatmap_calling.pdf", width = 8, height = 4, units = "in", res = 200)
+png("~/Baltica/sirv_benchmark/results/heatmap_calling.png", width = 8, height = 4, res=300, units = 'in')
 draw(hm,
      heatmap_legend_list = list(lengend_method))
 dev.off()
