@@ -251,22 +251,22 @@ gr <- c(
 
 mcols(gr) <- NULL
 mcols(gr)$method <- c(
-  df$majiq$method,
-  df$leafcutter$method,
   df$junctionseq$method,
+  df$leafcutter$method,
+  df$majiq$method,
   df$rmats$method
 )
 gr$method <- tolower(gr$method)
 mcols(gr)$comparison <- c(
-  df$majiq$comparison,
-  df$leafcutter$comparison,
   df$junctionseq$comparison,
+  df$leafcutter$comparison,
+  df$majiq$comparison,
   df$rmats$comparison
 )
 mcols(gr)$score <- c(
-  1 - df$majiq$probability_non_changing,
-  1 - df$leafcutter$p.adjust,
   1 - df$junctionseq$padjust,
+  1 - df$leafcutter$p.adjust,
+  1 - df$majiq$probability_non_changing,
   1 - df$rmats$FDR
 )
 
@@ -292,7 +292,9 @@ if (!is.null(opt$orthogonal_result)) {
   ort_result <- process_ort_result(opt$orthogonal_result)
 }
 
-message("preparing annotation")
+message("Preparing annotation")
+# TODO prepate annotation in another script, this does not need be done here
+# It's super slow
 exon_number <- get_exon_number(ex_tx)
 txid_to_gene <- setNames(tx$gene_name, nm = tx$transcript_id)
 txid_to_tx_name <- setNames(tx$cmp_ref, nm = tx$transcript_id)
