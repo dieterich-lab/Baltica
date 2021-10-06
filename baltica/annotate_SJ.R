@@ -7,12 +7,10 @@
 suppressPackageStartupMessages({
   library(optparse)
   library(GenomicRanges)
-  library(GenomicFeatures)
   library(rtracklayer)
+  library(stringr)
+  library(reshape2)
   library(readr)
-  library(yaml)
-  library(igraph)
-  library(tidyverse)
 })
 
 #' Compute and filter hits based on the difference in the genomic start and end
@@ -109,6 +107,13 @@ get_exon_number <- function(ex_tx) {
   exon_number
 }
 
+#' Get the most frequent variable from a numeric
+#' @param .x numeric vector
+#' @return the most frequent numeric element from .x
+most_frequent <- function(.x) {
+  as.numeric(names(which.max(table(.x))))
+}
+
 #' Process a file with scores from orthogonal experiment
 #' Used to integrated third-generation sequencing results into baltica
 #'
@@ -142,6 +147,22 @@ process_ort_result <- function(.path) {
   ort_result
 }
 
+#' Corrects coordinates from alt GRange to ref GRange
+#' by the most common start and end difference
+#' @param ref reference GenomicRange
+#' @param alt alternative GenomicRange
+#' @return alt but corrected start and end coordinates
+#' @export
+integrate_coordinates <- function(ref, alt) {
+  hits <- findOverlaps(ref, alt)
+  query <- ref[queryHits(hits)]
+  subject <- alt[subjectHits(hits)]
+  start_diff <- start(query) - start(subject)
+  start(alt) <- start(alt) + most_frequent(start_diff)
+  end_diff <- end(query) - end(subject)
+  end(alt) <- end(alt) + most_frequent(end_diff)
+  return(alt)
+}
 
 default_input <- str_glue(
   "{method}/{method}_junctions.csv",
@@ -214,10 +235,6 @@ if (!all(as.logical(lapply(files, file.exists)))) {
   stop("Annotation not found.", call. = FALSE)
 }
 
-gtf <- rtracklayer::import.gff2(opt$annotation)
-.read_csv <- function(x) {
-  read.csv(x)
-}
 majiq_idx <- grep("majiq", files)
 leafcutter_idx <- grep("leafcutter", files)
 junctionseq_idx <- grep("junctionseq", files)
@@ -225,76 +242,43 @@ rmats_idx <- grep("rmats", files)
 
 message("Processing DJU method output")
 df <- list(
-  majiq = .read_csv(files[[majiq_idx]]),
-  leafcutter = .read_csv(files[[leafcutter_idx]]),
-  junctionseq = .read_csv(files[[junctionseq_idx]]),
-  rmats = .read_csv(files[[rmats_idx]])
+  majiq = read.csv(files[[majiq_idx]]),
+  leafcutter = read.csv(files[[leafcutter_idx]]),
+  junctionseq = read.csv(files[[junctionseq_idx]]),
+  rmats = read.csv(files[[rmats_idx]])
 )
 
-try_grange <- function(x) {
-  tryCatch(
-    expr = {
-      GRanges(x)
-    },
-    error = function(e) {
-      GRanges()
-    }
-  )
-}
-
-gr <- c(
-  try_grange(df$junctionseq),
-  try_grange(df$leafcutter),
-  try_grange(df$majiq),
-  try_grange(df$rmats)
-)
-
-mcols(gr) <- NULL
-mcols(gr)$method <- c(
-  df$junctionseq$method,
-  df$leafcutter$method,
-  df$majiq$method,
-  df$rmats$method
-)
-gr$method <- tolower(gr$method)
-mcols(gr)$comparison <- c(
-  df$junctionseq$comparison,
-  df$leafcutter$comparison,
-  df$majiq$comparison,
-  df$rmats$comparison
-)
-mcols(gr)$score <- c(
-  1 - df$junctionseq$padjust,
-  1 - df$leafcutter$p.adjust,
-  1 - df$majiq$probability_non_changing,
-  1 - df$rmats$FDR
-)
+df$junctionseq["score"] <- 1 - df$junctionseq$padjust
+df$leafcutter["score"] <- 1 - df$leafcutter$p.adjust
+df$majiq["score"] <- 1 - df$majiq$probability_non_changing
+df$rmats["score"] <- 1 - df$rmats$FDR
 
 message("Processing de novo annotation")
+gtf <- rtracklayer::import.gff2(opt$annotation)
 tx <- subset(gtf, type == "transcript")
-tx <- subsetByOverlaps(tx, gr)
-gtf <- gtf[gtf$transcript_id %in% unique(tx$transcript_id)]
-
 ex_tx <- filter_multi_exon(gtf)
 introns <- get_introns(ex_tx)
 
-if (!is.null(opt$reference)) {
-  message("Processing reference annotation")
+reference <- rtracklayer::import.gff(opt$reference)
+ref_ex_tx <- filter_multi_exon(reference)
+ref_introns <- get_introns(ref_ex_tx)
+ref_introns <- ref_introns[width(ref_introns) > 2, ]
 
-  reference <- rtracklayer::import.gff(opt$reference)
-  ref_ex_tx <- filter_multi_exon(reference)
-  ref_introns <- get_introns(ref_ex_tx)
-  introns$is_novel <- !(introns %in% ref_introns)
-}
+introns$is_novel <- !(introns %in% ref_introns)
 
 ort_result <- NULL
 if (!is.null(opt$orthogonal_result)) {
   ort_result <- process_ort_result(opt$orthogonal_result)
+
+  mcols(ort_result)["method"] <- "orthogonal"
 }
+
+df$orthogonal <- ort_result
 
 message("Preparing annotation")
 # TODO prepate annotation in another script, this does not need be done here
 # It's super slow
+
 exon_number <- get_exon_number(ex_tx)
 txid_to_gene <- setNames(tx$gene_name, nm = tx$transcript_id)
 txid_to_tx_name <- setNames(tx$cmp_ref, nm = tx$transcript_id)
@@ -307,70 +291,41 @@ mcols(introns)$exon_number <- exon_number$value
 introns$exon_number <- apply(introns$exon_number, 1, paste, collapse = "-")
 
 introns <- aggregate_annotation(introns)
-introns$group <- NULL
-introns_metadata <- mcols(introns)
-introns_metadata <- introns_metadata %>%
-  as_tibble() %>%
-  rownames_to_column("metadata_group")
+annotation <- as.data.frame(mcols(introns))
 
-mcols(introns) <- NULL
-names(introns) <- NULL
-mcols(introns)$metadata_group <- seq_along(introns)
+message("Proceding with integration")
 
-if (!is.null(ort_result)) {
-  gr <- c(gr, ort_result, introns)
-} else {
-  gr <- c(gr, introns)
+gr <- lapply(df, function(x) {
+  .gr <- GRanges(x)
+  .gr <- .gr[width(.gr) > 2, ]
+  if (!"comparison" %in% colnames(mcols(.gr))) {
+    mcols(.gr)["comparison"] <- "NA"
+  }
+  mcols(.gr) <- mcols(.gr)[c("score", "comparison", "method")]
+
+  integrate_coordinates(ref_introns, .gr)
+})
+
+gr <- unlist(as(gr, "GRangesList"))
+mcols(gr)$method <- names(gr)
+sj <- mcols(gr)
+sj$coordinates <- as.character(gr)
+sj <- as.data.frame(sj)
+sj <- dcast(
+  sj,
+  coordinates ~ method + comparison,
+  value.var = "score",
+  fun.aggregate = max
+)
+
+is.na(sj) <- sapply(sj, is.infinite)
+
+sj <- merge(sj, annotation, by = "coordinates", all.x = TRUE, all.y = FALSE)
+
+for (col in c(
+  "class_code", "gene_name", "transcript_name", "exon_number"
+)) {
+  sj[[col]] <- lapply(sj[[col]], paste0, collapse = ";")
 }
 
-############################################
-message("Integration introns")
-
-hits <- filter_hits_by_diff(gr, drop.redundant = T)
-hits <- igraph::graph_from_data_frame(data.frame(hits))
-hits <- stack(igraph::groups(igraph::clusters(hits)))
-hits$values <- as.integer(hits$values)
-split_hits <- split(gr[hits$values, ], hits$ind)
-
-df_base <- as_tibble(mcols(gr)[hits$values, ])
-df_base$group <- hits$ind
-
-df <- df_base %>%
-  arrange(method) %>%
-  group_by(
-    group
-  ) %>%
-  fill(
-    metadata_group,
-    .direction = "up"
-  ) %>%
-  drop_na(method) %>%
-  pivot_wider(
-    id_cols = c(group, metadata_group),
-    names_from = c(method, comparison),
-    values_from = c(score),
-    # if there is more than one intron entry for
-    # the same comparison and method
-    # use the highest scoring one
-    # this happens for methods that test for multiple
-    # AS types
-    values_fn = c(score = max)
-  )
-
-message("Integrating annotation")
-region_names <- stack(range(split_hits))
-region_names <- tibble(
-  group = as.numeric(region_names$name),
-  coord = as.character(region_names)
-)
-df <- plyr::join(df, region_names)
-df <- plyr::join(df, introns_metadata, match = "first")
-df <- df %>%
-  mutate(coordinates = coalesce(coord)) %>%
-  select(-coord, -group, -metadata_group) %>%
-  mutate_if(
-    is.list,
-    list(~ map_chr(., . %>% str_c(collapse = ";")))
-  )
-
-readr::write_csv(df, opt$output)
+readr::write_csv(sj, opt$output)

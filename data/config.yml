@@ -1,5 +1,5 @@
 assembly: GRCh38_90_SIRV
-baltica_path: /beegfs/homes/tbrittoborges/miniconda3/lib/python3.7/site-packages/baltica/command.py
+baltica_path: /beegfs/homes/tbrittoborges/Baltica/baltica/command.py
 config_path: /beegfs/homes/tbrittoborges/Baltica/data/config.yml
 contrasts:
   mix2-vs-mix1:
