@@ -23,14 +23,14 @@ def comparison(wc, index, mapping):
 def natural_sort_key(s, _nsre=re.compile("([0-9]+)")):
     return [int(text) if text.isdigit() else text.lower() for text in _nsre.split(s)]
 
-strand = {"fr-firststrand": "reverse", "fr-secondstrand": "forward"}.get("strandness", "None")
-
+strand = {"fr-firststrand": "reverse", "fr-secondstrand": "forward"}
+strand = strand.get(config.get("strandness"), "None")
 def create_ini(output):
     lines = [
         "[info]",
         "readlen={}".format(config["read_len"]),
         "bamdirs={}".format("mappings/"),
-        "genome={}".format(config["assembly"]),
+        "genome={}".format(config.get("assembly", "")),
         "genome_path={}".format(config["ref_fa"]),
         "strandness={}".format(strand),
         "[experiments]",
