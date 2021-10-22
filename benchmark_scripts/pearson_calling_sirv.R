@@ -3,6 +3,7 @@ library(reshape2)
 source("load_sirv_data.R")
 
 df <- df %>% 
+  filter(!is.na(orthogonal)) %>% 
   replace(is.na(.), 0) 
 
 colnames(df) <- gsub(x=colnames(df), "orthogonal", 'SIRV') 

@@ -3,8 +3,8 @@ source("load_sirv_data.R")
 cm <- lapply(
   seq_along(df),
   function(x) {
-    
-    .x <- df[, c(x, 5)]
+    .x <- df[!is.na(df[, 5]), ]
+    .x <- .x[, c(x, 5)]
     .x <- .x[rowSums(is.na(.x)) !=2, ]
     .x <- replace(.x, is.na(.x), 0)
     
