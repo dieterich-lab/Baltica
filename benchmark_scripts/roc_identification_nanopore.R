@@ -6,18 +6,15 @@ library(cowplot)
 
 # NA are not called
 df <- df %>% 
-  mutate( 
-    across(everything(), ~ifelse(is.na(.), 0, 1)),
-    comparison = NULL
-  ) 
+  filter(!is.na(orthogonal)) %>% 
+  mutate(across(1:4, ~ifelse(is.na(.), yes=0, 1))) %>% 
+  mutate(orthogonal = ifelse(orthogonal > 0.95, 1, 0))
 
 compute_prediction <- function(col, ref) {
   .x <- df[, c(col, ref)]
-  .x <- filter_all(.x, any_vars(. != 0))
-  prediction(
-    ifelse(.x[[col]] > .95, 1, 0), 
-    ifelse(1 - .x[[ref]] > .95, 1, 0))
+  prediction(.x[[col]], .x[[ref]])
 }
+
 
 pars <- tibble(
   col = c("majiq", "leafcutter", "rmats", "junctionseq"),
@@ -34,16 +31,20 @@ auc <- lapply(auc, function(x) round(slot(x, "y.values")[[1]][[1]], 2))
 roc_data <- tibble(
   FPR = unlist(lapply(tpr_fpr, function(x) slot(x, "x.values")[[1]])),
   TPR = unlist(lapply(tpr_fpr, function(x) slot(x, "y.values")[[1]])),
-  Method = rep(paste0(names(method), " (AUC=", auc[names(method)], ")"), method)
+  Method = rep(names(method), method)
 )
 
 p <- ggplot(roc_data, aes(x = FPR, y = TPR, color = Method)) +
   geom_line() +
+  geom_point(size=0.5) +
   geom_abline(aes(slope = 1, intercept = 0), linetype = "dashed") +
   theme_cowplot(14) +
-  labs(title = "SIRV benchmark - identification task") +
-  theme(legend.position = c(0.60, 0.3))
+  theme(legend.position="bottom") +
+  scale_color_manual(
+    name = NULL,
+    labels = setNames(nm=names(auc), paste(names(auc), ' AUCROC=', auc, sep="")),
+    values = color_list$method[1:4]) +
+  guides(color=guide_legend(nrow=2,byrow=TRUE))
 p
-
-ggsave("../nanopore_benchmark/results/roc_identification.pdf")
+ggsave("../nanopore_benchmark/results/roc_identification.pdf", width = 15, height = 15, units = 'cm')
 
