@@ -73,9 +73,9 @@ data.head()
 # In[ ]:
 
 
-y = data['orthogonal_na']
+y = data['orthogonal_NA']
 y = np.where(y > 0.95, 1, 0) # classification problem
-x = data.drop(columns='orthogonal_na')
+x = data.drop(columns='orthogonal_NA')
 
 
 # ## Data split and preprocess
