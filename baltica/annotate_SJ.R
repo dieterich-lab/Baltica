@@ -325,7 +325,7 @@ sj <- merge(sj, annotation, by = "coordinates", all.x = TRUE, all.y = FALSE)
 for (col in c(
   "class_code", "gene_name", "transcript_name", "exon_number"
 )) {
-  sj[[col]] <- lapply(sj[[col]], paste0, collapse = ";")
+  sj[[col]] <- as.character(lapply(sj[[col]], paste0, collapse = ";"))
 }
 
 readr::write_csv(sj, opt$output)
