@@ -1,14 +1,33 @@
 library(ROCR)
-library(ggplot2)
 library(cowplot)
 
 source("load_sirv_data.R")
-  
+
+# df2 <- df
+# 
+# df2$coordinate <- coordinates 
+# df2$comparison <- comparison
+# 
+# df2 %>% 
+#   filter(!is.na(orthogonal)) %>% 
+#   distinct(comparison, coordinate) %>% 
+#   nrow()
+# 
+# df2 %>% 
+#   filter(!is.na(orthogonal)) %>% 
+#   mutate(across(1:4, ~replace_na(.x, 0))) %>% 
+#   select(coordinate, comparison, everything()) %>% 
+#   write_csv('/prj/Niels_Gehring/baltica_benchmark/1_1_2/input.csv')
+
+length(unique(coordinates[!is.na(df$orthogonal) ]))
+
 compute_prediction <- function(col, ref) {
-  .x <- df[, c(col, ref)]
-  .x <- .x[rowSums(is.na(.x)) !=2, ]
-  .x <- replace(.x, is.na(.x), 0)
-  prediction(.x[[col]], .x[[ref]])
+  col <- df[, col]
+  ref <- df[, ref]
+  col <- col[!is.na(ref)]
+  ref <- ref[!is.na(ref)]
+  col <- replace(col, is.na(col), 0)
+  prediction(col, ref)
 }
 
 pars <- tibble(
@@ -38,9 +57,10 @@ p <- ggplot(roc_data, aes(x = FPR, y = TPR, color = Method)) +
   scale_color_manual(
     name = NULL,
     labels = setNames(nm=names(auc), paste(names(auc), ' AUCROC=', auc, sep="")),
-    values = color_list$method[1:4])
+    values = color_list$method[1:4]) + 
+  guides(color=guide_legend(nrow=2,byrow=TRUE))
 
 p
 
 ggsave(
-  "../sirv_benchmark/results/roc_calling.pdf")
+  "../sirv_benchmark/results/roc_calling.pdf", width = 15, height = 15, units = 'cm')

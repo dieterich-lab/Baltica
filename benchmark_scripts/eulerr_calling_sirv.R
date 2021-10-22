@@ -2,6 +2,8 @@ library(eulerr)
 
 source("~/Baltica/benchmark_scripts/load_sirv_data.R")
 
+# keep <- !is.na(df$orthogonal)
+
 mat <- df %>%
   mutate(
     across(everything(), ~ replace_na(.x, 0)),
@@ -9,13 +11,12 @@ mat <- df %>%
   ) %>%
   as.matrix(df)
 
-mat[mat > 0.95] <- 1
-mat[mat < 0.95] <- 0
-mat[is.na(mat)] <- 0
-keep <- rowSums(mat) >= 1
-mat <- mat[keep, ]
-gene_name <- gene_name[keep]
-coordinates <- coordinates[keep]
+# mat <- mat[keep, ]  
+x[x > 0.95] <- 1
+x[x < 0.95] <- 0
+
+# gene_name <- gene_name[keep]
+# coordinates <- coordinates[keep]
 
 fit <- euler(mat, shape = "ellipse")
 
@@ -43,8 +44,8 @@ input_genes <- lapply(
 
 pdf('../sirv_benchmark/results/eulerr_gene_sirv_calling.pdf')
 plot(
-  euler(input_genes[1:4], shape = "ellipse"),
-  fills = color_list$method[names(input_sj[1:4])],
+  euler(input_genes[1:5], shape = "ellipse"),
+  fills = color_list$method[names(input_genes[1:5])],
   edges = F,
   fontsize = 14,
   quantities = list(fontsize = 14),
@@ -55,11 +56,12 @@ dev.off()
 
 pdf('../sirv_benchmark/results/eulerr_sj_sirv_calling.pdf')
 plot(
-  euler(input_sj[1:4], shape = "ellipse"),
-  fills = color_list$method[names(input_sj[1:4])],
+  euler(input_sj[1:5], shape = "ellipse"),
+  fills = color_list$method[names(input_sj[1:5])],
   edges = F,
-  fontsize = 14,
-  quantities = list(fontsize = 12),
+  # adjust_labels = TRUE,
+  quantities = list(fontsize = 10),
   labels = FALSE,
   legend = list(nrow = 1, ncol = 5, side = "bottom", fontsize = 16))
+
 dev.off()

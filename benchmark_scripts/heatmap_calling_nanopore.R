@@ -5,13 +5,20 @@ library(RColorBrewer)
 
 set.seed(123)
 
+colnames(df) <- gsub(x=colnames(df), "orthogonal", 'nanopore') 
+methods <- c("rmats", "junctionseq", "majiq", "leafcutter", "nanopore")
+methods <- str_extract(colnames(df), str_c(methods, collapse = "|"))
+methods <- methods[!is.na(methods)]
 
-mat <- df %>% 
-  replace(is.na(.), 0) %>% 
-  as.matrix(df)
+df <- df %>% 
+  filter(rowSums(., na.rm=TRUE) > 0, ) %>% 
+  filter(!is.na(nanopore)) %>% 
+  replace(is.na(.), 0) 
+
+mat <- as.matrix(df)
 
 idx <- data.frame(
-  is=ifelse(df$orthogonal>0.95, 1, 0)
+  is=ifelse(df$nanopore>0.95, 1, 0)
 )
 
 idx <- idx %>%
@@ -52,7 +59,10 @@ hm=Heatmap(
   column_title = NULL,
   show_column_names=F)
 
-png("~/Baltica/nanopore_benchmark/results/heatmap_calling.pdf", width = 8, height = 4, units = "in", res = 200)
+
+png(
+  "~/Baltica/nanopore_benchmark/results/heatmap_calling.png", 
+  width = 8, height = 4, res=300, units = 'in')
 draw(hm,
      heatmap_legend_list = list(lengend_method))
 dev.off()

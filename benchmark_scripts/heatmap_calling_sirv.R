@@ -4,28 +4,29 @@ library(ComplexHeatmap)
 library(RColorBrewer)
 
 set.seed(123)
-
+# df <- df[rowSums(df, na.rm=TRUE) > 0, ]
 colnames(df) <- gsub(x=colnames(df), "orthogonal", 'SIRV') 
 methods <- c("rmats", "junctionseq", "majiq", "leafcutter", "SIRV")
 methods <- str_extract(colnames(df), str_c(methods, collapse = "|"))
 methods <- methods[!is.na(methods)]
 
-mat <- df %>% 
+is_SIRV <- !is.na(df$SIRV)
+
+mat <- df %>%
   mutate( 
     across(everything(), ~ replace_na(.x, 0)),
     comparison = NULL
   ) %>% 
   as.matrix(df)
 
-is_SIRV <- startsWith(coordinates, 'SIRV')
-
 idx <- data_frame(
   is_SIRV=is_SIRV)
 
+n_SIRV <- table(is_SIRV)[['TRUE']]
 idx <- idx %>%
   mutate(n=row_number()) %>% 
   group_by(is_SIRV) %>% 
-  sample_n(504)
+  sample_n(n_SIRV)
 
 method <- str_extract(colnames(mat), str_c(methods, collapse = "|"))
 method_cols <- setNames(brewer.pal(n = length(methods), name = "Set2"), methods)

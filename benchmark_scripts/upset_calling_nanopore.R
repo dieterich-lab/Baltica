@@ -1,18 +1,21 @@
-source("load_sirv_data.R")
+source("load_nanopore_data.R")
+
 library(ComplexHeatmap)
 library(RColorBrewer)
 
-# df <- read.csv('/prj/Niels_Gehring/baltica_benchmark/1_1_2/sirv_input.csv')
-# coordinates <- df$coordinate
-# comparison <- df$comparison
-# mat <- as.matrix(df[3:7])
-# 
-# methods <- colnames(mat)
+colnames(df) <- gsub(x=colnames(df), "orthogonal", 'nanopore') 
+methods <- c("rmats", "junctionseq", "majiq", "leafcutter", "nanopore")
+# methods <- str_extract(colnames(df), str_c(methods, collapse = "|"))
+# methods <- methods[!is.na(methods)]
 
-# anno_barplot
+# mat <- df %>% 
+#   filter(!is.na(NANOPORE)) %>% 
+#   mutate( 
+#     across(everything(), ~ replace_na(.x, 0)),
+#     comparison = NULL
+#   ) %>% 
+#   as.matrix(df)
 mat <- as.matrix(df)
-colnames(mat) <- gsub(x=colnames(mat), "orthogonal", 'SIRV') 
-# rownames(mat) <- paste(coordinates, '_', comparison)
 mat[mat > 0.95] <- 1
 mat[mat < 0.95] <- 0
 total <- colSums(mat, na.rm = T)
@@ -22,7 +25,6 @@ mat[is.na(mat)] <- 0
 
 # mat <- mat[rowSums(mat) >= 1, ]
 comb_mat <- make_comb_mat(mat)
-
 method <- str_extract(colnames(mat), str_c(methods, collapse = "|"))
 color_list <- list(
   method = setNames(
@@ -31,14 +33,6 @@ color_list <- list(
   )
 )
 comb_mat <- comb_mat[comb_degree(comb_mat) > 1]
-
-# us <- UpSet(
-#   comb_mat,
-#   comb_order = order(rev(comb_degree(comb_mat))),
-#   top_annotation = upset_top_annotation(comb_mat, add_numbers = T),
-#   right_annotation = upset_right_annotation(comb_mat, add_numbers = T),
-#   lwd = 0.8,
-#   pt_size = unit(2, "mm"))
 
 us <- UpSet(
   comb_mat,
@@ -62,22 +56,21 @@ us <- UpSet(
       gp = gpar(fill = "black"),
       add_numbers = T,
       border = T
-      ),
+    ),
     total = anno_barplot(
       total, 
       width = unit(50, "mm"),
       gp = gpar(fill = "black"),
       add_numbers = T,
       border = T
-      ),
+    ),
     show_annotation_name = TRUE,
     annotation_label = c("Set size", "Total")),
   lwd = 0.8,
   pt_size = unit(2, "mm"))
 
-
 pdf(
-  "../sirv_benchmark/results/upset_calling_sirv.pdf",
+  "../nanopore_benchmark/results/upset_calling.pdf",
   width = 10,
   height = 5,
   useDingbats = FALSE

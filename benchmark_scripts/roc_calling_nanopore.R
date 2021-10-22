@@ -1,17 +1,31 @@
 source("load_nanopore_data.R")
 
 library(ROCR)
-library(ggplot2)
 library(cowplot)
 
+# df2 <- df
+# df2$coordinate <- coordinates
+# df2 %>%
+#   filter(!is.na(orthogonal)) %>%
+#   distinct(coordinate) %>%
+#   nrow()
+# df2 %>%
+#   filter(!is.na(orthogonal)) %>%
+#   mutate(across("orthogonal", ~ifelse(. < 0.95, 0, 1))) %>% 
+#   mutate(across(1:4, ~replace_na(.x, 0))) %>%
+#   select(coordinate, everything()) %>%
+#   write_csv('/prj/Niels_Gehring/baltica_benchmark/1_1_2/nanopore_input.csv')
+
 df <- df %>% 
-  replace(is.na(.), 0) %>% 
-  # mutate_all(~ifelse(. < 0.95, 0, 1))
   mutate_at(vars("orthogonal"), ~ifelse(. < 0.95, 0, 1))
 
 compute_prediction <- function(col, ref) {
-  .x <- df[, c(col, ref)]
-  prediction(.x[[col]], .x[[ref]])
+  col <- df[, col]
+  ref <- df[, ref]
+  col <- col[!is.na(ref)]
+  ref <- ref[!is.na(ref)]
+  col <- replace(col, is.na(col), 0)
+  prediction(col, ref)
 }
 
 pars <- tibble(
@@ -34,13 +48,16 @@ roc_data <- tibble(
 
 p <- ggplot(roc_data, aes(x = FPR, y = TPR, color = Method)) +
   geom_line() +
+  geom_point(size=0.5) +
   geom_abline(aes(slope = 1, intercept = 0), linetype = "dashed") +
   theme_cowplot(14) +
-  theme(legend.position = c(0.60, 0.3)) +
+  theme(legend.position="bottom") +
   scale_color_manual(
-    labels = setNames(nm=names(auc), paste(names(auc), '(AUC ROC=', auc, ')', sep=" ")),
-    values = color_list$method[1:4])
-p
+    name = NULL,
+    labels = setNames(nm=names(auc), paste(names(auc), ' AUCROC=', auc, sep="")),
+    values = color_list$method[1:4]) +
+  guides(color=guide_legend(nrow=2,byrow=TRUE))
 
-# ggsave("../nanopore_benchmark/results/roc_calling.pdf")
+p
+ggsave("../nanopore_benchmark/results/roc_calling.pdf",  width = 15, height = 15, units = 'cm')
 
