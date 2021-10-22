@@ -58,7 +58,12 @@ cluster_sig <- lapply(
   sep = "\t",
   header = TRUE,
   colClasses = c(
-    "character", "double", "integer", "double", "character", "double"
+    "character",
+    "double",
+    "integer",
+    "double",
+    "character",
+    "double"
   )
 )
 
