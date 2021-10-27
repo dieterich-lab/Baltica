@@ -1,13 +1,12 @@
-# Baltica project configuration:
-
+# Baltica project configuration
 
 Baltica requires a project configuration file as input. For a template see [here](https://raw.githubusercontent.com/dieterich-lab/Baltica/master/baltica/config.yml). For a programmatic solution to generate the configuration, use the script [baltica/write_new_config.R](https://github.com/dieterich-lab/Baltica/blob/8bc5fe5f71e948b3971ea5db5f1456b2d9e2f838/baltica/write_new_config.R). Method specific parameters are detailed in the [Workflow implementation](workflows.md) page.
 
 !!! warning
-   Baltica project requires that configuration been update. Users should use the full path to files. The sample names for the `samples` parameters uses a underscore (\_) to separate the sample name and replicate number, like in mix\_1, so the sample should not contain spaces or underscores. 
+   Baltica project requires that configuration been update. Users should use the full path to files. The sample names for the `samples` parameters uses a underscore (\_) to separate the sample name and replicate number, like in mix\_1, so the sample should not contain spaces or underscores.
 
 !!! note
-    The `Required` column flags parameters without default.
+    The `Required` column flags parameters without a default value.
 
 ## General parameters description
 
@@ -24,8 +23,8 @@ Baltica requires a project configuration file as input. For a template see [here
 | ref_fa | path to reference annotation in the FASTA format | &#10003; |
 | project_authors | project author name, used in the report |  |
 | project_title | project title name, used in file names and report |  |
-| orthogonal_result | result from Nanopore-seq in GFF or BED with a valid score column, and optionally a comparisons column with   contrasts |  |
-
+| orthogonal_result | path to results from orthonal experiment, such as ONT RNA-seq ([see](proj-config.md#orthogonal-result)) |  |
+| baltica_max_table | maximum number of rows for the Baltica table in the HTML report  | |  
 
 ## Pairwise comparisons
 
@@ -40,8 +39,14 @@ contrasts:
 ```
 
 !!! note
-    junctionseq and leafcutter support more complex experimental designs, which were not implemented in Baltica.
+    junctionseq and leafcutter support more complex experimental designs, which were not implemented in Baltica.  
 
+## Orthogonal result
+
+Full path to GFF or BED with a valid score column.
+Optionally a comparison or name column containing the experimental comparisons.
+Otherwise, only the first contrast of the project is used.
+This parameter allows Baltica to integrate a validation dataset obtained with third-generation sequencing.
 
 ## majiq specific paramers
 
@@ -59,8 +64,8 @@ contrasts:
 | majiq_non_changing_threshold | --non-changing-threshold | |
 | majiq_threshold | --threshold ||
 
-
 ## junctionseq specific paramers
+
 [qorts manual](https://hartleys.github.io/QoRTs/doc/QoRTs-vignette.pdf)
 [junctionseq manual](http://hartleys.github.io/JunctionSeq/doc/JunctionSeq.pdf)
 
