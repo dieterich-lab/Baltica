@@ -132,6 +132,7 @@ process_ort_result <- function(.path) {
       str_glue("score column is missing from {.path}
       , so the file will not be used")
     )
+    ort_result <- GRanges()
   } else {
     .score <- mcols(ort_result)$score
     if ("comparison" %in% colnames(mcols(ort_result))) {
