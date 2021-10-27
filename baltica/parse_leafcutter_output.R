@@ -56,15 +56,7 @@ cluster_sig <- lapply(
   cluster_sig_file,
   read.table,
   sep = "\t",
-  header = TRUE,
-  colClasses = c(
-    "character",
-    "double",
-    "integer",
-    "double",
-    "character",
-    "double"
-  )
+  header = TRUE
 )
 
 names(cluster_sig) <- file_names
