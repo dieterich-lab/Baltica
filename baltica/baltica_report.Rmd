@@ -97,74 +97,6 @@ knitr::knit_hooks$set(
 
 This is a report for the Baltica framework. Please see https://github.com/dieterich-lab/Baltica and https://dieterich-lab.github.io/Baltica/ for details.
 
-## Summary on Leafcutter results: {.tabset .tabset-fade .tabset-pills}
-```{r message=TRUE, warning=TRUE}
-if (!is_leafcutter) {
-  warning("Leafcutter result files not found.")
-} else {
-  message("See Leafcutter summary below.")
-}
-```
-
-```{r, eval=is_leafcutter}
-
-knitr::asis_output("### P-adjust distribution.\\n")
-
-leafcutter_complete <- read_csv(leafcutter_file, col_types = cols(
-  .default = col_character(),
-  logef = col_double(),
-  ref_psi = col_double(),
-  alt_psi = col_double(),
-  deltapsi = col_double(),
-  start = col_double(),
-  end = col_double(),
-  loglr = col_double(),
-  df = col_double(),
-  p = col_double(),
-  p.adjust = col_double(),
-))
-
-leafcutter_complete <- leafcutter_complete %>%
-  mutate(is_sig = abs(deltapsi) > 0.1 & p.adjust < 0.05)
-
-leafcutter_complete %>%
-  ggplot(aes(x = p)) +
-  labs(
-    title = "Leafcutter p.value distribution",
-    x = "p.value",
-    y = "Frequency"
-  ) +
-  geom_histogram(bins = 50, alpha = 0.5) +
-  facet_wrap(~comparison, nrow = 3) +
-  geom_vline(xintercept = 0.05, color = "red", linetype = "longdash") +
-  theme_bw(base_size = 16)
-```
-
-
-```{r eval=is_leafcutter}
-knitr::asis_output("### Volcano\\n")
-
-p <- leafcutter_complete %>%
-  ggplot(aes(deltapsi, -log10(p.adjust))) +
-  geom_point(aes(colour = is_sig), alpha = .5, size = 2) +
-  geom_hline(yintercept = -log10(0.05), linetype = "dashed", size = 0.3) +
-  geom_vline(xintercept = c(-0.1, 0.1), linetype = "dashed", size = 0.3) +
-  scale_colour_manual(values = c("grey", "red")) +
-  theme_minimal(base_size = 16) +
-  labs(
-    y = expression(-log[10](p.adjust)),
-    x = expression(Delta ~ PSI),
-    color = "is_sig",
-    tittle = "Leafcutter: volcano plot",
-    caption = expression(
-      paste("is_sig: |", Delta ~ PSI, "|> 0.1 & p.adj < 0.05")
-    )
-  ) +
-  facet_wrap(~comparison, nrow = 3) +
-  theme(legend.position = "bottom")
-p
-```
-
 ## Baltica table:
 ```{r warning=TRUE, message=TRUE}
 
@@ -191,7 +123,7 @@ df <- readr::read_csv(sj_annotated_file, col_types = cols(
 
 
 mat <- df %>%
-  dplyr::select(matches("-vs-")) %>%
+  dplyr::select(matches("-vs-"), matches("_NA")) %>%
   as.matrix(.)
 
 methods <- c("rmats", "junctionseq", "majiq", "leafcutter", "orthogonal")
