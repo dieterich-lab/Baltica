@@ -272,9 +272,9 @@ if (!is.null(opt$orthogonal_result)) {
   ort_result <- process_ort_result(opt$orthogonal_result)
 
   mcols(ort_result)["method"] <- "orthogonal"
+  df$orthogonal <- ort_result
 }
 
-df$orthogonal <- ort_result
 
 message("Preparing annotation")
 # TODO prepate annotation in another script, this does not need be done here
