@@ -53,11 +53,11 @@ plugins:
   - bibtex:
       bib_file: "docs/bibliography.bib"
       cite_style: "pandoc"
-  - mkpdfs:
-      author: "Thiago Britto Borges"
-      design: "docs/report.css"
-      output_path: "pdf/baltica_docs.pdf"
-      toc_title: "Table of contents"
+  #- mkpdfs:
+  #    author: "Thiago Britto Borges"
+  #    design: "docs/report.css"
+  #    output_path: "pdf/baltica_docs.pdf"
+  #    toc_title: "Table of contents"
 # https://squidfunk.github.io/mkdocs-material/reference/admonitions/#details
 
 
