@@ -123,7 +123,7 @@ df <- readr::read_csv(sj_annotated_file, col_types = cols(
 
 
 mat <- df %>%
-  dplyr::select(matches("-vs-"), matches("_NA")) %>%
+  dplyr::select(matches("-vs-")) %>%
   as.matrix(.)
 
 methods <- c("rmats", "junctionseq", "majiq", "leafcutter", "orthogonal")
@@ -263,7 +263,7 @@ df %>%
   )) %>%
   mutate(ex = ifelse(is.na(gene_name), NA_character_, ex)) %>%
   dplyr::select(
-    -transcript_name, -class_code, -exon_number, -group,
+    -transcript_name, -class_code, -exon_number,
     # -as_type
   ) %>%
   reactable(
