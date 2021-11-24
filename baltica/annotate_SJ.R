@@ -329,4 +329,21 @@ for (col in c(
   sj[[col]] <- as.character(lapply(sj[[col]], paste0, collapse = ";"))
 }
 
+sj$is_novel[is.na(sj$is_novel)] <- TRUE
+sj$group <- NULL
+sj <- sj[
+  order(
+    rowSums(
+      sj[
+        grepl(
+          x = colnames(sj), pattern = "vs"
+        )
+      ],
+      na.rm = T
+    ),
+    decreasing = TRUE
+  ),
+]
+
+
 readr::write_csv(sj, opt$output)
