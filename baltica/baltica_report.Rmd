@@ -180,6 +180,8 @@ intron annotation. Multi columns are sortable by holding <kbd>SHIFT</kbd>.
 Note that the output is limited to the top 1,000 (or `baltica_max_table`)
 rows, ranked by row sum.\n
 Legend: R, rMATS; J, JunctionSeq; M, Majiq; L, LeafCutter, O, Orthogonal
+\U2713, intron is not in the reference annotation.
+\U2718, intron is annotated.
 ")
 
 df <- df %>%
@@ -303,8 +305,8 @@ df %>%
           cell = function(value) {
             case_when(
               is.na(value) ~ "-",
-              value == TRUE ~ "\u2718",
-              TRUE ~ "\u2713"
+              value == TRUE ~ "\u2713",
+              TRUE ~ "\u2718"
             )
           }
         )
