@@ -123,9 +123,10 @@ df <- readr::read_csv(sj_annotated_file, col_types = cols(
 
 
 mat <- df %>%
-  dplyr::select(matches("-vs-")) %>%
+  dplyr::select(matches("-vs-", "_NA")) %>%
   as.matrix(.)
 
+# supported methods
 methods <- c("rmats", "junctionseq", "majiq", "leafcutter", "orthogonal")
 
 comparisons <- unique(
@@ -134,11 +135,13 @@ comparisons <- unique(
 
 mat[mat > 0.95] <- 1
 mat[mat < 0.95] <- 0
+total <- colSums(mat, na.rm = T)
 mat[is.na(mat)] <- 0
-mat <- mat[rowSums(mat) >= 1, ]
 
 
 comb_mat <- make_comb_mat(mat)
+comb_mat <- comb_mat[comb_degree(comb_mat) > 1]
+
 
 color_list <- list(
   group = setNames(
@@ -154,20 +157,32 @@ color_list <- list(
 UpSet(
   comb_mat,
   comb_order = order(rev(comb_degree(comb_mat))),
-  pt_size = unit(1.5, "mm"),
-  lwd = 0.5,
-  right_annotation = rowAnnotation(
-    "Set size" = anno_barplot(
-      set_size(comb_mat),
-      border = FALSE,
+  top_annotation = columnAnnotation(
+    inter = anno_barplot(
+      comb_size(comb_mat),
       gp = gpar(fill = "black"),
-      width = unit(2, "cm")
+      height = unit(35, "mm"),
+      add_numbers = T,
     ),
-    # https://stackoverflow.com/a/47268265/1694714
-    group = str_extract(colnames(mat), str_c(comparisons, collapse = "|")),
-    method = str_extract(colnames(mat), str_c(methods, collapse = "|")),
+    annotation_name_side = "left",
+    show_annotation_name = TRUE,
+    annotation_label = "Intersection\nsize"
+  ),
+  right_annotation = rowAnnotation(
+    set_size = anno_barplot(
+      set_size(comb_mat),
+      gp = gpar(fill = "black"),
+      add_numbers = T,
+      border = T,
+      width = unit(35, "mm"),
+    ),
+    group = group,
+    methods = methods,
+    annotation_label = c("Set size", "group", "methods"),
     col = color_list
-  )
+  ),
+  lwd = 0.8,
+  pt_size = unit(2, "mm")
 )
 ```
 
@@ -189,7 +204,7 @@ df <- df %>%
     desc(
       rowSums(
         across(
-          contains("-vs-")
+          contains("-vs-", "_NA")
         )
       )
     )
