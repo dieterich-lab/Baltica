@@ -143,7 +143,6 @@ process_ort_result <- function(.path) {
     if (exists(".comparison")) {
       mcols(ort_result)$comparison <- .comparison
     }
-    mcols(ort_result)$method <- "orthogonal"
   }
   ort_result
 }
@@ -253,6 +252,7 @@ df$junctionseq["score"] <- 1 - df$junctionseq$padjust
 df$leafcutter["score"] <- 1 - df$leafcutter$p.adjust
 df$majiq["score"] <- 1 - df$majiq$probability_non_changing
 df$rmats["score"] <- 1 - df$rmats$FDR
+comparison <- unique(unlist(lapply(df, function(x) unique(x$comparison))))
 
 message("Processing de novo annotation")
 gtf <- rtracklayer::import.gff2(opt$annotation)
@@ -267,11 +267,14 @@ ref_introns <- ref_introns[width(ref_introns) > 2, ]
 
 introns$is_novel <- !(introns %in% ref_introns)
 
-ort_result <- NULL
 if (!is.null(opt$orthogonal_result)) {
   ort_result <- process_ort_result(opt$orthogonal_result)
 
   mcols(ort_result)["method"] <- "orthogonal"
+  # resolves missing comparison column if there is a single column
+  if (length(comparison) == 1 & !("comparison" %in% colnames(ort_result))) {
+    mcols(ort_result)["comparison"] <- comparison[[1]]
+  }
   df$orthogonal <- ort_result
 }
 

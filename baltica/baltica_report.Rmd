@@ -123,7 +123,7 @@ df <- readr::read_csv(sj_annotated_file, col_types = cols(
 
 
 mat <- df %>%
-  dplyr::select(matches("-vs-", "_NA")) %>%
+  dplyr::select(matches("-vs-")) %>%
   as.matrix(.)
 
 # supported methods
@@ -176,12 +176,17 @@ UpSet(
       border = T,
       width = unit(35, "mm"),
     ),
-    group = group,
-    methods = methods,
+    group = str_extract(
+      names(set_size(comb_mat)),
+      str_c(comparisons, collapse = "|")),
+    methods = str_extract(
+      names(set_size(comb_mat)),
+      str_c(methods, collapse = "|")),
     annotation_label = c("Set size", "group", "methods"),
     col = color_list
   ),
   lwd = 0.8,
+  width = unit(40, "mm"),
   pt_size = unit(2, "mm")
 )
 ```
@@ -204,7 +209,7 @@ df <- df %>%
     desc(
       rowSums(
         across(
-          contains("-vs-", "_NA")
+          contains("-vs-")
         )
       )
     )
