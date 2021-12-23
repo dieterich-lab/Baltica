@@ -1,313 +1,584 @@
 
-<!DOCTYPE html>
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Baltica - Integrated differential junction usage (DJU)">
+      
+      
+      
+        <meta name="author" content="Thiago Britto-Borges">
+      
+      
+        <link rel="canonical" href="https://github.com/dieterich-lab/Baltica/workflows.html">
+      
+      <link rel="icon" href="img/baltica_logo.ico">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.2">
+    
+    
+      
+        <title>Workflow implementation - Baltica</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.1118c9be.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.ba0d045b.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="extra.css">
+    
+    
+      
 
-<html class="no-js" lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1" name="viewport"/>
-<meta content="Baltica - Integrated differential junction usage (DJU)" name="description"/>
-<meta content="Thiago Britto-Borges" name="author"/>
-<link href="https://github.com/dieterich-lab/Baltica/workflows.html" rel="canonical"/>
-<link href="img/baltica_logo.ico" rel="icon"/>
-<meta content="mkdocs-1.2.2, mkdocs-material-7.2.0" name="generator"/>
-<title>Workflow implementation - Baltica</title>
-<link href="assets/stylesheets/main.fe914879.min.css" rel="stylesheet"/>
-<link href="assets/stylesheets/palette.ba0d045b.min.css" rel="stylesheet"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&amp;display=fallback" rel="stylesheet"/>
-<style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
-<link href="extra.css" rel="stylesheet"/>
-</head>
-<body data-md-color-accent="" data-md-color-primary="" data-md-color-scheme="default" dir="ltr">
-<script>function __prefix(e){return new URL(".",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
-<script>var palette=__get("__palette");if(null!==palette&&"object"==typeof palette.color)for(var key in palette.color)document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
-<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
-<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
-<label class="md-overlay" for="__drawer"></label>
-<div data-md-component="skip">
-<a class="md-skip" href="#workflow-implementation">
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    <script>function __prefix(e){return new URL(".",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+      <script>var palette=__get("__palette");if(null!==palette&&"object"==typeof palette.color)for(var key in palette.color)document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#workflow-implementation" class="md-skip">
           Skip to content
         </a>
-</div>
-<div data-md-component="announce">
-</div>
-<header class="md-header" data-md-component="header">
-<nav aria-label="Header" class="md-header__inner md-grid">
-<a aria-label="Baltica" class="md-header__button md-logo" data-md-component="logo" href="index.html" title="Baltica">
-<img alt="logo" src="img/baltica_logo.ico"/>
-</a>
-<label class="md-header__button md-icon" for="__drawer">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"></path></svg>
-</label>
-<div class="md-header__title" data-md-component="header-title">
-<div class="md-header__ellipsis">
-<div class="md-header__topic">
-<span class="md-ellipsis">
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="index.html" title="Baltica" class="md-header__button md-logo" aria-label="Baltica" data-md-component="logo">
+      
+  <img src="img/baltica_logo.ico" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
             Baltica
           </span>
-</div>
-<div class="md-header__topic" data-md-component="header-topic">
-<span class="md-ellipsis">
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
             
               Workflow implementation
             
           </span>
-</div>
-</div>
-</div>
-<form class="md-header__option" data-md-component="palette">
-<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="" data-md-color-media="" data-md-color-primary="" data-md-color-scheme="default" id="__palette_1" name="__palette" type="radio"/>
-<label class="md-header__button md-icon" for="__palette_2" hidden="" title="Switch to dark mode">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5z"></path></svg>
-</label>
-<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="" data-md-color-media="" data-md-color-primary="" data-md-color-scheme="slate" id="__palette_2" name="__palette" type="radio"/>
-<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to light mode">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1z"></path></svg>
-</label>
-</form>
-<label class="md-header__button md-icon" for="__search">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"></path></svg>
-</label>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
 <div class="md-search" data-md-component="search" role="dialog">
-<label class="md-search__overlay" for="__search"></label>
-<div class="md-search__inner" role="search">
-<form class="md-search__form" name="search">
-<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
-<label class="md-search__icon md-icon" for="__search">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"></path></svg>
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"></path></svg>
-</label>
-<nav aria-label="Search" class="md-search__options">
-<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" type="reset">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"></path></svg>
-</button>
-</nav>
-</form>
-<div class="md-search__output">
-<div class="md-search__scrollwrap" data-md-scrollfix="">
-<div class="md-search-result" data-md-component="search-result">
-<div class="md-search-result__meta">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
             Initializing search
           </div>
-<ol class="md-search-result__list"></ol>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-</div>
-</div>
-</div>
-</div>
-<div class="md-header__source">
-<a class="md-source" data-md-component="source" href="https://github.com/dieterich-lab/Baltica/" title="Go to repository">
-<div class="md-source__icon md-icon">
-<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"></path></svg>
-</div>
-<div class="md-source__repository">
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/dieterich-lab/Baltica/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
     GitHub
   </div>
 </a>
-</div>
-</nav>
+      </div>
+    
+  </nav>
 </header>
-<div class="md-container" data-md-component="container">
-<main class="md-main" data-md-component="main">
-<div class="md-main__inner md-grid">
-<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
-<div class="md-sidebar__scrollwrap">
-<div class="md-sidebar__inner">
-<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
-<label class="md-nav__title" for="__drawer">
-<a aria-label="Baltica" class="md-nav__button md-logo" data-md-component="logo" href="index.html" title="Baltica">
-<img alt="logo" src="img/baltica_logo.ico"/>
-</a>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="index.html" title="Baltica" class="md-nav__button md-logo" aria-label="Baltica" data-md-component="logo">
+      
+  <img src="img/baltica_logo.ico" alt="logo">
+
+    </a>
     Baltica
   </label>
-<div class="md-nav__source">
-<a class="md-source" data-md-component="source" href="https://github.com/dieterich-lab/Baltica/" title="Go to repository">
-<div class="md-source__icon md-icon">
-<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"></path></svg>
-</div>
-<div class="md-source__repository">
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/dieterich-lab/Baltica/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
     GitHub
   </div>
 </a>
-</div>
-<ul class="md-nav__list" data-md-scrollfix="">
-<li class="md-nav__item">
-<a class="md-nav__link" href="index.html">
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
         Index
       </a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="intro.html">
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="intro.html" class="md-nav__link">
         Introduction
       </a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="setup.html">
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="setup.html" class="md-nav__link">
         Getting started
       </a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="proj-config.html">
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="proj-config.html" class="md-nav__link">
         Project configuration
       </a>
-</li>
-<li class="md-nav__item md-nav__item--active">
-<input class="md-nav__toggle md-toggle" data-md-toggle="toc" id="__toc" type="checkbox"/>
-<label class="md-nav__link md-nav__link--active" for="__toc">
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
           Workflow implementation
           <span class="md-nav__icon md-icon"></span>
-</label>
-<a class="md-nav__link md-nav__link--active" href="workflows.html">
+        </label>
+      
+      <a href="workflows.html" class="md-nav__link md-nav__link--active">
         Workflow implementation
       </a>
-<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
-<label class="md-nav__title" for="__toc">
-<span class="md-nav__icon md-icon"></span>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
       Table of contents
     </label>
-<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#quality-control-workflow">
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quality-control-workflow" class="md-nav__link">
     Quality control workflow
   </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#rmats-workflow">
+      
+        <li class="md-nav__item">
+  <a href="#rmats-workflow" class="md-nav__link">
     RMATs workflow
   </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#junctionseq-workflow">
+      
+        <li class="md-nav__item">
+  <a href="#junctionseq-workflow" class="md-nav__link">
     JunctionSeq workflow
   </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#majiq-workflow">
+      
+        <li class="md-nav__item">
+  <a href="#majiq-workflow" class="md-nav__link">
     Majiq workflow
   </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#leafcutter-workflow">
+      
+        <li class="md-nav__item">
+  <a href="#leafcutter-workflow" class="md-nav__link">
     Leafcutter workflow
   </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#stringtie-workflow">
+      
+        <li class="md-nav__item">
+  <a href="#stringtie-workflow" class="md-nav__link">
     Stringtie workflow
   </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#references">
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
     References
   </a>
+  
 </li>
-</ul>
+      
+    </ul>
+  
 </nav>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="integration.html">
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="integration.html" class="md-nav__link">
         DJU methods result integration
       </a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="dev_guide.html">
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="dev_guide.html" class="md-nav__link">
         Development guidelines
       </a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="faq.html">
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="faq.html" class="md-nav__link">
         Frequently asked questions
       </a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="tutorial.html">
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorial.html" class="md-nav__link">
         Tutorial
       </a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="bibliography.html">
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bibliography.html" class="md-nav__link">
         References
       </a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="release-notes.html">
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="release-notes.html" class="md-nav__link">
         Release notes
       </a>
-</li>
-</ul>
+    </li>
+  
+
+    
+  </ul>
 </nav>
-</div>
-</div>
-</div>
-<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
-<div class="md-sidebar__scrollwrap">
-<div class="md-sidebar__inner">
-<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
-<label class="md-nav__title" for="__toc">
-<span class="md-nav__icon md-icon"></span>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
       Table of contents
     </label>
-<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#quality-control-workflow">
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quality-control-workflow" class="md-nav__link">
     Quality control workflow
   </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#rmats-workflow">
+      
+        <li class="md-nav__item">
+  <a href="#rmats-workflow" class="md-nav__link">
     RMATs workflow
   </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#junctionseq-workflow">
+      
+        <li class="md-nav__item">
+  <a href="#junctionseq-workflow" class="md-nav__link">
     JunctionSeq workflow
   </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#majiq-workflow">
+      
+        <li class="md-nav__item">
+  <a href="#majiq-workflow" class="md-nav__link">
     Majiq workflow
   </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#leafcutter-workflow">
+      
+        <li class="md-nav__item">
+  <a href="#leafcutter-workflow" class="md-nav__link">
     Leafcutter workflow
   </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#stringtie-workflow">
+      
+        <li class="md-nav__item">
+  <a href="#stringtie-workflow" class="md-nav__link">
     Stringtie workflow
   </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#references">
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
     References
   </a>
+  
 </li>
-</ul>
+      
+    </ul>
+  
 </nav>
-</div>
-</div>
-</div>
-<div class="md-content" data-md-component="content">
-<article class="md-content__inner md-typeset"><a class="md-content__icon pdf-download-btn" download href="pdf/baltica_docs.pdf" title="Download"><i class="fa fas fa-download"></i><small> PDF</small></a>
-<a class="md-content__button md-icon" href="https://github.com/dieterich-lab/Baltica/tree/master/docs/workflows.md" title="Edit this page">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"></path></svg>
-</a>
-<h1 id="workflow-implementation">Workflow implementation<a class="headerlink" href="#workflow-implementation" title="Permanent link">¶</a></h1>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/dieterich-lab/Baltica/tree/master/docs/workflows.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="workflow-implementation">Workflow implementation<a class="headerlink" href="#workflow-implementation" title="Permanent link">&para;</a></h1>
 <p>This chapter details the implementation and usage of each workflow in Baltica.</p>
 <p>Baltica comprises a collection of Snakemake workflows (SMK files). Each file determines a series of sub-tasks (rules). The sub-tasks run in a specific order; once the output of every rule is complete, the workflow is considered successful. We implemented the workflows following instructions and parameters suggested by the methods authors unless otherwise noted.</p>
-<p><img alt="baltica_overview" class="center" src="img/Baltica_overview.png" width="80%">
+<p><img alt="baltica_overview" class="center" src="img/Baltica_overview.png" width="80%" />
 <strong>Fig. 1 - Baltica overview</strong>: Baltica is a framework to execute and integrate differential junction usage (DJU) analysis and further investigation enabled by the data integration.
 <strong>1 -- Input</strong>: Baltica takes as input RNA-seq alignments, reference annotation, and a configuration file.
 <strong>2 -- Quality control</strong>: As the first step of the pipeline, Baltica performs quality control of alignments with <code>RSeQC</code> and <code>FastQC</code>, which is reported by <code>MultiQC</code>.
 <strong>3 -- DJU and transcriptome assembly</strong>: 
 Next, Baltica computes DJU with <code>JunctionSeq</code>, <code>Majiq</code>, and <code>Leafcutter</code>, and uses <code>Stringtie2</code> to detected new transcripts and exons in the dataset.
 <strong>4 -- Downstream analysis</strong>: 
-Finally, we integrate the results from the DJU method. Optionally, Baltica can include an extra piece of evidence for DJU, such as DJU obtained from third-generation sequencing, to the integrated table. The set of introns is re-annotated using information from <em>de novo</em> transcriptome annotation, and splice types between SJ and exons are assigned. Finally, a Baltica compiles a report with the most relevant information.</img></p>
-<h2 id="quality-control-workflow">Quality control workflow<a class="headerlink" href="#quality-control-workflow" title="Permanent link">¶</a></h2>
+Finally, we integrate the results from the DJU method. Optionally, Baltica can include an extra piece of evidence for DJU, such as DJU obtained from third-generation sequencing, to the integrated table. The set of introns is re-annotated using information from <em>de novo</em> transcriptome annotation, and splice types between SJ and exons are assigned. Finally, a Baltica compiles a report with the most relevant information.</p>
+<h2 id="quality-control-workflow">Quality control workflow<a class="headerlink" href="#quality-control-workflow" title="Permanent link">&para;</a></h2>
 <p>Executed with:</p>
 <div class="codehilite"><pre><span></span><code>baltica qc &lt;config&gt; --use-singularity
 </code></pre></div>
+
 <p>The first workflow comprises the quality control of the read alignments. 
 This step aims to determine the success of sequencing and alignment.
 Baltica includes workflows for RSeQC <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> and FastQC <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>. MultiQC <sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup> summarizes the output from both tools.
@@ -319,19 +590,21 @@ In addition, RSeQC provides the <code>junction_saturation.py</code> method, whic
 Thus, users can use this functionality to identify the saturation of annotated and unannotated SJ, or a higher level of coverage is needed.
 In conclusion, the quality control step serves to identify potential problems with the RNA-Seq library alignment and, potentially, direct on further troubleshooting and downstream analysis.</p>
 <p><a href="https://github.com/dieterich-lab/Baltica/blob/master/envs/qc.yml">Software dependencies</a></p>
-<h2 id="rmats-workflow">RMATs workflow<a class="headerlink" href="#rmats-workflow" title="Permanent link">¶</a></h2>
+<h2 id="rmats-workflow">RMATs workflow<a class="headerlink" href="#rmats-workflow" title="Permanent link">&para;</a></h2>
 <p>Executed with:</p>
 <div class="codehilite"><pre><span></span><code>baltica rmats &lt;config&gt; --use-singularity
 </code></pre></div>
+
 <p>RMATs <sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup> workflow is done in two steps:
-    - Determine the experimental groups.<br/>
+    - Determine the experimental groups.<br />
     - Run <code>rmats.py</code>.  </p>
 <p>Running RMATs <a href="https://github.com/Xinglab/rmats-turbo/tree/8a2ad659717a1ccd6dbecd593dc1370ba7c30621#running-prep-and-post-separately">prep and post tasks separately</a> and paired statistical test were not implemented in Baltica. </p>
 <p><a href="https://github.com/dieterich-lab/Baltica/blob/master/envs/rmats.yml">Software dependencies</a></p>
-<h2 id="junctionseq-workflow">JunctionSeq workflow<a class="headerlink" href="#junctionseq-workflow" title="Permanent link">¶</a></h2>
+<h2 id="junctionseq-workflow">JunctionSeq workflow<a class="headerlink" href="#junctionseq-workflow" title="Permanent link">&para;</a></h2>
 <p>Executed with:</p>
 <div class="codehilite"><pre><span></span><code>baltica junctionseq &lt;config&gt; --use-singularity
 </code></pre></div>
+
 <p>JunctionSeq <sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup> workflows starts by junction read counts extraction done with QoRTs <sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup>. 
 In Baltica implementation for JunctionSeq workflow, we only consider reads that span multiple exons (splice junction reads, SJ) for annotated and unannotated introns, ignoring exon counts.
 JunctionSeq uses disjoint genomic bins to flatten the transcriptome annotation.
@@ -339,23 +612,25 @@ To test the hypothesis that features are differently expressed in experimental g
 Unlike other DJU methods, JunctionSeq does not group the introns or S in AS events, so it does not compute PSI events but rather log fold change.</p>
 <p>Baltica parses the <code>*_sigGenes.results.txt.gz</code> (located at <code>junctionseq/analysis/</code>) and discard entries that were flagged as not testable.</p>
 <p><a href="https://github.com/dieterich-lab/Baltica/blob/master/envs/junctionseq.yml">Software dependencies</a> and <a href="https://github.com/dieterich-lab/Baltica/blob/master/docker/junctionseq/1.16.0/Dockerfile">docker image recipe</a>.</p>
-<h2 id="majiq-workflow">Majiq workflow<a class="headerlink" href="#majiq-workflow" title="Permanent link">¶</a></h2>
+<h2 id="majiq-workflow">Majiq workflow<a class="headerlink" href="#majiq-workflow" title="Permanent link">&para;</a></h2>
 <p>Executed with:</p>
 <div class="codehilite"><pre><span></span><code>baltica majiq &lt;config&gt; --use-singularity
 </code></pre></div>
+
 <p>Majiq workflow includes the following steps:
 1. Create a configuration file (<code>majiq/build.ini</code>)
 1. Converts the reference annotation from gtf to gff with <code>gtf2gff3.pl</code>
 1. <strong>majiq build</strong> generates the Splice Graph database with exons and SJ from the RNA-Seq experiment and the reference annotation
-1. <strong>majiq deltapsi</strong>: computes ψ and Δψ and tests if the Δψ significantly changes between comparisons. Introns are called significant if the probability of Δψ &gt; <code>threshold</code> is higher than <code>non-changing-threshold</code>, where <code>threshold</code> and <code>non-changing-threshold</code> are the <code>--threshold</code> and <code>--non-changing-threshold</code> parameters, respectively 
+1. <strong>majiq deltapsi</strong>: computes &#968; and &#916;&#968; and tests if the &#916;&#968; significantly changes between comparisons. Introns are called significant if the probability of &#916;&#968; &gt; <code>threshold</code> is higher than <code>non-changing-threshold</code>, where <code>threshold</code> and <code>non-changing-threshold</code> are the <code>--threshold</code> and <code>--non-changing-threshold</code> parameters, respectively 
 1. <strong>voila tsv</strong>: filter and outputs the Majiq result to a tab-separated value file</p>
 <p>Majiq visualization methods, such as <code>voila view</code>, are not currently implemented in Baltica but can be used independently. </p>
 <p>Baltica parses the <code>{comparison}_voila.tsv</code> files - one per comparison, located at <code>majiq/voila/</code>. </p>
 <p><a href="https://github.com/dieterich-lab/Baltica/blob/master/docker/majiq/2.2/Dockerfile">Docker image recipe</a>.</p>
-<h2 id="leafcutter-workflow">Leafcutter workflow<a class="headerlink" href="#leafcutter-workflow" title="Permanent link">¶</a></h2>
+<h2 id="leafcutter-workflow">Leafcutter workflow<a class="headerlink" href="#leafcutter-workflow" title="Permanent link">&para;</a></h2>
 <p>Executed with:</p>
 <div class="codehilite"><pre><span></span><code>baltica leafcutter &lt;config&gt; --use-singularity
 </code></pre></div>
+
 <p>Leafcutter uses Regtools<sup id="fnref:8"><a class="footnote-ref" href="#fn:8">8</a></sup> to extract SJ reads from the BAM files. Next, introns with at least <code>minclureads</code> reads clustered.
 The clustering procedure iteratively discards introns supported by less than 
  <code>mincluratio</code> reads within a cluster. 
@@ -376,96 +651,122 @@ giving SJ within a cluster and compare this usage among conditions</p>
 1. <code>{cond_2}</code>: fitted junction usage in condition <code>cond_2</code>
 1. <code>deltapsi</code>: difference between usage in the two conditions  </p>
 <p><a href="https://github.com/dieterich-lab/Baltica/blob/master/envs/leafcutter.yml">Software dependencies</a> and <a href="https://github.com/dieterich-lab/Baltica/blob/master/docker/leafcutter/0.2.7/Dockerfile">Docker image recipe</a>.</p>
-<h2 id="stringtie-workflow">Stringtie workflow<a class="headerlink" href="#stringtie-workflow" title="Permanent link">¶</a></h2>
+<h2 id="stringtie-workflow">Stringtie workflow<a class="headerlink" href="#stringtie-workflow" title="Permanent link">&para;</a></h2>
 <p>Baltica uses the gene, transcript, and class code assignments from the Stringtie output to the SJ from the DJU method outputs. In addition, exons defined by this annotation are used for assignments of splicing event types.</p>
 <p>We process <em>de novo</em> transcriptomic workflow with Stringtie <sup id="fnref:9"><a class="footnote-ref" href="#fn:9">9</a></sup>. First, we merge the alignment files from biological replicates. Next, we compute <em>de novo</em> annotation with Stringtie, using the parameters  <code>-c 3 -j 3 -f 0.01</code>. Finally, the merge the multiple annotation with <code>gffcompare -r {reference_annotation.gtf} -R -V</code>. Details on the parameter selection are in the <a href="integration.html">Integration chapter</a>. </p>
 <p><a href="https://github.com/dieterich-lab/Baltica/blob/master/docker/stringtie/2.1.5/Dockerfile">Docker image recipe</a></p>
-<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">¶</a></h2>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <div class="footnote">
-<hr/>
+<hr />
 <ol>
 <li id="fn:1">
-<p>Liguo Wang, Shengqin Wang, and Wei Li. RSeQC: quality control of RNA-seq experiments. <em>Bioinformatics</em>, 28(16):2184–2185, June 2012. URL: <a href="https://doi.org/10.1093/bioinformatics/bts356">https://doi.org/10.1093/bioinformatics/bts356</a>, <a href="https://doi.org/10.1093/bioinformatics/bts356">doi:10.1093/bioinformatics/bts356</a>. <a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">↩</a></p>
+<p>Liguo Wang, Shengqin Wang, and Wei Li. RSeQC: quality control of RNA-seq experiments. <em>Bioinformatics</em>, 28(16):2184–2185, June 2012. URL: <a href="https://doi.org/10.1093/bioinformatics/bts356">https://doi.org/10.1093/bioinformatics/bts356</a>, <a href="https://doi.org/10.1093/bioinformatics/bts356">doi:10.1093/bioinformatics/bts356</a>.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:2">
-<p>Simon Andrews, Felix Krueger, Anne Segonds-Pichon, Laura Biggins, Christel Krueger, and Steven Wingett. FastQC. Babraham Institute, January 2012. URL: <a href="https://qubeshub.org/resources/fastqc">https://qubeshub.org/resources/fastqc</a>. <a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">↩</a></p>
+<p>Simon Andrews, Felix Krueger, Anne Segonds-Pichon, Laura Biggins, Christel Krueger, and Steven Wingett. FastQC. Babraham Institute, January 2012. URL: <a href="https://qubeshub.org/resources/fastqc">https://qubeshub.org/resources/fastqc</a>.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 <li id="fn:3">
-<p>Philip Ewels, Måns Magnusson, Sverker Lundin, and Max Käller. MultiQC: summarize analysis results for multiple tools and samples in a single report. <em>Bioinformatics</em>, 32(19):3047–3048, Jun 2016. URL: <a href="http://dx.doi.org/10.1093/bioinformatics/btw354">http://dx.doi.org/10.1093/bioinformatics/btw354</a>, <a href="https://doi.org/10.1093/bioinformatics/btw354">doi:10.1093/bioinformatics/btw354</a>. <a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">↩</a></p>
+<p>Philip Ewels, Måns Magnusson, Sverker Lundin, and Max Käller. MultiQC: summarize analysis results for multiple tools and samples in a single report. <em>Bioinformatics</em>, 32(19):3047–3048, Jun 2016. URL: <a href="http://dx.doi.org/10.1093/bioinformatics/btw354">http://dx.doi.org/10.1093/bioinformatics/btw354</a>, <a href="https://doi.org/10.1093/bioinformatics/btw354">doi:10.1093/bioinformatics/btw354</a>.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 <li id="fn:4">
-<p>Shihao Shen, Juw Won Park, Zhi-xiang Lu, Lan Lin, Michael D. Henry, Ying Nian Wu, Qing Zhou, and Yi Xing. Rmats: robust and flexible detection of differential alternative splicing from replicate rna-seq data. <em>Proceedings of the National Academy of Sciences</em>, 111(51):E5593–E5601, Dec 2014. URL: <a href="http://dx.doi.org/10.1073/pnas.1419161111">http://dx.doi.org/10.1073/pnas.1419161111</a>, <a href="https://doi.org/10.1073/pnas.1419161111">doi:10.1073/pnas.1419161111</a>. <a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">↩</a></p>
+<p>Shihao Shen, Juw Won Park, Zhi-xiang Lu, Lan Lin, Michael D. Henry, Ying Nian Wu, Qing Zhou, and Yi Xing. Rmats: robust and flexible detection of differential alternative splicing from replicate rna-seq data. <em>Proceedings of the National Academy of Sciences</em>, 111(51):E5593–E5601, Dec 2014. URL: <a href="http://dx.doi.org/10.1073/pnas.1419161111">http://dx.doi.org/10.1073/pnas.1419161111</a>, <a href="https://doi.org/10.1073/pnas.1419161111">doi:10.1073/pnas.1419161111</a>.&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
 </li>
 <li id="fn:5">
-<p>Stephen W. Hartley and James C. Mullikin. Detection and visualization of differential splicing in RNA-seq data with JunctionSeq. <em>Nucleic Acids Research</em>, pages gkw501, June 2016. URL: <a href="https://doi.org/10.1093/nar/gkw501">https://doi.org/10.1093/nar/gkw501</a>, <a href="https://doi.org/10.1093/nar/gkw501">doi:10.1093/nar/gkw501</a>. <a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">↩</a></p>
+<p>Stephen W. Hartley and James C. Mullikin. Detection and visualization of differential splicing in RNA-seq data with JunctionSeq. <em>Nucleic Acids Research</em>, pages gkw501, June 2016. URL: <a href="https://doi.org/10.1093/nar/gkw501">https://doi.org/10.1093/nar/gkw501</a>, <a href="https://doi.org/10.1093/nar/gkw501">doi:10.1093/nar/gkw501</a>.&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
 </li>
 <li id="fn:6">
-<p>Stephen W. Hartley and James C. Mullikin. QoRTs: a comprehensive toolset for quality control and data processing of RNA-seq experiments. <em>BMC Bioinformatics</em>, Jul 2015. URL: <a href="http://dx.doi.org/10.1186/s12859-015-0670-5">http://dx.doi.org/10.1186/s12859-015-0670-5</a>, <a href="https://doi.org/10.1186/s12859-015-0670-5">doi:10.1186/s12859-015-0670-5</a>. <a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">↩</a></p>
+<p>Stephen W. Hartley and James C. Mullikin. QoRTs: a comprehensive toolset for quality control and data processing of RNA-seq experiments. <em>BMC Bioinformatics</em>, Jul 2015. URL: <a href="http://dx.doi.org/10.1186/s12859-015-0670-5">http://dx.doi.org/10.1186/s12859-015-0670-5</a>, <a href="https://doi.org/10.1186/s12859-015-0670-5">doi:10.1186/s12859-015-0670-5</a>.&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
 </li>
 <li id="fn:7">
-<p>S. Anders, A. Reyes, and W. Huber. Detecting differential usage of exons from RNA-seq data. <em>Genome Research</em>, 22(10):2008–2017, June 2012. URL: <a href="https://doi.org/10.1101/gr.133744.111">https://doi.org/10.1101/gr.133744.111</a>, <a href="https://doi.org/10.1101/gr.133744.111">doi:10.1101/gr.133744.111</a>. <a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">↩</a></p>
+<p>S. Anders, A. Reyes, and W. Huber. Detecting differential usage of exons from RNA-seq data. <em>Genome Research</em>, 22(10):2008–2017, June 2012. URL: <a href="https://doi.org/10.1101/gr.133744.111">https://doi.org/10.1101/gr.133744.111</a>, <a href="https://doi.org/10.1101/gr.133744.111">doi:10.1101/gr.133744.111</a>.&#160;<a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">&#8617;</a></p>
 </li>
 <li id="fn:8">
-<p>Kelsy C. Cotto, Yang-Yang Feng, Avinash Ramu, Zachary L. Skidmore, Jason Kunisaki, Megan Richters, Sharon Freshour, Yiing Lin, William C. Chapman, Ravindra Uppaluri, and et al. Regtools: integrated analysis of genomic and transcriptomic data for the discovery of splicing variants in cancer. pre-print, Oct 2018. URL: <a href="http://dx.doi.org/10.1101/436634">http://dx.doi.org/10.1101/436634</a>, <a href="https://doi.org/10.1101/436634">doi:10.1101/436634</a>. <a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 8 in the text">↩</a></p>
+<p>Kelsy C. Cotto, Yang-Yang Feng, Avinash Ramu, Zachary L. Skidmore, Jason Kunisaki, Megan Richters, Sharon Freshour, Yiing Lin, William C. Chapman, Ravindra Uppaluri, and et al. Regtools: integrated analysis of genomic and transcriptomic data for the discovery of splicing variants in cancer. pre-print, Oct 2018. URL: <a href="http://dx.doi.org/10.1101/436634">http://dx.doi.org/10.1101/436634</a>, <a href="https://doi.org/10.1101/436634">doi:10.1101/436634</a>.&#160;<a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 8 in the text">&#8617;</a></p>
 </li>
 <li id="fn:9">
-<p>Mihaela Pertea, Geo M Pertea, Corina M Antonescu, Tsung-Cheng Chang, Joshua T Mendell, and Steven L Salzberg. Stringtie enables improved reconstruction of a transcriptome from RNA-seq reads. <em>Nature Biotechnology</em>, 33(3):290–295, Feb 2015. URL: <a href="http://dx.doi.org/10.1038/nbt.3122">http://dx.doi.org/10.1038/nbt.3122</a>, <a href="https://doi.org/10.1038/nbt.3122">doi:10.1038/nbt.3122</a>. <a class="footnote-backref" href="#fnref:9" title="Jump back to footnote 9 in the text">↩</a></p>
+<p>Mihaela Pertea, Geo M Pertea, Corina M Antonescu, Tsung-Cheng Chang, Joshua T Mendell, and Steven L Salzberg. Stringtie enables improved reconstruction of a transcriptome from RNA-seq reads. <em>Nature Biotechnology</em>, 33(3):290–295, Feb 2015. URL: <a href="http://dx.doi.org/10.1038/nbt.3122">http://dx.doi.org/10.1038/nbt.3122</a>, <a href="https://doi.org/10.1038/nbt.3122">doi:10.1038/nbt.3122</a>.&#160;<a class="footnote-backref" href="#fnref:9" title="Jump back to footnote 9 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
-</article>
-</div>
-</div>
-</main>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
 <footer class="md-footer">
-<nav aria-label="Footer" class="md-footer__inner md-grid">
-<a aria-label="Previous: Project configuration" class="md-footer__link md-footer__link--prev" href="proj-config.html" rel="prev">
-<div class="md-footer__button md-icon">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"></path></svg>
-</div>
-<div class="md-footer__title">
-<div class="md-ellipsis">
-<span class="md-footer__direction">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="proj-config.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Project configuration" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
                 Previous
               </span>
               Project configuration
             </div>
-</div>
-</a>
-<a aria-label="Next: DJU methods result integration" class="md-footer__link md-footer__link--next" href="integration.html" rel="next">
-<div class="md-footer__title">
-<div class="md-ellipsis">
-<span class="md-footer__direction">
+          </div>
+        </a>
+      
+      
+        
+        <a href="integration.html" class="md-footer__link md-footer__link--next" aria-label="Next: DJU methods result integration" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
                 Next
               </span>
               DJU methods result integration
             </div>
-</div>
-<div class="md-footer__button md-icon">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"></path></svg>
-</div>
-</a>
-</nav>
-<div class="md-footer-meta md-typeset">
-<div class="md-footer-meta__inner md-grid">
-<div class="md-footer-copyright">
-<div class="md-footer-copyright__highlight">
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
             Thiago Britto-Borges, Dieterichlab - MIT License
           </div>
         
         Made with
-        <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
           Material for MkDocs
         </a>
-</div>
-</div>
-</div>
+        
+      </div>
+      
+    </div>
+  </div>
 </footer>
-</div>
-<div class="md-dialog" data-md-component="dialog">
-<div class="md-dialog__inner md-typeset"></div>
-</div>
-<script id="__config" type="application/json">{"base": ".", "features": ["instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "assets/javascripts/workers/search.53c85856.min.js", "version": null}</script>
-<script src="assets/javascripts/bundle.716f8af4.min.js"></script>
-</body>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": ".", "features": ["instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "assets/javascripts/workers/search.709b4209.min.js", "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.2b46852b.min.js"></script>
+      
+    
+  </body>
 </html>
