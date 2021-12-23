@@ -178,10 +178,12 @@ UpSet(
     ),
     group = str_extract(
       names(set_size(comb_mat)),
-      str_c(comparisons, collapse = "|")),
+      str_c(comparisons, collapse = "|")
+    ),
     methods = str_extract(
       names(set_size(comb_mat)),
-      str_c(methods, collapse = "|")),
+      str_c(methods, collapse = "|")
+    ),
     annotation_label = c("Set size", "group", "methods"),
     col = color_list
   ),
@@ -260,7 +262,6 @@ process_colum_names <- function(col_name) {
 
 comp_cols_new_name <- lapply(seq_along(comp_cols), function(i) {
   colDef(
-    # name = sub("_[a-z0-9-]+", "", comp_cols[i]),
     name = process_colum_names(comp_cols[i]),
     cell = function(value) ifelse(is.na(value), "-", value)
   )
@@ -306,7 +307,7 @@ df %>%
         coordinates = colDef(
           cell = function(value, index) {
             # Render as a link
-            new_value <- str_sub(value, 1, -3)
+            new_value <- sub(x = value, ":[-+*]", "")
             url <- str_glue(target_url)
             htmltools::tags$a(
               href = url, target = "_blank", as.character(value)

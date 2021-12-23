@@ -1,9 +1,12 @@
-## Parsing the results of the method 
+
+# Integration
+
+## Parsing the results of the method
 
 The first step in the analysis workflow is parsing and processing the DJU methods' output with `scripts/parse_{method}_output.R` scripts as follows:
 
 1. The resulting text output from the DJU methods is parsed and loaded as R data frames
-1. The data frames are pivoted in a longer format to have one junction and one comparison per row 
+1. The data frames are pivoted in a longer format to have one junction and one comparison per row  
 
 !!! warning
     RMATs, Majiq, and Leafcutter use AS events to test for DJU, so metrics are associated with a group and not the SJ. In Baltica, we split these groups in SJ, and multiple SJ may have the same metric, for example, test statistics.
@@ -11,8 +14,12 @@ The first step in the analysis workflow is parsing and processing the DJU method
 <!-- !!! warning
     majiq and rmats may be assigned multiple scores to an SJ to different AS types. For these, Baltica selects the maximum score as the representative.  
  -->
+!!! note
+    For unstranded RNA-seq libraries, JunctionSeq output genomic coordinates without the strand information.
+    Therefore, we support the integration by eliminating the strand from the analysis.
+    However, we recommend against generating unstranded RNA-seq libraries in 2021.  
 
-## Result integration 
+## Result integration
 
 One challenge for the integration of DJU results is that the methods use different genomic coordinate systems. 
 The coordinates system's differences are due to the method implementation: methods can be 0-indexed (BED format) versus 1-indexed (GTF format) or use the exonic versus intronic coordinates to represent the SJ genomic position.   
@@ -20,7 +27,8 @@ We propose a `filter_hits_by_diff` function to find overlapping features and the
 The multiple hits form a graph, which is then partitioned into the clusters, and each cluster represents an intron. 
 This feature enables the reconciliation of the multiple DJU results.
 
-## Annotating the results 
+
+## Annotating the results
 
 We annotate the results with information from genes and transcripts hosting the SJ. 
 For this, we use the _de novo_ transcript annotation at `stringtie/merged/merged.combined.gtf`. 
@@ -28,18 +36,19 @@ Commonly, multiple transcripts share an intron so that a single intron may be an
 
 These are the columns assigned after the annotation:
 
-__Table 1: Annotation description__
+__Table 1: Annotation description__  
+
 Column name | Description |
 ------------|-------------|
 comparison | pairwise comparison as `{case}_vs_{control}` |
 chr | seqname or genomic contig |
-start | intron start position for the SJ | 
-end |  intron end position | 
+start | intron start position for the SJ |
+end |  intron end position |
 strand | RNA strand that encodes that gene |
-gene | the gene symbol | 
-e2 - e1| acceptor and donor exons number, if in + strand else the inverse | 
+gene | the gene symbol |
+e2 - e1| acceptor and donor exons number, if in + strand else the inverse |
 tx_id | transcript identifier from the combined annotation |
-transcript_name | transcript name | 
+transcript_name | transcript name |
 class_code | association between reference transcript and novel transcript ([seq fig1 for details]( https://doi.org/10.12688/f1000research.23297.1)) |
 
 ## Selecting optimal parameters for _de novo_ transcriptome assembly

@@ -22,14 +22,17 @@ suppressPackageStartupMessages({
 #' respectively
 #' @return overlapping ranges given the constrain
 #' @export
-filter_hits_by_diff <- function(query, subject = NULL, ..., max_start = 2, max_end = 2) {
+filter_hits_by_diff <- function(query,
+                                subject = NULL,
+                                max_start = 2,
+                                max_end = 2) {
   stopifnot(is(query, "GRanges"))
   if (is.null(subject)) {
-    hits <- findOverlaps(query, ...)
+    hits <- findOverlaps(query)
     subject <- query
   } else {
     stopifnot(is(subject, "GRanges"))
-    hits <- findOverlaps(query, subject, ...)
+    hits <- findOverlaps(query, subject)
   }
   query <- query[queryHits(hits)]
   subject <- subject[subjectHits(hits)]
@@ -75,7 +78,10 @@ get_introns <- function(ex_tx) {
 aggregate_annotation <- function(gr) {
   stopifnot(is(gr, "GRanges"))
 
-  equal_hits <- findOverlaps(gr, type = "equal")
+  equal_hits <- findOverlaps(
+    gr,
+    type = "equal"
+  )
   equal_hits <- as.data.frame(equal_hits)
   equal_hits <- igraph::graph_from_data_frame(equal_hits)
   equal_hits_groups <- stack(igraph::groups(igraph::clusters(equal_hits)))
@@ -204,6 +210,12 @@ option_list <- list(
      a score column with results from a orthogonal method, such as
      paired ONT Nanopore-seq from the same samples.",
     metavar = "character",
+  ),
+  make_option(
+    c("--unstranded"),
+    type = "logical",
+    help = "If library is unstranded, [default is %default]",
+    default = FALSE
   )
 )
 # enabling both baltica or snakemake input
@@ -221,7 +233,8 @@ if (exists("snakemake")) {
     reference = snakemake@params$ref,
     annotation = snakemake@input[[5]],
     output = snakemake@output[[1]],
-    orthogonal_result = snakemake@params$orthogonal_result
+    orthogonal_result = snakemake@params$orthogonal_result,
+    unstranded = snakemake@params$unstranded
   )
 } else {
   opt <- parse_args(OptionParser(option_list = option_list))
@@ -295,9 +308,14 @@ mcols(introns)$exon_number <- exon_number$value
 introns$exon_number <- apply(introns$exon_number, 1, paste, collapse = "-")
 
 introns <- aggregate_annotation(introns)
-annotation <- as.data.frame(mcols(introns))
 
 message("Proceding with integration")
+
+if (isTRUE(opt$unstranded)) {
+  message("Unstranded library, removing strand information")
+  strand(introns) <- "*"
+  strand(ref_introns) <- "*"
+}
 
 gr <- lapply(df, function(x) {
   .gr <- GRanges(x)
@@ -307,10 +325,16 @@ gr <- lapply(df, function(x) {
   }
   mcols(.gr) <- mcols(.gr)[c("score", "comparison", "method")]
 
+  if (isTRUE(opt$unstranded)) {
+    strand(.gr) <- "*"
+  }
+
   integrate_coordinates(ref_introns, .gr)
 })
 
 gr <- unlist(as(gr, "GRangesList"))
+
+
 mcols(gr)$method <- names(gr)
 sj <- mcols(gr)
 sj$coordinates <- as.character(gr)
@@ -323,6 +347,8 @@ sj <- dcast(
 )
 
 is.na(sj) <- sapply(sj, is.infinite)
+
+annotation <- as.data.frame(mcols(introns))
 
 sj <- merge(sj, annotation, by = "coordinates", all.x = TRUE, all.y = FALSE)
 

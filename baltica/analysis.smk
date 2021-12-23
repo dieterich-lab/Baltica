@@ -119,7 +119,8 @@ rule annotate:
         ref="stringtie/merged/merged.combined.gtf",
     params:
         ref=config.get("ref"),
-        orthogonal_result=config.get('orthogonal_result')
+        orthogonal_result=config.get('orthogonal_result'),
+        unstranded=False if 'strandness' in config else True,
     envmodules:
         "R/4.0.5_deb10",
     log:

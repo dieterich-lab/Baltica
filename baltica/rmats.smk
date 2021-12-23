@@ -34,7 +34,6 @@ d = defaultdict(list)
 for x in keys:
     d[x[0]].append(x[1])
 
-
 include: "symlink.smk"
 
 
