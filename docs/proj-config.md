@@ -3,7 +3,9 @@
 Baltica requires a project configuration file as input. For a template see [here](https://raw.githubusercontent.com/dieterich-lab/Baltica/master/baltica/config.yml). For a programmatic solution to generate the configuration, use the script [baltica/write_new_config.R](https://github.com/dieterich-lab/Baltica/blob/8bc5fe5f71e948b3971ea5db5f1456b2d9e2f838/baltica/write_new_config.R). Method specific parameters are detailed in the [Workflow implementation](workflows.md) page.
 
 !!! warning
-   Baltica project requires that configuration been update. Users should use the full path to files. The sample names for the `samples` parameters uses a underscore (\_) to separate the sample name and replicate number, like in mix\_1, so the sample should not contain spaces or underscores.
+    Baltica project requires that configuration been update.
+    Users should use the full path to files.
+    The sample names for the `samples` parameters uses a underscore (\_) to separate the sample name and replicate number, like in mix\_1, so the sample should not contain spaces or underscores.
 
 !!! note
     The `Required` column flags parameters without a default value.
