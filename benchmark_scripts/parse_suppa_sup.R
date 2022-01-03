@@ -1,0 +1,95 @@
+parse_suppa_sup = function(url, sheet, event_id=TRUE, startRow = 3){
+    x = openxlsx::read.xlsx(url, sheet = sheet, startRow = startRow)
+    if (isTRUE(event_id)) {
+        event_id = stringr::str_split(x$Event_id, ';|:', simplify = TRUE)
+        colnames(event_id) = c('gene_id', 'type', 'chr', 'coord1', 'coord2', 'strand')
+        event_id = as.data.frame(event_id)
+        event_id$strand = NULL
+        event_id$chr = NULL
+        x = dplyr::bind_cols(x, event_id)
+    }
+    return(x)
+}
+
+url='https://static-content.springer.com/esm/art%3A10.1186%2Fs13059-018-1417-1/MediaObjects/13059_2018_1417_MOESM2_ESM.xlsx'
+# from https://genomebiology.biomedcentral.com/articles/10.1186/s13059-018-1417-1#MOESM2
+# RT-PCR validated:
+# 83 positive 
+# 44 negative 
+pos = parse_suppa_sup(url, 4, event_id = TRUE, startRow = 3)
+neg = parse_suppa_sup(url, 10, event_id = FALSE, 3)
+pos$score = 1
+# neg$score = 0
+
+library(tidyverse)
+
+pos <- pos %>% 
+    rownames_to_column('event_n') %>% 
+    mutate(
+        # exon_coord = str_glue_data(., "{exon_start}-{exon_end}"),
+        exon_start = NULL,
+        exon_end = NULL,
+        Event_id = NULL, 
+        coord=str_glue('{coord1}|{coord2}'),
+        coord1 = NULL,
+        coord2 = NULL,
+        exon_coord = NULL) %>% 
+    separate_rows(coord, sep =  '\\|') 
+
+neg <- neg %>%
+    rownames_to_column('event_n') %>%
+    dplyr::rename(chr=Chr, Gene=Gene_symbol) %>%
+    mutate(
+        coord = str_glue_data(., "{Exon_start}-{Exon_end}"),
+        Exon_start = NULL,
+        Exon_end = NULL)
+# 
+# reference <- rtracklayer::import.gff("/biodb/genomes/homo_sapiens/GRCh38_102/GRCh38.102.SIRV.gtf")
+# 
+# filter_multi_exon <- function(gtf) {
+#     stopifnot(is(gtf, "GRanges"))
+#     
+#     ex <- subset(gtf, type == "exon")
+#     stopifnot(length(ex) > 0)
+#     
+#     # discard single exons transcripts
+#     multi_ex <- table(ex$transcript_id) > 1
+#     ex <- subset(ex, mcols(ex)$transcript_id %in% names(multi_ex[multi_ex]))
+#     ex_tx <- split(ex, ex$transcript_id)
+#     ex_tx
+# }
+# 
+# get_introns <- function(ex_tx) {
+#     stopifnot(is(ex_tx, "List"))
+#     
+#     introns <- psetdiff(unlist(range(ex_tx), use.names = FALSE), ex_tx)
+#     introns <- unlist(introns)
+#     introns
+# }
+# 
+# ref_ex_tx <- filter_multi_exon(reference)
+# ref_introns <- get_introns(ref_ex_tx)
+# ref_introns <- ref_introns[width(ref_introns) > 2, ]
+
+
+# x <- bind_rows(pos, neg)
+# process
+
+pos$coord <- as.character(pos$coord)
+pos <- filter(pos, coord != '')
+
+library(rtracklayer)
+
+gr <- GRanges(seqnames = pos$chr, ranges = IRanges(pos$coord), strand = pos$strand)
+seqlevelsStyle(gr) <- 'ensembl'
+# https://gist.github.com/tbrittoborges/f0bc89cd7192d0955679d5105fd39475
+ch <- rtracklayer::import.chain('~/GRCh37_to_GRCh38_2.chain')
+gr <- rtracklayer::liftOver(gr, ch) 
+gr <- unlist(gr)
+mcols(gr)$score <- 1
+names(gr) <- seq_along(gr)
+
+export.bed(gr, '/prj/Niels_Gehring/baltica_benchmark/best_et_al/baltica/ortho.bed')
+head(gr)
+
+
