@@ -19,9 +19,56 @@ url='https://static-content.springer.com/esm/art%3A10.1186%2Fs13059-018-1417-1/M
 pos = parse_suppa_sup(url, 4, event_id = TRUE, startRow = 3)
 neg = parse_suppa_sup(url, 10, event_id = FALSE, 3)
 pos$score = 1
-# neg$score = 0
+neg$score = 0
 
 library(tidyverse)
+
+neg <- neg %>%
+    rownames_to_column('event_n') %>%
+    dplyr::rename(chr=Chr, Gene=Gene_symbol) %>%
+    mutate(
+        coord = str_glue_data(., "{Exon_start}-{Exon_end}"),
+        Exon_start = NULL,
+        Exon_end = NULL)
+
+reference <- rtracklayer::import.gff("/biodb/genomes/homo_sapiens/GRCh38_102/GRCh38.102.SIRV.gtf")
+
+filter_multi_exon <- function(gtf) {
+    stopifnot(is(gtf, "GRanges"))
+
+    ex <- subset(gtf, type == "exon")
+    stopifnot(length(ex) > 0)
+
+    # discard single exons transcripts
+    multi_ex <- table(ex$transcript_id) > 1
+    ex <- subset(ex, mcols(ex)$transcript_id %in% names(multi_ex[multi_ex]))
+    ex_tx <- split(ex, ex$transcript_id)
+    ex_tx
+}
+
+get_introns <- function(ex_tx) {
+    stopifnot(is(ex_tx, "List"))
+
+    introns <- psetdiff(unlist(range(ex_tx), use.names = FALSE), ex_tx)
+    introns <- unlist(introns)
+    introns
+}
+
+ref_ex_tx <- filter_multi_exon(reference)
+ref_introns <- get_introns(ref_ex_tx)
+ref_introns <- ref_introns[width(ref_introns) > 2, ]
+
+neg_gr <- GRanges(
+    seqnames = neg$Chr, 
+    ranges = IRanges(neg$Exon_start, pos$Exon_end))
+seqlevelsStyle(neg_gr) <- 'ensembl'
+neg_introns <- subsetByOverlaps(ref_introns, neg_gr)
+perc_olaps <- width(pintersect(ref_introns[from(neg_olaps)], neg_gr[to(neg_olaps)])) / width(neg_gr[to(neg_olaps)])
+neg_introns <- neg_introns[ perc_olaps == 1 ]
+score(neg_introns) <- 0
+
+library(GenomicFeatures)
+library(rtracklayer)
 
 pos <- pos %>% 
     rownames_to_column('event_n') %>% 
@@ -34,51 +81,9 @@ pos <- pos %>%
         coord1 = NULL,
         coord2 = NULL,
         exon_coord = NULL) %>% 
-    separate_rows(coord, sep =  '\\|') 
-
-neg <- neg %>%
-    rownames_to_column('event_n') %>%
-    dplyr::rename(chr=Chr, Gene=Gene_symbol) %>%
-    mutate(
-        coord = str_glue_data(., "{Exon_start}-{Exon_end}"),
-        Exon_start = NULL,
-        Exon_end = NULL)
-# 
-# reference <- rtracklayer::import.gff("/biodb/genomes/homo_sapiens/GRCh38_102/GRCh38.102.SIRV.gtf")
-# 
-# filter_multi_exon <- function(gtf) {
-#     stopifnot(is(gtf, "GRanges"))
-#     
-#     ex <- subset(gtf, type == "exon")
-#     stopifnot(length(ex) > 0)
-#     
-#     # discard single exons transcripts
-#     multi_ex <- table(ex$transcript_id) > 1
-#     ex <- subset(ex, mcols(ex)$transcript_id %in% names(multi_ex[multi_ex]))
-#     ex_tx <- split(ex, ex$transcript_id)
-#     ex_tx
-# }
-# 
-# get_introns <- function(ex_tx) {
-#     stopifnot(is(ex_tx, "List"))
-#     
-#     introns <- psetdiff(unlist(range(ex_tx), use.names = FALSE), ex_tx)
-#     introns <- unlist(introns)
-#     introns
-# }
-# 
-# ref_ex_tx <- filter_multi_exon(reference)
-# ref_introns <- get_introns(ref_ex_tx)
-# ref_introns <- ref_introns[width(ref_introns) > 2, ]
-
-
-# x <- bind_rows(pos, neg)
-# process
-
-pos$coord <- as.character(pos$coord)
-pos <- filter(pos, coord != '')
-
-library(rtracklayer)
+    separate_rows(coord, sep =  '\\|') %>% 
+    mutate(coord = as.character(coord)) %>% 
+    filter(coord != '')
 
 gr <- GRanges(seqnames = pos$chr, ranges = IRanges(pos$coord), strand = pos$strand)
 seqlevelsStyle(gr) <- 'ensembl'
@@ -89,6 +94,10 @@ gr <- unlist(gr)
 mcols(gr)$score <- 1
 names(gr) <- seq_along(gr)
 
+neg_gr <- rtracklayer::liftOver(neg_gr, ch) 
+neg_gr <- unlist(neg_gr)
+
+gr <- c(neg_introns, gr)
 export.bed(gr, '/prj/Niels_Gehring/baltica_benchmark/best_et_al/baltica/ortho.bed')
 head(gr)
 
