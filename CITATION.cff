@@ -15,8 +15,6 @@ authors:
   orcid: "https://orcid.org/0000-0001-9468-6311"
 title: "Baltica: integrated splice junction usage analysis"
 version: 1.0
-doi: https://doi.org/10.1101/2021.12.23.473966
+doi: "https://doi.org/10.1101/2021.12.23.473966"
 date-released: 2021-12-23
 url: "https://github.com/dieterich-lab/Baltica"
-preferred-citation:
-  type: unpublished
