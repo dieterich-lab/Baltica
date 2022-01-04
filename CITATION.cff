@@ -1,0 +1,43 @@
+cff-version: "1.2.0"
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Britto-Borges"
+  given-names: "Thiago"
+  orcid: "http://orcid.org/0000-0002-6218-4429"
+- family-names: "Boehm"
+  given-names: "Volker"
+  orcid: "https://orcid.org/0000-0001-7588-9842"
+- family-names: "Gehring"
+  given-names: "Niels"
+  orcid: "https://orcid.org/0000-0001-7792-1164"
+- family-names: "Dieterich"
+  given-names: "Christoph"
+  orcid: "https://orcid.org/0000-0001-9468-6311"
+title: "Baltica: integrated splice junction usage analysis"
+version: "1.0"
+doi: https://doi.org/10.1101/2021.12.23.473966
+date-released: 2021-12-23
+url: "https://github.com/dieterich-lab/Baltica"
+keywords: 
+  - "RNA-Seq"
+  - "Differential splicing"
+  - "workflows"
+  - "data integration"
+  - "reproducibility"
+abstract: "Alternative splicing is a tightly regulated co- and post-transcriptional process contributing to the transcriptome diversity observed in eukaryotes. Several methods for detecting differential junction usage (DJU) from RNA sequencing (RNA-seq) datasets exist. Yet, efforts to integrate the results from DJU methods are lacking. Here, we present Baltica, a framework that provides workflows for quality control, de novo transcriptome assembly with StringTie2, and currently 4 DJU methods: rMATS, JunctionSeq, Majiq, and LeafCutter. Baltica puts the results from different DJU methods into context by integrating the results at the junction level. We present Baltica using 2 datasets, one containing known artificial transcripts (SIRVs) and the second dataset of paired Illumina and Oxford Nanopore Technologies RNA-seq. The data integration allows the user to compare the performance of the tools and reveals that JunctionSeq outperforms the other methods, in terms of F1 score, for both datasets. Finally, we demonstrate for the first time that meta-classifiers trained on scores of multiple methods outperform classifiers trained on scores of a single method, emphasizing the application of our data integration approach for differential splicing identification. Baltica is available at https://github.com/dieterich-lab/Baltica under MIT license."
+preferred-citation:
+  type: unpublished
+  authors:
+  - family-names: "Britto-Borges"
+    given-names: "Thiago"
+    orcid: "http://orcid.org/0000-0002-6218-4429"
+  - family-names: "Boehm"
+    given-names: "Volker"
+    orcid: "https://orcid.org/0000-0001-7588-9842"
+  - family-names: "Gehring"
+    given-names: "Niels"
+    orcid: "https://orcid.org/0000-0001-7792-1164"
+  - family-names: "Dieterich"
+    given-names: "Christoph"
+    orcid: "https://orcid.org/0000-0001-9468-6311"
+  
