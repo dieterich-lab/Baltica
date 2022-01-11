@@ -338,6 +338,21 @@
   
   
     <li class="md-nav__item">
+      <a href="report.html" class="md-nav__link">
+        Baltica output
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="faq.html" class="md-nav__link">
         Frequently asked questions
       </a>
@@ -420,8 +435,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#v11-july-23-2021-released-in-september-7-2021" class="md-nav__link">
-    v1.1  July 23, 2021 (released in September 7 2021) 
+  <a href="#v112-unreleased" class="md-nav__link">
+    v1.1.2  Unreleased 
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v111-july-23-2021-released-in-september-7-2021" class="md-nav__link">
+    v1.1.1  July 23, 2021 (released in September 7 2021) 
   </a>
   
 </li>
@@ -485,8 +507,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#v11-july-23-2021-released-in-september-7-2021" class="md-nav__link">
-    v1.1  July 23, 2021 (released in September 7 2021) 
+  <a href="#v112-unreleased" class="md-nav__link">
+    v1.1.2  Unreleased 
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v111-july-23-2021-released-in-september-7-2021" class="md-nav__link">
+    v1.1.1  July 23, 2021 (released in September 7 2021) 
   </a>
   
 </li>
@@ -530,27 +559,33 @@
                   <h1>Release notes</h1>
                 
                 <h2 id="change-log">Change log<a class="headerlink" href="#change-log" title="Permanent link">&para;</a></h2>
-<h3 id="v11-july-23-2021-released-in-september-7-2021">v1.1 <small> July 23, 2021 (released in September 7 2021) </small><a class="headerlink" href="#v11-july-23-2021-released-in-september-7-2021" title="Permanent link">&para;</a></h3>
+<h3 id="v112-unreleased">v1.1.2 <small> Unreleased </small><a class="headerlink" href="#v112-unreleased" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add support to unstranded RNA-seq data</li>
+<li>Add scripts for benchmark</li>
+<li>Add a new configuration <code>bind_paths</code> that allow integrating bam files from different projects</li>
+</ul>
+<h3 id="v111-july-23-2021-released-in-september-7-2021">v1.1.1 <small> July 23, 2021 (released in September 7 2021) </small><a class="headerlink" href="#v111-july-23-2021-released-in-september-7-2021" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Add rmats workflow</li>
 <li>Add scrips for parsing for rmats and updated analysis to support the method</li>
 <li>Create the benchmark with the ONT Nanopore-seq</li>
 <li>Update benchmaks, included difference comparison for SIRV benchmark</li>
-<li>Splite annotation and AS type assigment functions</li>
-<li>Update baltica table algorithm </li>
+<li>Split annotation and AS type assigment functions</li>
+<li>Update baltica table algorithm</li>
 <li>Add support for singularity container via snakemake, with container recipes <code>baltica qc config.yaml --use-singularity</code></li>
 <li>Add parsing method for gffcompare tracking output</li>
 <li>Update configuration file to expose important parameters from the DJU methods</li>
 <li>Add end-to-end analysis with <code>baltica all config</code>  </li>
-<li>Experiment with meta-score (gradient boosted trees) </li>
-<li>Add baltica report and improved on report summaries </li>
+<li>Experiment with meta-score (gradient boosted trees)</li>
+<li>Add baltica report and improved on report summaries</li>
 <li>Add orthogonal dataset use-case, to integrate third generation sequencing to the baltica table</li>
-<li>Change strand parameter to "fr-firststrand": "reverse", "fr-secondstrand": "forward" or unstranded, fix error in rmats strand </li>
+<li>Change strand parameter to "fr-firststrand": "reverse", "fr-secondstrand": "forward" or unstranded, fix error in rmats strand</li>
 </ul>
 <h3 id="v10-september-17-2020">v1.0 <small> September 17, 2020</small><a class="headerlink" href="#v10-september-17-2020" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Add <code>is_novel</code> column, indication introns not into the reference annotation</li>
-<li>Remove unitended columns (X1, ...) from merge</li>
+<li>Remove unitended columns (X1, ...) from the report</li>
 </ul>
 <h3 id="v10-july-23-2020">v1.0 <small>- July 23, 2020</small><a class="headerlink" href="#v10-july-23-2020" title="Permanent link">&para;</a></h3>
 <ul>

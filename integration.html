@@ -359,6 +359,19 @@
     Annotating the results
   </a>
   
+    <nav class="md-nav" aria-label="Annotating the results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#table-1-annotation-description" class="md-nav__link">
+    Table 1: Annotation description
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -427,6 +440,21 @@
     <li class="md-nav__item">
       <a href="dev_guide.html" class="md-nav__link">
         Development guidelines
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="report.html" class="md-nav__link">
+        Baltica output
       </a>
     </li>
   
@@ -536,6 +564,19 @@
     Annotating the results
   </a>
   
+    <nav class="md-nav" aria-label="Annotating the results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#table-1-annotation-description" class="md-nav__link">
+    Table 1: Annotation description
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -624,17 +665,17 @@ Therefore, we support the integration by eliminating the strand from the analysi
 However, we recommend against generating unstranded RNA-seq libraries in 2021.  </p>
 </div>
 <h2 id="result-integration">Result integration<a class="headerlink" href="#result-integration" title="Permanent link">&para;</a></h2>
-<p>One challenge for the integration of DJU results is that the methods use different genomic coordinate systems. 
-The coordinates system's differences are due to the method implementation: methods can be 0-indexed (BED format) versus 1-indexed (GTF format) or use the exonic versus intronic coordinates to represent the SJ genomic position. <br />
+<p>One challenge for the integration of DJU results is that the methods use different genomic coordinate systems.
+The coordinates system's differences are due to the method implementation: methods can be 0-indexed (BED format) versus 1-indexed (GTF format) or use the exonic versus intronic coordinates to represent the SJ genomic position.
 We propose a <code>filter_hits_by_diff</code> function to find overlapping features and then discard any overlaps with more than two bp differences to account for the multiple genomic coordinates system.
-The multiple hits form a graph, which is then partitioned into the clusters, and each cluster represents an intron. 
+The multiple hits form a graph, which is then partitioned into the clusters, and each cluster represents an intron.
 This feature enables the reconciliation of the multiple DJU results.</p>
 <h2 id="annotating-the-results">Annotating the results<a class="headerlink" href="#annotating-the-results" title="Permanent link">&para;</a></h2>
-<p>We annotate the results with information from genes and transcripts hosting the SJ. 
-For this, we use the <em>de novo</em> transcript annotation at <code>stringtie/merged/merged.combined.gtf</code>. 
+<p>We annotate the results with information from genes and transcripts hosting the SJ.
+For this, we use the <em>de novo</em> transcript annotation at <code>stringtie/merged/merged.combined.gtf</code>.
 Commonly, multiple transcripts share an intron so that a single intron may be annotated with multiple transcripts.</p>
 <p>These are the columns assigned after the annotation:</p>
-<p><strong>Table 1: Annotation description</strong>  </p>
+<h3 id="table-1-annotation-description">Table 1: Annotation description<a class="headerlink" href="#table-1-annotation-description" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -691,28 +732,30 @@ Commonly, multiple transcripts share an intron so that a single intron may be an
 <p>The section below was obtained in a previous Baltica release, using stringtie v1.2.X, but we don't expect major changes in current version.</p>
 </div>
 <p>We found that the parameters used to obtain the <em>de novo</em> transcriptome are critical for maximum integration between the GTF and the SJ from DJU methods.
-<strong>Fig 1</strong> shows a parameter scan where we vary the group, <code>-j</code> (minimum junction coverage), <code>-c</code> (minimum coverage), and <code>-f</code> (minimum isoform proportion) and compute the number of transcripts that match with SJ called significantly. 
-As expected, the merged annotation and not the group-specific annotation have the highest rate of annotated introns. 
-The crucial result here is the dependency of the <code>-f</code> parameter, which is also associated with an increased number of annotated introns. 
-As we confirmed this behavior in other datasets, we decided to use <code>-c 3 -j 3 -f 0.01</code> as default values in Baltica. 
+<strong>Fig 1</strong> shows a parameter scan where we vary the group, <code>-j</code> (minimum junction coverage), <code>-c</code> (minimum coverage), and <code>-f</code> (minimum isoform proportion) and compute the number of transcripts that match with SJ called significantly.
+As expected, the merged annotation and not the group-specific annotation have the highest rate of annotated introns.
+The crucial result here is the dependency of the <code>-f</code> parameter, which is also associated with an increased number of annotated introns.
+As we confirmed this behavior in other datasets, we decided to use <code>-c 3 -j 3 -f 0.01</code> as default values in Baltica.
 The higher coverage (<code>-c</code> and <code>-j</code>) values counter the potential noise of transcripts with low abundance.</p>
 <p><img alt="" src="img/stringtie_parameter_scan_heatmap.png" /><br />
 <strong>Fig 1</strong>:Parameter scan to maximize the number of introns annotated.
-We have run Stringtie with multipleparameters of merged annotation or group annotation; junction coverage of 1, 2, or 3; coverage of 1, 2, 3, and minimum isoform fraction of 0.1, 0.01, or 0.001. 
+We have run Stringtie with multipleparameters of merged annotation or group annotation; junction coverage of 1, 2, or 3; coverage of 1, 2, 3, and minimum isoform fraction of 0.1, 0.01, or 0.001.
 The result shows a dependency of the minimum isoform fraction parameter, which needs to be minimized to increase the proportion of annotated SJ, as expected.</p>
 <h2 id="assigning-as-type">Assigning AS type<a class="headerlink" href="#assigning-as-type" title="Permanent link">&para;</a></h2>
 <h3 id="biological-motivation">Biological motivation<a class="headerlink" href="#biological-motivation" title="Permanent link">&para;</a></h3>
 <p>Identifying the type of AS is critical to understand a potential molecular mechanism for AS events. <a href="https://www.uniprot.org/uniprot/Q01130">SRSF2</a> is a relevant example in this context. SRSF2 is splicing factors from the SR family that are known for auto-regulation. In certain conditions, the SRSF2 transcript can activate the nonsense-mediated decay by either including a new exon containing a premature stop codon or an intron in  3' UTR. These changes lead to transcript degradation and overall reduction of gene expression. Thus, the reduction of SRSF2 protein level leads to widespread exon skipping. Identifying such patterns is critical to understanding which splicing regulators are driving the observed splicing changes, and it enables further analysis of AS events of a specific type.</p>
 <h3 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h3>
-<p>In Baltica, we use a geometric approach to define AS in three classes:
-- ES, for exon skipping
-- A3SS, for alternative 3' splice-site
-- A5SS, for alternative 5' splice-site</p>
+<p>In Baltica, we use a geometric approach to define AS in three classes:</p>
+<ul>
+<li>ES, for exon skipping</li>
+<li>A3SS, for alternative 3' splice-site</li>
+<li>A5SS, for alternative 5' splice-site</li>
+</ul>
 <p>Figure 2 details how we use the distance between features start and end to determine the AS type.</p>
 <p><img :=":" alt="" class="center" src="img/Baltica_as_type.png" width="70%" /><br />
-<strong>Fig 2</strong>: AS type assignment in Baltica. Baltica uses the genomic coordinates from the SJ and its overlapping exons to assigning AS type to SJ and its overlapping exons. Because many exons may be affected, multiple assignments are output. For example, donor and acceptor exons are assigned as JS and JE, respectively. </p>
+<strong>Fig 2</strong>: AS type assignment in Baltica. Baltica uses the genomic coordinates from the SJ and its overlapping exons to assigning AS type to SJ and its overlapping exons. Because many exons may be affected, multiple assignments are output. For example, donor and acceptor exons are assigned as JS and JE, respectively.</p>
 <h2 id="simplify-the-as-event">Simplify the AS event<a class="headerlink" href="#simplify-the-as-event" title="Permanent link">&para;</a></h2>
-<p>Because most of the final users are only interested in the list of genomic ranges, gene names, or event types, we offer a simplified output that removes redundant information. This step helps generate a final report. </p>
+<p>Because most of the final users are only interested in the list of genomic ranges, gene names, or event types, we offer a simplified output that removes redundant information. This step helps generate a final report.</p>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
                 
               

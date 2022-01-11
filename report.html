@@ -20,7 +20,7 @@
     
     
       
-        <title>Report - Baltica</title>
+        <title>Baltica output - Baltica</title>
       
     
     
@@ -73,7 +73,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#report" class="md-skip">
+        <a href="#baltica-output" class="md-skip">
           Skip to content
         </a>
       
@@ -102,7 +102,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Report
+              Baltica output
             
           </span>
         </div>
@@ -336,6 +336,89 @@
 
   
   
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Baltica output
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="report.html" class="md-nav__link md-nav__link--active">
+        Baltica output
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#baltica-table-spreadsheet" class="md-nav__link">
+    Baltica table spreadsheet
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-splice-junctions" class="md-nav__link">
+    Common splice junctions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#baltica-table" class="md-nav__link">
+    Baltica table
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#baltica-report-configuration" class="md-nav__link">
+    Baltica report configuration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reproducibility" class="md-nav__link">
+    Reproducibility
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
   
     <li class="md-nav__item">
       <a href="faq.html" class="md-nav__link">
@@ -409,6 +492,49 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#baltica-table-spreadsheet" class="md-nav__link">
+    Baltica table spreadsheet
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-splice-junctions" class="md-nav__link">
+    Common splice junctions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#baltica-table" class="md-nav__link">
+    Baltica table
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#baltica-report-configuration" class="md-nav__link">
+    Baltica report configuration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reproducibility" class="md-nav__link">
+    Reproducibility
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -424,7 +550,45 @@
                   </a>
                 
                 
-                <h1 id="report">Report<a class="headerlink" href="#report" title="Permanent link">&para;</a></h1>
+                <h1 id="baltica-output">Baltica output<a class="headerlink" href="#baltica-output" title="Permanent link">&para;</a></h1>
+<p>Baltica framework produces two files as output:<br />
+    - an R markdown report
+    - an excel spreadsheet  </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If available, the orthogonal dataset is treated as a new method named <code>orthogonal.</code></p>
+</div>
+<h2 id="baltica-table-spreadsheet">Baltica table spreadsheet<a class="headerlink" href="#baltica-table-spreadsheet" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>results/baltica_table_{proj_name}.xlsx</code></li>
+</ul>
+<p>The spreadsheet contains the complete set of coordinate output by methods and comparisons. In addition, there are a column for the combination of methods and comparisons plus the columns for the annotation:</p>
+<ul>
+<li>coordinates: junction genomic coordinate in the format: <code>{chr}:{start}-{end}:{strand}</code> (strand omitted if none)</li>
+<li>score columns: in the format: <code>{method}_{comparisons}</code></li>
+<li>is_novel: whether the splicing junction is or not annotated</li>
+<li>gene_name: the gene name obtained from the de novo annotation workflow</li>
+<li>transcript_name: transcript name from the de novo annotation</li>
+<li>class_code: transcript class association to the reference annotation transcript, please see <a href="https://f1000research.com/articles/9-304/v2">Fig 1 in the GFF Utilities paper</a> for details</li>
+<li>exon_number: pairs of exon numbers from the de novo annotation. First of the pair is the donor exon if the feature is the positive strand; otherwise acceptor</li>
+<li>as_type: type of AS for each junction exon skipping (ES), alternative 3' splice site (A3SS), alternative 5' splice site (A5SS)</li>
+</ul>
+<p>Currently, the HTML report comprises two sections:</p>
+<h2 id="common-splice-junctions">Common splice junctions<a class="headerlink" href="#common-splice-junctions" title="Permanent link">&para;</a></h2>
+<p>The <a href="https://jokergoo.github.io/ComplexHeatmap-reference/book/upset-plot.html#upset-plot">upset plot</a> shows the combination of distinct sets of calls (score &gt; 0.95) from each method and contrast. The plot helps to compare the common calls among sets. The complement sets are ignored, as these sets usually have a high number.</p>
+<h2 id="baltica-table">Baltica table<a class="headerlink" href="#baltica-table" title="Permanent link">&para;</a></h2>
+<p>This interactive HTML table provides the top 1,000 (or <code>baltica_max_table</code> in the configuration file) sorted by the sum of the scores. Extra annotation is available upon clicking on ▶. In addition, the coordinates columns link to the UCSC genome browser. Regional URL for UCSC GB can be selected with <code>ucsc_url</code>, and assembly should be selected with the <code>assembly</code> configuration</p>
+<h2 id="baltica-report-configuration">Baltica report configuration<a class="headerlink" href="#baltica-report-configuration" title="Permanent link">&para;</a></h2>
+<p>Change the following options on your project configuration to change the report:  </p>
+<ul>
+<li>project_authors: name of the persons running the project</li>
+<li>project_title: name of the files and report title</li>
+<li>baltica_max_table: maximum number of rows on the HTML table</li>
+<li>assembly: assembly used for linking with the genome browser</li>
+<li>ucsc_url: URL for the genome browser, like <code>http://genome-euro.ucsc.edu</code> for the European mirror</li>
+</ul>
+<h2 id="reproducibility">Reproducibility<a class="headerlink" href="#reproducibility" title="Permanent link">&para;</a></h2>
+<p>This section provides the information necessary to reproduce the report, including project configuration and R package version.  </p>
                 
               
               
@@ -440,6 +604,41 @@
       
         
 <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="dev_guide.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Development guidelines" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Development guidelines
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="faq.html" class="md-footer__link md-footer__link--next" aria-label="Next: Frequently asked questions" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Frequently asked questions
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
