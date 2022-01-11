@@ -67,6 +67,12 @@ leafcutter_file <- as.character(snakemake@input[[2]])
 is_leafcutter <- file.exists(leafcutter_file)
 config <- yaml::read_yaml(snakemake@params$config)
 
+if (!"assembly" %in% names(config)) {
+  config$assembly <- "hg38"
+}
+if (!"ucsc_url" %in% names(config)) {
+  config$ucsc_url <- "http://genome-euro.ucsc.edu"
+}
 
 knitr::knit_hooks$set(
   error = function(x, options) {
@@ -273,7 +279,7 @@ html <- function(x, inline = FALSE) {
   container(dangerouslySetInnerHTML = list("__html" = x))
 }
 
-target_url <- "http://genome.ucsc.edu/cgi-bin/hgTracks?db=
+target_url <- "{config$ucsc_url}/cgi-bin/hgTracks?db=
 {config$assembly}&position={new_value}"
 # <p><strong>as_type: </strong>{as_type}</p>"
 
