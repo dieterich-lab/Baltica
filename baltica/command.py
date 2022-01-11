@@ -143,6 +143,13 @@ def cli(workflow, config_file, verbose, snakemake_args):
 
         if 'orthogonal_result' in config:
             bound_path.append(str(Path(config['orthogonal_result']).parent))
+
+        if 'bind_paths' in config:
+            if not isinstance(config['bind_paths'], list):
+                logger.error("bind_paths must be a list")
+                pass
+            bound_path.extend(config['bind_paths'])
+
         bound_path = set(bound_path)
 
         # bind several paths that contain input data
