@@ -1,3 +1,8 @@
+library(tidyverse)
+library(GenomicFeatures)
+library(rtracklayer)
+library(GenomicRanges)
+
 parse_suppa_sup = function(url, sheet, event_id=TRUE, startRow = 3){
     x = openxlsx::read.xlsx(url, sheet = sheet, startRow = startRow)
     if (isTRUE(event_id)) {
@@ -18,18 +23,10 @@ url='https://static-content.springer.com/esm/art%3A10.1186%2Fs13059-018-1417-1/M
 # 44 negative 
 pos = parse_suppa_sup(url, 4, event_id = TRUE, startRow = 3)
 neg = parse_suppa_sup(url, 10, event_id = FALSE, 3)
-pos$score = 1
-neg$score = 0
-
-library(tidyverse)
 
 neg <- neg %>%
     rownames_to_column('event_n') %>%
-    dplyr::rename(chr=Chr, Gene=Gene_symbol) %>%
-    mutate(
-        coord = str_glue_data(., "{Exon_start}-{Exon_end}"),
-        Exon_start = NULL,
-        Exon_end = NULL)
+    dplyr::rename(chr=Chr, Gene=Gene_symbol)
 
 reference <- rtracklayer::import.gff("/biodb/genomes/homo_sapiens/GRCh38_102/GRCh38.102.SIRV.gtf")
 
@@ -53,22 +50,23 @@ get_introns <- function(ex_tx) {
     introns <- unlist(introns)
     introns
 }
+ch <- rtracklayer::import.chain('~/GRCh37_to_GRCh38_2.chain')
 
 ref_ex_tx <- filter_multi_exon(reference)
 ref_introns <- get_introns(ref_ex_tx)
 ref_introns <- ref_introns[width(ref_introns) > 2, ]
 
 neg_gr <- GRanges(
-    seqnames = neg$Chr, 
-    ranges = IRanges(neg$Exon_start, pos$Exon_end))
+    seqnames = neg$chr, 
+    ranges = IRanges(neg$Exon_start, neg$Exon_end))
 seqlevelsStyle(neg_gr) <- 'ensembl'
-neg_introns <- subsetByOverlaps(ref_introns, neg_gr)
-perc_olaps <- width(pintersect(ref_introns[from(neg_olaps)], neg_gr[to(neg_olaps)])) / width(neg_gr[to(neg_olaps)])
-neg_introns <- neg_introns[ perc_olaps == 1 ]
-score(neg_introns) <- 0
+neg_gr <- rtracklayer::liftOver(neg_gr, ch) 
+neg_gr <- unlist(neg_gr)
 
-library(GenomicFeatures)
-library(rtracklayer)
+neg_introns <- subsetByOverlaps(ref_introns, neg_gr)
+# perc_olaps <- width(pintersect(ref_introns[from(neg_olaps)], neg_gr[to(neg_olaps)])) / width(neg_gr[to(neg_olaps)])
+# neg_introns <- neg_introns[ perc_olaps == 1 ]
+score(neg_introns) <- 0
 
 pos <- pos %>% 
     rownames_to_column('event_n') %>% 
@@ -88,17 +86,17 @@ pos <- pos %>%
 gr <- GRanges(seqnames = pos$chr, ranges = IRanges(pos$coord), strand = pos$strand)
 seqlevelsStyle(gr) <- 'ensembl'
 # https://gist.github.com/tbrittoborges/f0bc89cd7192d0955679d5105fd39475
-ch <- rtracklayer::import.chain('~/GRCh37_to_GRCh38_2.chain')
 gr <- rtracklayer::liftOver(gr, ch) 
 gr <- unlist(gr)
+
+pairs <- findOverlapPairs(ref_introns, gr)
+same_end <- end(pairs@first) - end(pairs@second) == -1
+same_start <- start(pairs@first) - start(pairs@second) == 1
+length(unique(pairs[same_start & same_end]@second))
+pairs <- pairs[same_start & same_end]
+gr <- unique(pairs@first)
 mcols(gr)$score <- 1
 names(gr) <- seq_along(gr)
 
-neg_gr <- rtracklayer::liftOver(neg_gr, ch) 
-neg_gr <- unlist(neg_gr)
-
 gr <- c(neg_introns, gr)
 export.bed(gr, '/prj/Niels_Gehring/baltica_benchmark/best_et_al/baltica/ortho.bed')
-head(gr)
-
-
