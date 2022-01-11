@@ -315,6 +315,7 @@ if (isTRUE(opt$unstranded)) {
   message("Unstranded library, removing strand information")
   strand(introns) <- "*"
   strand(ref_introns) <- "*"
+  introns$coordinates <- as.character(introns)
 }
 
 gr <- lapply(df, function(x) {
