@@ -34,6 +34,7 @@ nav:
   - Workflow implementation: workflows.md 
   - DJU methods result integration: integration.md 
   - Development guidelines: dev_guide.md
+  - Baltica output: report.md
   - Frequently asked questions: faq.md
   - Tutorial: tutorial.md
   - References: bibliography.md
