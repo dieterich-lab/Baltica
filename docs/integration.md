@@ -23,9 +23,13 @@ The first step in the analysis workflow is parsing and processing the DJU method
 
 One challenge for the integration of DJU results is that the methods use different genomic coordinate systems.
 The coordinates system's differences are due to the method implementation: methods can be 0-indexed (BED format) versus 1-indexed (GTF format) or use the exonic versus intronic coordinates to represent the SJ genomic position.
-We propose a `filter_hits_by_diff` function to find overlapping features and then discard any overlaps with more than two bp differences to account for the multiple genomic coordinates system.
-The multiple hits form a graph, which is then partitioned into the clusters, and each cluster represents an intron.
-This feature enables the reconciliation of the multiple DJU results.
+To harmonize the different coordiantes systems, we first:
+
+- Compute the genomic overlap between introns in the reference annotation (subject) and a set of SJ output from a method (query)
+
+- Next, we compute the coordinate offset between subject and query, determine the most frequent difference in start and end coordinates
+
+- Finally, apply corrections to the coordinates in the query, and repeat it for each method
 
 ## Annotating the results
 
