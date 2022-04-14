@@ -59,10 +59,12 @@ if (exists("snakemake")) {
 message("Loading JunctionSeq result")
 
 read_junctionseq_out <- function(x) {
-  read.table(
+  tmp <- read.table(
     x,
     header = 1
   )
+  tmp$chr <- as.character(tmp$chr)
+  tmp
 }
 
 message("Loading processing the table")
