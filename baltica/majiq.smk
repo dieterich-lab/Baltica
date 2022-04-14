@@ -109,10 +109,6 @@ rule majiq_build:
     threads: len(conditions)
     log:
         "logs/majiq_build.log",
-    envmodules:
-        "majiq/2.2_deb10",
-    shadow:
-        "shallow"
     shell:
         " majiq build --conf {input.ini} --nproc {threads} --output majiq/ {input.ref}"
 
@@ -133,10 +129,6 @@ rule majiq_deltapsi:
         name2=lambda wc: wc.contrast.replace("-vs-", "_"),
         cont=lambda wc: wc.contrast,
         majiq_minreads=config.get("minreads", 3),
-    envmodules:
-        "majiq/2.2_deb10",
-    shadow:
-        "shallow"
     shell:
         "majiq deltapsi -grp1 {input.a} -grp2 {input.b} "
         "--nproc {threads} --output majiq/{params.cont} "
@@ -156,13 +148,9 @@ rule majiq_voila:
         "../envs/majiq.yml"
     log:
         "logs/majiq_voila/{contrast}.log",
-    envmodules:
-        "majiq/2.2_deb10",
     params:
         threshold=config.get("majiq_threshold", 0.2),
         non_changing_threshold=config.get("majiq_non_changing_threshold", 0.05),
-    shadow:
-        "shallow"
     shell:
         "voila tsv "
         "--threshold {params.threshold} "
