@@ -297,14 +297,14 @@
       
         <li class="md-nav__item">
   <a href="#quick-example" class="md-nav__link">
-    Quick example:
+    Quick example
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#software-environment" class="md-nav__link">
-    Software environment:
+    Software environment
   </a>
   
 </li>
@@ -340,6 +340,13 @@
         <li class="md-nav__item">
   <a href="#advanced-baltica-workflows-directly-from-snakemake" class="md-nav__link">
     (Advanced) Baltica workflows directly from Snakemake
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-set-path-to-store-singularity-containers" class="md-nav__link">
+    (Advanced) Set path to store singularity containers
   </a>
   
 </li>
@@ -514,14 +521,14 @@
       
         <li class="md-nav__item">
   <a href="#quick-example" class="md-nav__link">
-    Quick example:
+    Quick example
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#software-environment" class="md-nav__link">
-    Software environment:
+    Software environment
   </a>
   
 </li>
@@ -561,6 +568,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#advanced-set-path-to-store-singularity-containers" class="md-nav__link">
+    (Advanced) Set path to store singularity containers
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -579,7 +593,7 @@
                 
                 
                 <h1 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h1>
-<h2 id="quick-example">Quick example:<a class="headerlink" href="#quick-example" title="Permanent link">&para;</a></h2>
+<h2 id="quick-example">Quick example<a class="headerlink" href="#quick-example" title="Permanent link">&para;</a></h2>
 <p>If Baltica dependencies, baltica configuration and cluster configuration are available, use:</p>
 <div class="codehilite"><pre><span></span><code>baltica &lt;workflow&gt; &lt;config&gt; --use-singularity
 </code></pre></div>
@@ -589,44 +603,48 @@
 <p>Singularity requires a mountable temp directory, we recommend setting /tmp with <code>export TMPDIR=/tmp/</code></p>
 </div>
 <ul>
-<li><strong>workflow</strong>:  <ul>
-<li>all: run end-to-end wokflows</li>
-<li>qc: run quality control </li>
-<li>stringtie: run <em>de novo</em> and guided transcriptome assembly</li>
-<li>rmats</li>
-<li>junctionseq</li>
-<li>majiq</li>
-<li>leafcutter </li>
-<li>analysis: run scripts for integration, annotation and reporting</li>
-</ul>
-</li>
+<li><strong>workflow</strong>:  </li>
+<li><code>all</code>: run end-to-end wokflows</li>
+<li><code>qc</code>: run quality control</li>
+<li><code>stringtie</code>: run <em>de novo</em> and guided transcriptome assembly</li>
+<li><code>rmats</code></li>
+<li><code>junctionseq</code></li>
+<li><code>majiq</code></li>
+<li><code>leafcutter</code>  </li>
+<li><code>analysis</code>: run scripts for integration, annotation and reporting</li>
 <li><strong>config</strong>: <a href="proj-config.html">project configuration file</a></li>
 </ul>
-<p>Use <code>--profile &lt;cluster&gt;</code> with a <a href="https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles">Snakemake cluster profile</a> 
+<p>Use <code>--profile &lt;cluster&gt;</code> with a <a href="https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles">Snakemake cluster profile</a>
 or set the number of avaiable cores with <code>--cores</code>. For more Snakemake parameters, <a href="https://snakemake.readthedocs.io/en/stable/executing/cli.html">check their documentation</a>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Baltica is under active development. Please <a href="https://github.com/dieterich-lab/Baltica/issues">contact us</a> if you have any issues with this documentation.</p>
 </div>
-<h2 id="software-environment">Software environment:<a class="headerlink" href="#software-environment" title="Permanent link">&para;</a></h2>
-<p>Baltica framework is based on:<br />
-- A python command-line interface<br />
-- <a href="https://snakemake.readthedocs.io/en/stable/">Snakemake</a> workflows<br />
-- Docker containers used with <a href="https://sylabs.io/singularity/">Singularity</a><br />
-- R scripts for processing, integrating, annotating, assigning biological features, and reporting<br />
-- a Rmarkdown report  </p>
-<p>We have developed it on the following computer environments:
-- Distribution: Debian 10
-- Kernel: 4.19.0-16-amd64
-- gcc version: 8.3.0<br />
-- Python version: 3.7.7<br />
-- Singularity version: 3.7.3<br />
-- Snakemake version: 6.4.1<br />
-- Git version: 2.20.1  </p>
+<h2 id="software-environment">Software environment<a class="headerlink" href="#software-environment" title="Permanent link">&para;</a></h2>
+<p>Baltica framework is based on:  </p>
+<ul>
+<li>A python command-line interface  </li>
+<li><a href="https://snakemake.readthedocs.io/en/stable/">Snakemake</a> workflows  </li>
+<li>Docker containers used with <a href="https://sylabs.io/singularity/">Singularity</a>  </li>
+<li>R scripts for processing, integrating, annotating, assigning biological features, and reporting  </li>
+<li>a Rmarkdown report  </li>
+</ul>
+<p>We have developed it on the following computer environments:</p>
+<ul>
+<li>Distribution: Debian 10  </li>
+<li>Kernel: 4.19.0-16-amd64  </li>
+<li>gcc version: 8.3.0  </li>
+<li>Python version: 3.7.7  </li>
+<li>Singularity version: 3.7.3  </li>
+<li>Snakemake version: 6.4.1  </li>
+<li>Git version: 2.20.1  </li>
+</ul>
 <p>These versions should not matter because the workflows are run within Docker containers, as long <strong>Snakemake version &gt; 6</strong> and a <strong>recent Singularity version</strong>.</p>
-<p>Baltica depends on python3, Singulary, and Snakemake:<br />
-- <a href="https://sylabs.io/guides/3.0/user-guide/installation.html">How to install Singularity</a><br />
-- <a href="https://snakemake.readthedocs.io/en/stable/getting_started/installation.html">How to install Snakemake</a>  </p>
+<p>Baltica depends on python3, Singulary, and Snakemake:  </p>
+<ul>
+<li><a href="https://sylabs.io/guides/3.0/user-guide/installation.html">How to install Singularity</a>  </li>
+<li><a href="https://snakemake.readthedocs.io/en/stable/getting_started/installation.html">How to install Snakemake</a>  </li>
+</ul>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <div class="codehilite"><pre><span></span><code>git clone https://github.com/dieterich-lab/baltica
 <span class="nb">cd</span> baltica
@@ -652,12 +670,18 @@ All other requirements are resolved with singularity containers. Baltica store i
 <h2 id="test-dataset">Test dataset<a class="headerlink" href="#test-dataset" title="Permanent link">&para;</a></h2>
 <p>Baltica ships with a test dataset, located at the <code>data/</code> directory. There is a configuration file for the test dataset. <strong>Users are required to update this configuration file</strong>. Please see the <a href="proj-config.html">Baltica project configuration</a> for further details.</p>
 <h2 id="cluster-profile">Cluster profile<a class="headerlink" href="#cluster-profile" title="Permanent link">&para;</a></h2>
-<p>Snakemake supports distributed workflow execution in many different high-performance computer clusters, as detailed <a href="https://snakemake.readthedocs.io/en/stable/executing/cluster.html?highlight=profile#cluster-execution">here</a>. We recommend using <a href="https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles">cluster profiles</a> and using it like: </p>
+<p>Snakemake supports distributed workflow execution in many different high-performance computer clusters, as detailed <a href="https://snakemake.readthedocs.io/en/stable/executing/cluster.html?highlight=profile#cluster-execution">here</a>. We recommend using <a href="https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles">cluster profiles</a> and using it like:</p>
 <div class="codehilite"><pre><span></span><code>baltica &lt;workflow&gt; &lt;config&gt; --use-singularity --profile &lt;cluster&gt; 
 </code></pre></div>
 
 <h2 id="advanced-baltica-workflows-directly-from-snakemake">(Advanced) Baltica workflows directly from Snakemake<a class="headerlink" href="#advanced-baltica-workflows-directly-from-snakemake" title="Permanent link">&para;</a></h2>
 <p>Baltica workflows can be used directly with Snakemake without installation. However, there is limited support for it.</p>
+<h2 id="advanced-set-path-to-store-singularity-containers">(Advanced) Set path to store singularity containers<a class="headerlink" href="#advanced-set-path-to-store-singularity-containers" title="Permanent link">&para;</a></h2>
+<p>The <code>--singularity-prefix</code> option can be use directly:</p>
+<div class="codehilite"><pre><span></span><code>baltica all config.yml --use-singularity --singularity-prefix <span class="nv">$PWD</span>/.singularity
+</code></pre></div>
+
+<p>Alternatively, with the <code>--use-singularity</code> option and without the<code>--singularity-prefix</code> option, Baltica uses <code>$HOME/.baltica/singularity/</code> to store the containers. Accordingly, to update the containers, one can delete the content of <code>$HOME/.baltica/singularity/</code>.</p>
                 
               
               
