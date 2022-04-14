@@ -1,5 +1,11 @@
 ## Change log
 
+### v1.2.2 <small> Unreleased </small>
+
+* Cleanup of majiq's workflow  
+* Update the docs to clarify how to save containers at a user-specified location
+* Force `chr` column to be of type chr  in `baltica/parse_junctionseq_output.R`
+
 ### v1.1.2 <small> Unreleased </small>
 
 * Add support to unstranded RNA-seq data
