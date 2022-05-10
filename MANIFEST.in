@@ -2,6 +2,7 @@ include README.md
 include LICENSE
 include baltica/cluster.yml
 include baltica resources baltica_report.css
+include baltica gff_compare_template.txt
 
 recursive-include scripts create_config.R
 recursive-include baltica *.smk
