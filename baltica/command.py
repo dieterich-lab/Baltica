@@ -85,7 +85,7 @@ def cli(workflow, config_file, verbose, snakemake_args):
     min_snakemake_version = "6"
     try:
         snakemake.utils.min_version(min_snakemake_version)
-    except snakemake.exceptions.WorkflowError as e:
+    except snakemake.exceptions.WorkflowError:
         logger.error(
             f'{_program} requires Snakemake version >= {min_snakemake_version}:',
             exc_info=True)
@@ -159,7 +159,7 @@ def cli(workflow, config_file, verbose, snakemake_args):
     try:
         _ = subprocess.run(['singularity', '--version'],
                            stdout=subprocess.DEVNULL)
-    except FileNotFoundError as e:
+    except FileNotFoundError:
         if '--use-singularity' in snakemake_args:
             logger.critical(
                 "Baltica requires Singularity, which was not found", exc_info=True)
