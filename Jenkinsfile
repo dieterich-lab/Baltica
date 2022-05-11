@@ -16,7 +16,7 @@ pipeline {
             steps {
                 sh '''
                     . ./venv/bin/activate
-                    lake8 baltica --max-line-length 140 --per-file-ignores baltica/parse_gffcompare_stats.py:F821
+                    flake8 baltica --max-line-length 140 --per-file-ignores baltica/parse_gffcompare_stats.py:F821
                 '''
             }
         }
