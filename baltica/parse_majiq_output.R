@@ -106,17 +106,7 @@ res <- lapply(files, read_majiq_out)
 
 names(res) <- file_names
 
-res <- bind_rows(res, .id = "comparison") %>%
-  separate_rows(
-    "junctions_coords",
-    "mean_dpsi_per_lsv_junction",
-    "probability_changing",
-    "probability_non_changing",
-    "ref_mean_psi",
-    "alt_mean_psi",
-    sep = ";",
-    convert = T
-  )
+res <- bind_rows(res, .id = "comparison")
 
 
 junction_pattern <- "(\\d+)-(\\d+)"
