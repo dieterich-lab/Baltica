@@ -25,11 +25,14 @@ include: "symlink.smk"
 container: "docker://tbrittoborges/qc:latest"
 
 
+id_name = name if "is_single_end" not in config else []
+
+
 rule all:
     input:
         expand("qc/fastqc/{name}_fastqc.zip", name=name),
         "qc/ref.bed12",
-        expand("qc/rseqc/{name}.inner_distance_plot.pdf", name=name),
+        expand("qc/rseqc/{name}.inner_distance_plot.pdf", name=id_name),
         expand("qc/rseqc/{name}.GC_plot.pdf", name=name),
         expand("qc/rseqc/{name}.DupRate_plot.pdf", name=name),
         expand("qc/rseqc/{name}.splice_junction.pdf", name=name),
@@ -49,12 +52,6 @@ rule fastqc:
     threads: 10
     params:
         prefix="qc/fastqc/",
-    conda:
-        "envs/qc.yml"
-    envmodules:
-        "fastqc",
-    shadow:
-        "shallow"
     log:
         "logs/fastqc_{name}.log",
     shell:
@@ -66,12 +63,6 @@ rule ref_annotation_gtf_to_bed:
         config["ref"],
     output:
         "qc/ref.bed12",
-    conda:
-        "envs/qc.yml"
-    envmodules:
-        "ucsc",
-    shadow:
-        "shallow"
     log:
         "logs/ref_annotation_gtf_to_bed.log",
     shell:
@@ -86,14 +77,8 @@ rule rseqc_gene_body_coverage:
         bed="qc/ref.bed12",
     output:
         "qc/rseqc/geneBodyCoverage.curves.pdf",
-    conda:
-        "envs/qc.yml"
-    envmodules:
-        "rseqc",
     params:
         prefix="qc/rseqc/",
-    shadow:
-        "shallow"
     log:
         "logs/rseqc_gene_body_coverage.log",
     shell:
@@ -108,12 +93,6 @@ rule rseqc_inner_distance:
         "qc/rseqc/{name}.inner_distance_plot.pdf",
     params:
         prefix="qc/rseqc/{name}",
-    conda:
-        "envs/qc.yml"
-    envmodules:
-        "rseqc",
-    shadow:
-        "shallow"
     log:
         "logs/rseqc_inner_distance_{name}.log",
     shell:
@@ -127,17 +106,12 @@ rule rseqc_read_gc:
         "qc/rseqc/{name}.GC_plot.pdf",
     params:
         prefix="qc/rseqc/{name}",
-    envmodules:
-        "rseqc",
-    shadow:
-        "shallow"
     log:
         "logs/rseqc_read_gc_{name}.log",
     shell:
         "read_GC.py -i {input} -o {params.prefix} 2> {log}"
 
 
-### fix above output
 rule rseqc_read_duplication:
     input:
         "mappings/{name}.bam",
@@ -145,12 +119,6 @@ rule rseqc_read_duplication:
         "qc/rseqc/{name}.DupRate_plot.pdf",
     params:
         prefix="qc/rseqc/{name}",
-    conda:
-        "envs/qc.yml"
-    envmodules:
-        "rseqc",
-    shadow:
-        "shallow"
     log:
         "logs/rseqc_read_duplication_{name}.log",
     shell:
@@ -166,12 +134,6 @@ rule rseqc_junction_annotation:
         "qc/rseqc/{name}.splice_events.pdf",
     params:
         prefix="qc/rseqc/{name}",
-    conda:
-        "envs/qc.yml"
-    envmodules:
-        "rseqc",
-    shadow:
-        "shallow"
     log:
         "logs/rseqc_junction_annotation_{name}.log",
     shell:
@@ -186,12 +148,6 @@ rule rseqc_junction_saturation:
         "qc/rseqc/{name}.junctionSaturation_plot.pdf",
     params:
         prefix="qc/rseqc/{name}",
-    envmodules:
-        "rseqc",
-    conda:
-        "envs/qc.yml"
-    shadow:
-        "shallow"
     log:
         "logs/rseqc_junction_saturation_{name}.log",
     shell:
@@ -204,12 +160,6 @@ rule rseqc_infer_experiment:
         bam="mappings/{name}.bam",
     output:
         "qc/rseqc/{name}.infer_experiment.txt",
-    conda:
-        "envs/qc.yml"
-    envmodules:
-        "rseqc",
-    shadow:
-        "shallow"
     log:
         "logs/rseqc_infer_experiment_{name}.log",
     shell:
@@ -221,12 +171,6 @@ rule rseqc_bam_stat:
         "mappings/{name}.bam",
     output:
         "qc/rseqc/{name}.bam_stat.txt",
-    envmodules:
-        "rseqc",
-    conda:
-        "envs/qc.yml"
-    shadow:
-        "shallow"
     log:
         "logs/rseqc_bam_stat_{name}.log",
     shell:
@@ -237,14 +181,8 @@ rule rseqc_read_distribution:
     input:
         bam="mappings/{name}.bam",
         bed="qc/ref.bed12",
-    envmodules:
-        "rseqc",
-    conda:
-        "envs/qc.yml"
     output:
         "qc/rseqc/{name}.read_distribution.txt",
-    shadow:
-        "shallow"
     log:
         "logs/rseqc_read_distribution_{name}.log",
     shell:
@@ -254,14 +192,8 @@ rule rseqc_read_distribution:
 rule multiqc:
     input:
         rules.all.input[:-1],
-    envmodules:
-        "multiqc",
-    conda:
-        "envs/qc.yml"
     output:
         "qc/multiqc/multiqc_report.html",
-    shadow:
-        "shallow"
     log:
         "logs/multiqc.log",
     shell:
