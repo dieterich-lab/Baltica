@@ -79,6 +79,7 @@ read_majiq_out <- function(x) {
       "ir_coords",
       "ucsc_lsv_link"
     ),
+    na.strings=c("\"\"","","na"),
     colClasses = c(
       "character",
       "character",
