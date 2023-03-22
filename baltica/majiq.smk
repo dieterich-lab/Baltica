@@ -104,8 +104,6 @@ rule majiq_build:
     output:
         expand("majiq/{name}.majiq", name=name),
         "majiq/splicegraph.sql",
-    conda:
-        "../envs/majiq.yml"
     threads: len(conditions)
     log:
         "logs/majiq_build.log",
@@ -119,8 +117,6 @@ rule majiq_deltapsi:
         b=lambda wc: comparison(wc, -1, mapping),
     output:
         "majiq/{contrast}/{contrast}.deltapsi.voila",
-    conda:
-        "../envs/majiq.yml"
     threads: 10
     log:
         "logs/majiq_deltapsi/{contrast}.log",
@@ -144,8 +140,6 @@ rule majiq_voila:
         "majiq/{contrast}/{contrast}.deltapsi.voila",
     output:
         "majiq/voila/{contrast}_voila.tsv",
-    conda:
-        "../envs/majiq.yml"
     log:
         "logs/majiq_voila/{contrast}.log",
     params:

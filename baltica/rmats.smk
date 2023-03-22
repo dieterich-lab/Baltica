@@ -70,8 +70,6 @@ rule rmats_run:
     log:
         "logs/rmats/run_{alt}-vs-{ref}.log",
     threads: 10
-    envmodules:
-        "rmats-turbo/4.1.1",
     params:
         gtf=config["ref"],
         is_paired="single" if config.get("is_single_end") else "paired",

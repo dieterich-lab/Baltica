@@ -68,8 +68,6 @@ rule junctionseq_qc:
         is_paired_end="--singleEnded" if config.get("is_single_end") == True else "",
     log:
         "logs/junctionseq_qc/{name}.log",
-    envmodules:
-        "java qorts ",
     shadow:
         "shallow"
     shell:
@@ -118,8 +116,6 @@ rule junctionseq_merge:
         gtf=config["ref"],
         min_count=config.get("junctionseq_mincount", 6),
         strandness=strandness.get(config.get("strandness"), ""),
-    envmodules:
-        "java qorts",
     log:
         "logs/junctionseq_merge.log",
     shadow:
@@ -145,8 +141,6 @@ rule junctionseq_analysis:
     threads: 10
     resources:
         mem_mb=64000
-    envmodules:
-        "R/3.6.3_deb10 junctionseq/1.16.0_deb10",
     shadow:
         "shallow"
     shell:

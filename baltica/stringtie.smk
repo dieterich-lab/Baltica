@@ -73,8 +73,6 @@ rule stringtie_merge_bam:
         "logs/stringtie_merge_bam/{group}.log",
     wildcard_constraints:
         group="|".join(cond),
-    envmodules:
-        "samtools/1.12_deb10",
     shadow:
         "shallow"
     shell:
@@ -95,8 +93,6 @@ rule stringtie_denovo_transcriptomics:
         group="|".join(cond),
     log:
         "logs/stringtie_denovo_transcriptomics/{group}.log",
-    envmodules:
-        "stringtie",
     shadow:
         "shallow"
     shell:
@@ -113,8 +109,6 @@ rule gffcompare:
     params:
         gtf=config["ref"],
         out="stringtie/merged/merged",
-    envmodules:
-        "rnaseqtools",
     shadow:
         "shallow"
     shell:

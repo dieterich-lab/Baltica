@@ -43,8 +43,6 @@ rule parse_majiq:
         expand("majiq/voila/{contrast}_voila.tsv", contrast=config["contrasts"].keys()),
     output:
         "majiq/majiq_junctions.csv",
-    envmodules:
-        "R/4.0.5_deb10",
     log:
         "logs/parse_majiq.log",
     params:
@@ -61,8 +59,6 @@ rule parse_leafcutter:
         ),
     output:
         "leafcutter/leafcutter_junctions.csv",
-    envmodules:
-        "R/4.0.5_deb10",
     log:
         "logs/parse_leafcutter.log",
     params:
@@ -79,8 +75,6 @@ rule parse_junctionseq:
         ),
     output:
         "junctionseq/junctionseq_junctions.csv",
-    envmodules:
-        "R/4.0.5_deb10",
     log:
         "logs/parse_junctionseq.log",
     params:
@@ -98,8 +92,6 @@ rule parse_rmats:
         ),
     output:
         "rmats/rmats_junctions.csv",
-    envmodules:
-        "R/4.0.5_deb10",
     log:
         "logs/parse_rmats.log",
     params:
@@ -121,8 +113,6 @@ rule annotate:
         ref=config.get("ref"),
         orthogonal_result=config.get('orthogonal_result'),
         unstranded=False if 'strandness' in config else True,
-    envmodules:
-        "R/4.0.5_deb10",
     log:
         "logs/baltica_annotate.log",
     output:
@@ -135,8 +125,6 @@ rule assign_AS_type:
     input:
         "results/SJ_annotated.csv",
         ref="stringtie/merged/merged.combined.gtf",
-    envmodules:
-        "R/4.0.5_deb10",
     output:
         "results/SJ_annotated_assigned.csv",
     log:
@@ -152,8 +140,6 @@ rule simplify:
         expand(
             "results/baltica_table{project_title}.xlsx", 
             project_title="_" + project_title),
-    envmodules:
-        "R/4.0.5_deb10",
     log:
         "logs/simplify.log",
     script:

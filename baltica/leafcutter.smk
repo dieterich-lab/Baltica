@@ -67,8 +67,6 @@ rule leafcutter_bam2junc:
         "mappings/{name}.bam",
     output:
         "leafcutter/{name}.junc",
-    envmodules:
-        "regtools/0.6",
     log:
         "logs/leafcutter/leafcutter_bam2junc/{name}.log",
     params:
@@ -83,8 +81,6 @@ rule leafcutter_bam2junc:
         # If your alignments contain XS tags,
         # these will be used in the "unstranded" mode.
         strand_specificity=strand.get(config.get("strandness", 2), 0),
-    envmodules:
-        "regtools",
     shadow:
         "shallow"
     shell:
@@ -138,8 +134,6 @@ rule leafcutter_intron_clustering:
         "leafcutter/{comp_names}/{comp_names}_perind_numers.counts.gz",
     log:
         "logs/leafcutter/leafcutter_intron_clustering/{comp_names}.log",
-    envmodules:
-        "python3/3.6.13_deb10",
     shadow:
         "shallow"
     shell:
@@ -158,8 +152,6 @@ rule leafcutter_gtf_to_exon:
     output:
         a="leafcutter/{}".format(basename(gtf_path, suffix=".gz")),
         b="leafcutter/exons.gtf.gz",
-    envmodules:
-        "R/4.0.5_deb10 leafcutter/0.2.7_deb10",
     log:
         "logs/leafcutter/leafcutter_gtf_to_exon.log",
     shadow:
@@ -184,10 +176,6 @@ rule leafcutter_differential_splicing:
         min_coverage=config.get("leafcutter_min_coverage", 20),
         prefix="leafcutter/{comp_names}/{comp_names}",
     threads: 10
-    conda:
-        "../envs/leafcutter.yml"
-    envmodules:
-        "R/4.0.5_deb10 leafcutter/0.2.7_deb10",
     log:
         "logs/leafcutter/leafcutter_differential_splicing/{comp_names}.log",
     shadow:
@@ -205,3 +193,4 @@ onsuccess:
         shell("rm *.sorted.gz")
     except CalledProcessError:
         pass
+
